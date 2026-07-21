@@ -97,6 +97,13 @@ class NodeMetaFormBlock extends BlockBase implements ContainerFactoryPluginInter
       return [];
     }
 
+    // Skip rendering when the node's bundle has no moderation workflow —
+    // otherwise getWorkflowForEntity() returns NULL and the block fatals.
+    $workflow = $this->moderationInformation->getWorkflowForEntity($node);
+    if (!$workflow) {
+      return [];
+    }
+
     // Container header with the moderation label as the title.
     $form['meta'] = [
       '#type' => 'container',
@@ -108,8 +115,7 @@ class NodeMetaFormBlock extends BlockBase implements ContainerFactoryPluginInter
     // Publication state (hidden for new/unsaved nodes).
     $form['meta']['published'] = [
       '#type' => 'item',
-      '#markup' => $this->moderationInformation
-        ->getWorkflowForEntity($node)
+      '#markup' => $workflow
         ->getTypePlugin()
         ->getState($node->moderation_state->value)
         ->label(),
