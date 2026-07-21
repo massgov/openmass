@@ -555,12 +555,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        content_count:
-          id: content_count
-          table: ed11y_result
-          field: content_count
-          relationship: none
-          group_type: sum
+        content_results:
+          id: content_results
+          table: ed11y_page
+          field: content_results
+          relationship: editoria11y_result_to_page
+          group_type: max
           admin_label: ''
           plugin_id: numeric
           label: 'Issue count'
@@ -719,12 +719,12 @@ display:
           empty: true
           title: 'No known issues at this url'
       sorts:
-        content_count:
-          id: content_count
-          table: ed11y_result
-          field: content_count
-          relationship: none
-          group_type: sum
+        content_results:
+          id: content_results
+          table: ed11y_page
+          field: content_results
+          relationship: editoria11y_result_to_page
+          group_type: max
           admin_label: ''
           plugin_id: standard
           order: DESC
@@ -783,6 +783,50 @@ display:
             autocomplete_dependent: 0
             autocomplete_contextual: 0
             autocomplete_autosubmit: 0
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+        content_results:
+          id: content_results
+          table: ed11y_page
+          field: content_results
+          relationship: editoria11y_result_to_page
+          group_type: group
+          admin_label: ''
+          plugin_id: numeric
+          operator: '>'
+          value:
+            min: ''
+            max: ''
+            value: '0'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -1243,7 +1287,7 @@ display:
             created: created
             changed: changed
             uid: uid
-            content_count: content_count
+            content_results: content_results
             pageviews: pageviews
           default: pageviews
           info:
@@ -1296,7 +1340,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            content_count:
+            content_results:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -1640,12 +1684,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        content_count:
-          id: content_count
-          table: ed11y_result
-          field: content_count
-          relationship: none
-          group_type: sum
+        content_results:
+          id: content_results
+          table: ed11y_page
+          field: content_results
+          relationship: editoria11y_result_to_page
+          group_type: max
           admin_label: ''
           plugin_id: numeric
           label: 'Issue count'
