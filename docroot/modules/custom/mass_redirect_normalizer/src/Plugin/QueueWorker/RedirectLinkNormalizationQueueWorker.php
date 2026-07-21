@@ -118,6 +118,9 @@ class RedirectLinkNormalizationQueueWorker extends QueueWorkerBase implements Co
     if (!empty($result['changed']) && !empty($result['changes']) && is_array($result['changes'])) {
       $this->changeLog->logChanges($entityType, $entityId, (string) $entity->bundle(), $source, $result['changes']);
     }
+    if (!empty($result['skips']) && is_array($result['skips'])) {
+      $this->changeLog->logSkips($entityType, $entityId, (string) $entity->bundle(), $source, $result['skips']);
+    }
   }
 
   /**
