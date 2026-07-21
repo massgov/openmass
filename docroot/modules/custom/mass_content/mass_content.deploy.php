@@ -402,3 +402,62 @@ function mass_content_deploy_tableau_embed_type_update(&$sandbox) {
     return t('All tableau_embed paragraphs have been updated with the "default" value in field_tableau_embed_type and reflected in the referencing nodes.');
   }
 }
+
+/**
+ * DP-44652: Switch promo page featured item descriptions to the allowed format.
+ *
+ * The field is restricted to "Basic HTML (no links)": links break the layout
+ * because the whole featured card is already one link, so nested links split
+ * the markup. Existing content was saved with formats that allow links
+ * (mostly basic_html); switching the stored format strips links at render
+ * time while keeping the rest of the markup. Runs as a deploy hook because
+ * the basic_html_no_links format is created by the config import that
+ * precedes deploy hooks.
+ */
+function mass_content_deploy_featured_item_description_format() {
+  $database = \Drupal::database();
+  $bundles = ['featured_content_2up_item', 'featured_content_single_item'];
+  $format = 'basic_html_no_links';
+
+  // Select by bundle only (not by current format) so cache invalidation
+  // stays complete if the hook is re-run after a partial failure.
+  $ids = $database->select('paragraph__field_rich_text_description', 'p')
+    ->fields('p', ['entity_id'])
+    ->condition('bundle', $bundles, 'IN')
+    ->distinct()
+    ->execute()
+    ->fetchCol();
+
+  $tables = [
+    'paragraph__field_rich_text_description',
+    'paragraph_revision__field_rich_text_description',
+  ];
+  $updated = 0;
+  $transaction = $database->startTransaction();
+  try {
+    foreach ($tables as $table) {
+      $updated += $database->update($table)
+        ->fields(['field_rich_text_description_format' => $format])
+        ->condition('bundle', $bundles, 'IN')
+        ->condition('field_rich_text_description_format', $format, '<>')
+        ->execute();
+    }
+  }
+  catch (\Throwable $e) {
+    $transaction->rollBack();
+    throw $e;
+  }
+  unset($transaction);
+
+  if ($ids) {
+    \Drupal::entityTypeManager()->getStorage('paragraph')->resetCache($ids);
+    $tags = array_map(fn($id) => 'paragraph:' . $id, $ids);
+    \Drupal\Core\Cache\Cache::invalidateTags($tags);
+  }
+
+  return t('Updated @rows field rows to the @format text format; invalidated caches for @count featured item paragraphs.', [
+    '@rows' => $updated,
+    '@count' => count($ids),
+    '@format' => $format,
+  ]);
+}
