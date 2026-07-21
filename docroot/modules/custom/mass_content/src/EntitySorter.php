@@ -72,10 +72,13 @@ class EntitySorter {
         case 'advisory':
         case 'binder':
         case 'decision':
+        case 'event':
         case 'executive_order':
+        case 'news':
         case 'regulation':
         case 'rules':
-          if ($date = Helper::fieldValue($object, 'field_date_published')) {
+          $field_name = $type === 'event' ? 'field_event_date' : 'field_date_published';
+          if ($date = Helper::fieldValue($object, $field_name)) {
             $date = $this->formatDateValue($date);
             break;
           }
