@@ -35,6 +35,19 @@ class MediaModerationStateRestricted extends ViewsBulkOperationsActionBase {
 
       // Move file to private storage.
       $file = File::load($entity->field_upload_file->target_id);
+      if (!$file) {
+        \Drupal::logger('content')->warning('Skipped restricted bulk action file move because file entity @fid could not be loaded.', [
+          '@fid' => $entity->field_upload_file->target_id,
+        ]);
+        return;
+      }
+
+      /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+      $file_system = \Drupal::service('file_system');
+      if (mass_media_skip_directory_file_move($file, $file_system, 'restricted bulk action')) {
+        return;
+      }
+
       // Path to save files to.
       $directory = "documents/" . date("Y") . "/" . date("m") . "/" . date("d") . "/";
 
