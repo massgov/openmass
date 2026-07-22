@@ -5,6 +5,7 @@ namespace Drupal\mass_media\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\mass_media\CacheableBinaryFileResponse;
 use Drupal\media\MediaInterface;
 use Drupal\stage_file_proxy\DownloadManagerInterface;
@@ -46,9 +47,9 @@ class MassMediaDownloadController extends ControllerBase {
   /**
    * Stage File Proxy download manager.
    *
-   * @var \Drupal\stage_file_proxy\DownloadManagerInterface
+   * @var \Drupal\stage_file_proxy\DownloadManagerInterface|null
    */
-  private DownloadManagerInterface $stageFileProxyDownloadManager;
+  private ?DownloadManagerInterface $stageFileProxyDownloadManager;
 
   /**
    * {@inheritdoc}
@@ -56,7 +57,7 @@ class MassMediaDownloadController extends ControllerBase {
   public function __construct(
     RequestStack $request_stack,
     StreamWrapperManagerInterface $stream_wrapper_manager,
-    DownloadManagerInterface $stage_file_proxy_download_manager,
+    ?DownloadManagerInterface $stage_file_proxy_download_manager,
     ConfigFactoryInterface $config_factory,
   ) {
     $this->requestStack = $request_stack;
@@ -72,7 +73,9 @@ class MassMediaDownloadController extends ControllerBase {
     return new static(
       $container->get('request_stack'),
       $container->get('stream_wrapper_manager'),
-      $container->get('stage_file_proxy.download_manager'),
+      $container->has('stage_file_proxy.download_manager')
+        ? $container->get('stage_file_proxy.download_manager')
+        : NULL,
       $container->get('config.factory')
     );
   }
@@ -87,7 +90,7 @@ class MassMediaDownloadController extends ControllerBase {
    *   File response that serves the media bytes directly.
    *
    * @throws \Exception
-   * @throws NotFoundHttpException
+   * @throws \Symfony\Component\HttpKernel\Exception\NotFoundHttpException
    */
   public function download(MediaInterface $media) {
     $bundle = $media->bundle();
@@ -138,7 +141,7 @@ class MassMediaDownloadController extends ControllerBase {
     if (!$this->fileExists($file_uri)) {
       // Stage File Proxy is intended for public assets; private files should
       // remain non-public and must not be fetched from origin.
-      if ($scheme === 'public') {
+      if ($scheme === 'public' && $this->stageFileProxyDownloadManager) {
         $stageConfig = $this->configFactory->get('stage_file_proxy.settings');
         $origin = (string) $stageConfig->get('origin');
         $originHost = (string) parse_url($origin, PHP_URL_HOST);
@@ -172,8 +175,16 @@ class MassMediaDownloadController extends ControllerBase {
         throw new AccessDeniedHttpException();
       }
     }
+    if (empty($headers)) {
+      throw new AccessDeniedHttpException();
+    }
 
-    $is_public = $scheme !== 'private';
+    $additional_public_schemes = array_diff(
+      Settings::get('file_additional_public_schemes', []),
+      ['private', 'temporary'],
+    );
+    $is_public = $scheme === 'public'
+      || in_array($scheme, $additional_public_schemes, TRUE);
     $response = new CacheableBinaryFileResponse(
       $file_uri,
       Response::HTTP_OK,
@@ -184,7 +195,7 @@ class MassMediaDownloadController extends ControllerBase {
       TRUE,
     );
 
-    if (empty($headers['Content-Disposition'])) {
+    if (!$response->headers->has('Content-Disposition')) {
       $mime_type = $file->getMimeType() ?: 'application/octet-stream';
       $disposition = $this->resolveContentDisposition($mime_type, $request_query);
       $response->setContentDisposition($disposition, $file->getFilename());
@@ -198,9 +209,9 @@ class MassMediaDownloadController extends ControllerBase {
     $response->addCacheableDependency($media);
     $response->addCacheableDependency($file);
     $response->getCacheableMetadata()->addCacheContexts(['url.site']);
-    // Prevent Dynamic Page Cache from serializing the BinaryFileResponse object.
-    // HTTP cache headers (max-age/s-maxage) and Akamai Edge-Cache-Tag headers are
-    // set separately for CDN caching and invalidation.
+    // Prevent Dynamic Page Cache from serializing the BinaryFileResponse
+    // object. HTTP cache headers (max-age/s-maxage) and Akamai Edge-Cache-Tag
+    // headers are set separately for CDN caching and invalidation.
     $response->getCacheableMetadata()->setCacheMaxAge(0);
 
     return $response;
@@ -232,6 +243,10 @@ class MassMediaDownloadController extends ControllerBase {
     string $relative_path,
     array $options,
   ): void {
+    if (!$this->stageFileProxyDownloadManager) {
+      return;
+    }
+
     try {
       $fetched = $this->stageFileProxyDownloadManager->fetch(
         $origin,
