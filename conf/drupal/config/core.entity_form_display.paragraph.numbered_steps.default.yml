@@ -6,7 +6,26 @@ dependencies:
     - field.field.paragraph.numbered_steps.field_step
     - paragraphs.paragraphs_type.numbered_steps
   module:
+    - field_group
     - paragraphs
+third_party_settings:
+  field_group:
+    group_numbered_steps:
+      children:
+        - field_step
+      label: 'Numbered Steps'
+      region: content
+      parent_name: ''
+      weight: 0
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        label_as_html: true
+        open: true
+        description: '<p>For accessibility, you must <strong> only use this component after an H2 section heading</strong>. Each numbered step is rendered as an H3 heading. For more information, please visit the <a href="https://massgov.sharepoint.com/sites/TSS-MassGov-Knowledge-Base/SitePages/Numbered-Steps.aspx">Knowledge Base</a>.<p>'
+        required_fields: false
 id: paragraph.numbered_steps.default
 targetEntityType: paragraph
 bundle: numbered_steps
@@ -14,7 +33,7 @@ mode: default
 content:
   field_step:
     type: paragraphs
-    weight: 0
+    weight: 1
     region: content
     settings:
       title: Paragraph
@@ -25,9 +44,11 @@ content:
       closed_mode_threshold: 0
       add_mode: dropdown
       form_display_mode: default
-      default_paragraph_type: ''
+      default_paragraph_type: numbered_step
       features:
+        add_above: '0'
         collapse_edit_all: collapse_edit_all
+        convert: '0'
         duplicate: duplicate
     third_party_settings: {  }
 hidden:
