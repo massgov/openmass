@@ -16,6 +16,8 @@ final class RedirectLinkChangeLog {
 
   public const STATUS_FAILED = 'failed';
 
+  public const STATUS_SKIPPED = 'skipped';
+
   public function __construct(
     private readonly Connection $database,
     private readonly LoggerInterface $logger,
@@ -52,6 +54,42 @@ final class RedirectLinkChangeLog {
         'after_value' => (string) ($change['after'] ?? ''),
         'status' => self::STATUS_SUCCEEDED,
         'error_message' => NULL,
+      ], $entityType, $entityId);
+    }
+  }
+
+  /**
+   * Logs rewrites the normalizer refused to make for one entity.
+   *
+   * Each skip records the link value, the target the rewrite would have
+   * produced, and the reason (e.g. unpublished_target, live_source_page),
+   * so the content team can find and clean up stale redirects.
+   */
+  public function logSkips(
+    string $entityType,
+    int $entityId,
+    string $bundle,
+    string $source,
+    array $skips,
+  ): void {
+    if (!$this->database->schema()->tableExists(self::TABLE)) {
+      return;
+    }
+    $now = time();
+    foreach ($skips as $skip) {
+      $this->insertRow([
+        'changed_at' => $now,
+        'source' => $source,
+        'entity_type' => $entityType,
+        'entity_id' => $entityId,
+        'bundle' => $bundle,
+        'field_name' => (string) ($skip['field'] ?? ''),
+        'delta' => (int) ($skip['delta'] ?? 0),
+        'kind' => (string) ($skip['kind'] ?? ''),
+        'before_value' => (string) ($skip['before'] ?? ''),
+        'after_value' => (string) ($skip['after'] ?? ''),
+        'status' => self::STATUS_SKIPPED,
+        'error_message' => (string) ($skip['reason'] ?? ''),
       ], $entityType, $entityId);
     }
   }
