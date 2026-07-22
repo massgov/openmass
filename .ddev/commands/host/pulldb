@@ -1,7 +1,25 @@
 #!/bin/bash
+set -euo pipefail
 
 ## Description: Container+Volume deletion, then image deletion, then start (db fetch happens at end).
 ## Usage: pulldb
 ## Example: "ddev pulldb"
+
+source .ddev/.env
+
+: "${MASS_DB_AWS_ACCOUNT_ID:?Set MASS_DB_AWS_ACCOUNT_ID in .ddev/.env}"
+: "${MASS_DB_AWS_REGION:?Set MASS_DB_AWS_REGION in .ddev/.env}"
+: "${MASS_DB_AWS_PROFILE_NAME:?Set MASS_DB_AWS_PROFILE_NAME in .ddev/.env}"
+
+registry="${MASS_DB_AWS_ACCOUNT_ID}.dkr.ecr.${MASS_DB_AWS_REGION}.amazonaws.com"
+
+if ! aws ecr get-login-password --region "${MASS_DB_AWS_REGION}" --profile "${MASS_DB_AWS_PROFILE_NAME}" \
+  | docker login --username AWS --password-stdin "${registry}"; then
+  echo "Could not log in to AWS ECR." >&2
+  echo "If your AWS SSO token expired, run:" >&2
+  echo "  aws sso login --profile ${MASS_DB_AWS_PROFILE_NAME}" >&2
+  echo "Then retry: ddev pulldb" >&2
+  exit 1
+fi
 
 ddev delete --omit-snapshot -y && ~/.ddev/bin/docker-compose -f .ddev/.ddev-docker-compose-full.yaml down --rmi all && ddev start
