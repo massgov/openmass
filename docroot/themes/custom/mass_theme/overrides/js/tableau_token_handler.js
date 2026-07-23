@@ -182,15 +182,16 @@
   }
 
   /**
-   * Replaces a placeholder that cannot be rendered with a readable message,
-   * instead of leaving an empty div behind.
+   * Shows a readable message inside a placeholder that cannot be rendered,
+   * instead of leaving blank space. Keeps the placeholder element so its
+   * data attributes and reserved height remain available.
    */
   function renderFailure(placeholder, reason) {
     console.error('Tableau embed failed:', reason);
     const message = document.createElement('div');
     message.className = 'ma_tableau_error';
     message.textContent = Drupal.t('This visualization could not be loaded. Please refresh the page or try again later.');
-    placeholder.replaceWith(message);
+    placeholder.replaceChildren(message);
   }
 
   const observer = 'IntersectionObserver' in window
