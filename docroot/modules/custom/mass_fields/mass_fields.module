@@ -972,8 +972,6 @@ function mass_fields_field_widget_single_element_entity_reference_paragraphs_for
  */
 function mass_fields_field_widget_single_element_image_image_form_alter(&$element, FormStateInterface $form_state, $context) {
   $field_process_map = [
-    'field_featured_item_highlight' => '_mass_fields_image_widget_alt_help_text_process',
-    'field_featured_item_image' => '_mass_fields_image_widget_alt_help_text_process',
     'field_event_image' => '_mass_fields_event_image_widget_alt_help_text_process',
     'field_event_logo' => '_mass_fields_event_image_widget_alt_help_text_process',
   ];
@@ -1001,17 +999,6 @@ function mass_fields_field_widget_single_element_image_image_form_alter(&$elemen
 function _mass_fields_microsite_key_message_image_process($element, &$form_state, $form) {
   // Modify the help text
   $element['#description'] = t("Recommended image size is 2560x1280, with a files size that doesn't exceed 5MB. Allowed types: png, gif, jpg, jpeg. Choose a high quality, decorative image that does not need text explanation. No ALT text is provided for visitors using a screenreader. If there is any text in the image, it should be repeated within the Key Message row.");
-  return $element;
-}
-
-/**
- * Helper function to change alt text.
- */
-function _mass_fields_image_widget_alt_help_text_process($element, &$form_state, $form) {
-  if (isset($element['alt'])) {
-    $text = 'If the image conveys information that is not part of the link text, describe it here. If the image is purely decorative, leave it blank. Screen readers will read the alt text first, then the link text.';
-    $element['alt']['#description'] = new TranslatableMarkup($text);
-  }
   return $element;
 }
 
