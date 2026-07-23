@@ -23,7 +23,7 @@
     // Start a viz this far before it scrolls into view.
     rootMargin: '600px',
     // Set to false to load everything immediately in DOM order.
-    lazy: true,
+    lazy: true
   }, drupalSettings.massTableau || {});
 
   // Module-level state, shared by every behaviour invocation on this page.
@@ -109,7 +109,7 @@
         // The endpoint sends no cache headers; single-use JWTs must not be
         // served from a cache (R8).
         cache: 'no-store',
-        credentials: 'omit',
+        credentials: 'omit'
       });
       if (!response.ok) {
         throw new Error(`token endpoint returned ${response.status}`);
@@ -164,7 +164,7 @@
     viz.setAttribute('hide-tabs', '');
     viz.setAttribute('token', token);
 
-    const { dataDetails, shareOptions } = placeholder.dataset;
+    const {dataDetails, shareOptions} = placeholder.dataset;
     if (dataDetails === 'show' || dataDetails === 'hide') {
       viz.appendChild(customParameter(':dataDetails', dataDetails === 'hide' ? 'no' : 'yes'));
     }
@@ -201,7 +201,7 @@
           enqueue(entry.target);
         }
       });
-    }, { rootMargin: config.rootMargin })
+    }, {rootMargin: config.rootMargin})
     : null;
 
   Drupal.behaviors.tableauTokenHandler = {
@@ -217,6 +217,6 @@
           enqueue(placeholder);
         }
       });
-    },
+    }
   };
 })(Drupal, drupalSettings, once);
