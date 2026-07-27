@@ -324,9 +324,10 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       access:
-        type: perm
+        type: role
         options:
-          perm: 'view all revisions'
+          role:
+            administrator: administrator
       cache:
         type: tag
         options: {  }
@@ -562,7 +563,7 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
-        - user.permissions
+        - user.roles
       tags:
         - 'config:field.storage.media.field_content_organization'
         - 'config:field.storage.media.field_title'
@@ -581,7 +582,7 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
-        - user.permissions
+        - user.roles
       tags:
         - 'config:field.storage.media.field_content_organization'
         - 'config:field.storage.media.field_title'
