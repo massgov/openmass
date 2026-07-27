@@ -134,6 +134,208 @@ class ResolverTest extends MassExistingSiteBase {
   }
 
   /**
+   * Tests redirects to unpublished nodes are ignored for URL rewriting.
+   */
+  public function testRedirectToUnpublishedNodeIsIgnored(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+    $source = 'to-unpublished-' . $this->randomMachineName();
+    $this->createRedirect($source, '/node/' . $target->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $href = '/' . $source . '?foo=1#bar';
+
+    $resolved = $service->resolveRedirectTarget($href);
+    $this->assertFalse($resolved['changed']);
+
+    $text = '<p><a href="' . $href . '">Unpublished</a></p>';
+    $normalizedText = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalizedText['changed']);
+    $this->assertStringContainsString($href, $normalizedText['text']);
+
+    $originalUri = 'internal:' . $href;
+    $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
+    $this->assertFalse($normalizedUri['changed']);
+    $this->assertSame($originalUri, $normalizedUri['uri']);
+  }
+
+  /**
+   * Tests redirects to trashed nodes are ignored for URL rewriting.
+   */
+  public function testRedirectToTrashedNodeIsIgnored(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $target->set('moderation_state', 'trash');
+    $target->save();
+
+    $source = 'to-trashed-' . $this->randomMachineName();
+    $this->createRedirect($source, '/node/' . $target->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $source);
+    $this->assertFalse($resolved['changed']);
+  }
+
+  /**
+   * Tests a published node with a newer draft is still a valid target.
+   *
+   * The published default revision is what visitors see, so normalization
+   * must not be blocked by the existence of a forward (draft) revision.
+   */
+  public function testRedirectToPublishedNodeWithNewerDraftIsNormalized(): void {
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $target->setNewRevision(TRUE);
+    $target->set('moderation_state', 'draft');
+    $target->setTitle($target->getTitle() . ' draft');
+    $target->save();
+
+    $source = 'to-published-with-draft-' . $this->randomMachineName();
+    $this->createRedirect($source, '/node/' . $target->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/' . $source);
+    $this->assertTrue($resolved['changed']);
+    $this->assertNotEmpty($resolved['node']);
+    $this->assertEquals($target->id(), $resolved['node']->id());
+  }
+
+  /**
+   * Tests aliased document download redirects are ignored for unpublished media.
+   */
+  public function testRedirectToUnpublishedAliasedDocumentIsIgnored(): void {
+    $media = $this->createDocumentMedia('unpublished-' . $this->randomMachineName(), [
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+
+    $aliasPath = '/doc/' . $this->randomMachineName() . '/download';
+    $alias = PathAlias::create([
+      'path' => '/media/' . $media->id() . '/download',
+      'alias' => $aliasPath,
+      'langcode' => 'en',
+      'status' => 1,
+    ]);
+    $alias->save();
+    $this->cleanupEntities[] = $alias;
+
+    $source = 'to-unpublished-doc-' . $this->randomMachineName();
+    $this->createRedirect($source, $aliasPath);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $href = '/' . $source . '?foo=1#bar';
+
+    $resolved = $service->resolveRedirectTarget($href);
+    $this->assertFalse($resolved['changed']);
+
+    $text = '<p><a href="' . $href . '">Unpublished doc</a></p>';
+    $normalizedText = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalizedText['changed']);
+    $this->assertStringContainsString($href, $normalizedText['text']);
+
+    $originalUri = 'internal:' . $href;
+    $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
+    $this->assertFalse($normalizedUri['changed']);
+    $this->assertSame($originalUri, $normalizedUri['uri']);
+  }
+
+  /**
+   * Tests redirects shadowing a live page's alias are ignored.
+   *
+   * A stale redirect can share its source path with the alias of a live
+   * published page (e.g. the alias was reused by another page). Links to
+   * that URL still reach the live page, so they must not be rewritten to
+   * the redirect target.
+   */
+  public function testShadowRedirectOverLiveAliasIsIgnored(): void {
+    $livePage = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $aliasPath = '/reused-alias-' . strtolower($this->randomMachineName());
+    $alias = PathAlias::create([
+      'path' => '/node/' . $livePage->id(),
+      'alias' => $aliasPath,
+      'langcode' => 'en',
+      'status' => 1,
+    ]);
+    $alias->save();
+    $this->cleanupEntities[] = $alias;
+
+    $other = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect($aliasPath, '/node/' . $other->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+
+    $resolved = $service->resolveRedirectTarget($aliasPath);
+    $this->assertFalse($resolved['changed']);
+
+    $text = '<p><a href="' . $aliasPath . '">Live page</a></p>';
+    $normalizedText = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalizedText['changed']);
+    $this->assertStringContainsString($aliasPath, $normalizedText['text']);
+
+    $originalUri = 'internal:' . $aliasPath;
+    $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
+    $this->assertFalse($normalizedUri['changed']);
+    $this->assertSame($originalUri, $normalizedUri['uri']);
+  }
+
+  /**
+   * Tests a redirect from the canonical path of a live node still applies.
+   *
+   * A redirect placed on /node/N is a deliberate merge: the redirect
+   * intercepts the request before routing, so the old page is unreachable
+   * there and links should follow the redirect.
+   */
+  public function testRedirectFromCanonicalPathOfLiveNodeStillNormalizes(): void {
+    $old = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $new = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $this->createRedirect('/node/' . $old->id(), '/node/' . $new->id());
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+    $resolved = $service->resolveRedirectTarget('/node/' . $old->id());
+    $this->assertTrue($resolved['changed']);
+    $this->assertNotEmpty($resolved['node']);
+    $this->assertEquals($new->id(), $resolved['node']->id());
+  }
+
+  /**
    * Tests redirect destination query strings are preserved through resolution.
    */
   public function testResolveRedirectTargetPreservesDestinationQuery(): void {
@@ -733,6 +935,81 @@ class ResolverTest extends MassExistingSiteBase {
     $this->assertNotNull($reloaded);
     /** @var \Drupal\node\NodeInterface $reloaded */
     $this->assertSame((int) $sourcePerson->id(), (int) $reloaded->get('field_person_bio')->target_id);
+  }
+
+  /**
+   * Tests entity reference rewrite skips unpublished node targets.
+   */
+  public function testEntityReferenceRewriteSkipsUnpublishedNodeTarget(): void {
+    $sourcePerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    $targetPerson = $this->createNode([
+      'type' => 'person',
+      'title' => $this->randomMachineName(),
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+    $this->createRedirect('/node/' . $sourcePerson->id(), '/node/' . $targetPerson->id());
+
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_person_bio' => [
+        ['target_id' => $sourcePerson->id()],
+      ],
+    ]);
+    $org->set('field_person_bio', ['target_id' => $sourcePerson->id()]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($org, TRUE);
+    $this->assertFalse($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($org->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertSame((int) $sourcePerson->id(), (int) $reloaded->get('field_person_bio')->target_id);
+  }
+
+  /**
+   * Tests entity reference rewrite skips unpublished media targets.
+   */
+  public function testEntityReferenceRewriteSkipsUnpublishedMediaTarget(): void {
+    $sourceMedia = $this->createDocumentMedia('source-unpublished-' . $this->randomMachineName());
+    $targetMedia = $this->createDocumentMedia('target-unpublished-' . $this->randomMachineName(), [
+      'status' => 0,
+      'moderation_state' => 'draft',
+    ]);
+    $this->createRedirect('/media/' . $sourceMedia->id(), '/media/' . $targetMedia->id());
+
+    $binder = $this->createNode([
+      'type' => 'binder',
+      'title' => $this->randomMachineName(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_downloads' => [
+        ['target_id' => $sourceMedia->id()],
+      ],
+    ]);
+    $binder->set('field_downloads', [
+      ['target_id' => $sourceMedia->id()],
+    ]);
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkNormalizationManager $manager */
+    $manager = \Drupal::service('mass_redirect_normalizer.manager');
+    $result = $manager->normalizeEntity($binder, TRUE);
+    $this->assertFalse($result['changed']);
+
+    $reloaded = \Drupal::entityTypeManager()->getStorage('node')->load($binder->id());
+    $this->assertNotNull($reloaded);
+    /** @var \Drupal\node\NodeInterface $reloaded */
+    $this->assertSame((int) $sourceMedia->id(), (int) $reloaded->get('field_downloads')->target_id);
   }
 
   /**
