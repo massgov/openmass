@@ -346,53 +346,6 @@ display:
           group: 1
           expose:
             operator: ''
-        created:
-          id: created
-          table: media_field_revision
-          field: created
-          relationship: none
-          group_type: group
-          admin_label: ''
-          entity_type: media
-          entity_field: created
-          plugin_id: date
-          operator: '>='
-          value:
-            min: ''
-            max: ''
-            value: '2026-07-05'
-            type: date
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
         roles_target_id:
           id: roles_target_id
           table: user__roles
@@ -479,6 +432,53 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
+        changed:
+          id: changed
+          table: media_field_revision
+          field: changed
+          relationship: none
+          group_type: group
+          admin_label: ''
+          entity_type: media
+          entity_field: changed
+          plugin_id: date
+          operator: '>='
+          value:
+            min: ''
+            max: ''
+            value: '2026-07-05'
+            type: date
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            min_placeholder: ''
+            max_placeholder: ''
+            placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
       style:
         type: table
         options:
@@ -489,11 +489,12 @@ display:
             changed: changed
             field_title__revision_id: field_title__revision_id
             field_content_organization__revision_id: field_content_organization__revision_id
-          default: '-1'
+            field_user_org: field_user_org
+          default: changed
           info:
             changed:
-              sortable: false
-              default_sort_order: asc
+              sortable: true
+              default_sort_order: desc
               align: ''
               separator: ''
               empty_column: false
@@ -506,6 +507,11 @@ display:
               empty_column: false
               responsive: ''
             field_content_organization__revision_id:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_user_org:
               align: ''
               separator: ''
               empty_column: false
@@ -574,8 +580,11 @@ display:
     display_plugin: page
     position: 1
     display_options:
-      display_extenders: {  }
-      path: permission-group-audit---documents
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
+      path: admin/report/permission-group-audit---documents
     cache_metadata:
       max-age: -1
       contexts:
