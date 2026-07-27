@@ -1,20 +1,21 @@
-uuid: ab3770c4-4f0d-4a65-9de5-1d71273b5d81
+uuid: e27e6ea8-7363-411b-a6a8-a5b4270de3e3
 langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_content_organization
+    - field.storage.media.field_content_organization
+    - field.storage.media.field_title
     - field.storage.user.field_user_org
     - user.role.administrator
     - user.role.content_team
   module:
     - user
-id: rpt_permission_group_audit_nodes
-label: 'Permission Group Audit - nodes'
+id: rpt_permission_group_audit_documents
+label: 'Permission Group Audit - documents'
 module: views
 description: ''
 tag: ''
-base_table: node_field_revision
+base_table: media_field_revision
 base_field: vid
 display:
   default:
@@ -23,19 +24,19 @@ display:
     display_plugin: default
     position: 0
     display_options:
-      title: 'Permission Group Audit - nodes'
+      title: 'Permission Group Audit - documents'
       fields:
         changed:
           id: changed
-          table: node_field_revision
+          table: media_field_revision
           field: changed
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: node
+          entity_type: media
           entity_field: changed
           plugin_id: field
-          label: Changed
+          label: ''
           exclude: false
           alter:
             alter_text: false
@@ -74,26 +75,42 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        title:
-          id: title
-          table: node_field_revision
-          field: title
+        field_title__revision_id:
+          id: field_title__revision_id
+          table: media_revision__field_title
+          field: field_title__revision_id
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: node
-          entity_field: title
           plugin_id: field
-          label: Title
+          label: ''
           exclude: false
           alter:
             alter_text: false
+            text: ''
             make_link: false
+            path: ''
             absolute: false
-            word_boundary: false
-            ellipsis: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
             strip_tags: false
             trim: false
+            preserve_tags: ''
             html: false
           element_type: ''
           element_class: ''
@@ -123,13 +140,13 @@ display:
           field_api_classes: false
         field_content_organization__revision_id:
           id: field_content_organization__revision_id
-          table: node_revision__field_content_organization
+          table: media_revision__field_content_organization
           field: field_content_organization__revision_id
           relationship: none
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'Permission - node'
+          label: 'Permission group - document'
           exclude: false
           alter:
             alter_text: false
@@ -192,7 +209,7 @@ display:
           group_type: group
           admin_label: ''
           plugin_id: field
-          label: 'Permission - user'
+          label: 'Permission Group - user'
           exclude: false
           alter:
             alter_text: false
@@ -252,7 +269,7 @@ display:
         options:
           offset: 0
           pagination_heading_level: h4
-          items_per_page: 20
+          items_per_page: 30
           total_pages: null
           id: 0
           tags:
@@ -277,10 +294,9 @@ display:
           sort_asc_label: Asc
           sort_desc_label: Desc
       access:
-        type: role
+        type: perm
         options:
-          role:
-            administrator: administrator
+          perm: 'view all revisions'
       cache:
         type: tag
         options: {  }
@@ -290,9 +306,9 @@ display:
       filters:
         status:
           id: status
-          table: node_field_revision
+          table: media_field_revision
           field: status
-          entity_type: node
+          entity_type: media
           entity_field: status
           plugin_id: boolean
           value: '1'
@@ -301,12 +317,12 @@ display:
             operator: ''
         created:
           id: created
-          table: node_field_revision
+          table: media_field_revision
           field: created
           relationship: none
           group_type: group
           admin_label: ''
-          entity_type: node
+          entity_type: media
           entity_field: created
           plugin_id: date
           operator: '>='
@@ -392,6 +408,42 @@ display:
           reduce_duplicates: false
       style:
         type: table
+        options:
+          grouping: {  }
+          row_class: ''
+          default_row_class: true
+          columns:
+            changed: changed
+            field_title__revision_id: field_title__revision_id
+            field_content_organization__revision_id: field_content_organization__revision_id
+          default: '-1'
+          info:
+            changed:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_title__revision_id:
+              sortable: false
+              default_sort_order: asc
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            field_content_organization__revision_id:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+          override: true
+          sticky: false
+          summary: ''
+          empty_table: false
+          caption: ''
+          description: ''
+          class: ''
       row:
         type: fields
       query:
@@ -406,12 +458,12 @@ display:
       relationships:
         uid:
           id: uid
-          table: node_field_revision
+          table: media_field_revision
           field: uid
           relationship: none
           group_type: group
           admin_label: User
-          entity_type: node
+          entity_type: media
           entity_field: uid
           plugin_id: standard
           required: true
@@ -427,10 +479,10 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
-        - 'user.node_grants:view'
-        - user.roles
+        - user.permissions
       tags:
-        - 'config:field.storage.node.field_content_organization'
+        - 'config:field.storage.media.field_content_organization'
+        - 'config:field.storage.media.field_title'
         - 'config:field.storage.user.field_user_org'
   page_1:
     id: page_1
@@ -439,15 +491,15 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: permission-group-audit---nodes
+      path: permission-group-audit---documents
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
-        - 'user.node_grants:view'
-        - user.roles
+        - user.permissions
       tags:
-        - 'config:field.storage.node.field_content_organization'
+        - 'config:field.storage.media.field_content_organization'
+        - 'config:field.storage.media.field_title'
         - 'config:field.storage.user.field_user_org'
