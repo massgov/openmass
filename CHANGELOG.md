@@ -1,5 +1,15 @@
 
 
+## [0.488.0] - July 28, 2026
+
+### Fixed
+  - DP-47963: Content Performance report exports no longer time out for large result sets.
+  
+### Added
+  - DP-48073: Numbered Steps Component Help Text
+  
+
+
 ## [0.487.0] - July 21, 2026
 
 ### Security
