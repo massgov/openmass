@@ -60,7 +60,7 @@ trait RedirectNormalizerTestTrait {
   /**
    * Creates a published document media entity for tests.
    */
-  private function createDocumentMedia(string $suffix) {
+  private function createDocumentMedia(string $suffix, array $overrides = []) {
     $destination = 'public://redirect-normalizer-' . $suffix . '.txt';
     $file = File::create(['uri' => $destination]);
     $file->setPermanent();
@@ -68,7 +68,7 @@ trait RedirectNormalizerTestTrait {
     $src = 'core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt';
     \Drupal::service('file_system')->copy($src, $destination, TRUE);
 
-    return $this->createMedia([
+    return $this->createMedia($overrides + [
       'title' => 'Doc ' . $suffix,
       'bundle' => 'document',
       'field_upload_file' => ['target_id' => $file->id()],
