@@ -4,6 +4,7 @@ status: true
 dependencies:
   config:
     - field.field.node.external_data_resource.field_collections
+    - field.field.node.external_data_resource.field_content_organization
     - field.field.node.external_data_resource.field_data_flag
     - field.field.node.external_data_resource.field_data_format
     - field.field.node.external_data_resource.field_data_resource_type
@@ -70,6 +71,7 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - search
         - search_nosnippet
         - simple_sitemap
@@ -108,6 +110,28 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 4
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons

@@ -1,0 +1,25 @@
+{#
+/**
+ * @file
+ * Renders user.field_default_organizations with its label.
+ */
+#}
+{%
+  set classes = [
+    'field',
+    'field--name-' ~ field_name|clean_class,
+    'field--type-' ~ field_type|clean_class,
+    'field--label-' ~ label_display,
+    label_display == 'inline' ? 'clearfix',
+  ]
+%}
+<div{{ attributes.addClass(classes) }}>
+  {% if not label_hidden %}
+    <h4{{ title_attributes.addClass('label') }}>{{ label }}</h4>
+  {% endif %}
+  <ul class="field__items">
+    {% for item in items %}
+      <li{{ item.attributes.addClass('field__item') }}>{{ item.content }}</li>
+    {% endfor %}
+  </ul>
+</div>

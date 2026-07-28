@@ -129,9 +129,14 @@ class AddCollectionsDocuments extends ViewsBulkOperationsActionBase implements C
    * {@inheritdoc}
    */
   public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
-    if ($object->getEntityType() === 'media') {
-      $access = $object->access('update', $account, TRUE)
-        ->andIf($object->status->access('edit', $account, TRUE));
+    if ($object->getEntityTypeId() === 'media') {
+      // The action only writes field_collections, so the entity-level
+      // update check is enough. A previous version also called
+      // $object->status->access('edit'), but on a content_moderation
+      // site that field is read-only for everyone (state changes go
+      // through moderation transitions), which blocked the bulk action
+      // for every user.
+      $access = $object->access('update', $account, TRUE);
       return $return_as_object ? $access : $access->isAllowed();
     }
 

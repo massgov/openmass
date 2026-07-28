@@ -1,0 +1,105 @@
+/**
+ * Message box configuration dialog (nested CKEditor for body field).
+ *
+ * dialogClass applies mass-inline-message-dialog on the .ui-dialog wrapper only
+ * (same pattern as entity-select-dialog). Form markup uses
+ * mass-inline-message-dialog-form so global heading styles do not override the
+ * modal title bar.
+ */
+
+/* Message box uses its own modal wrapper; editor embeds use #drupal-modal on top. */
+#mass-inline-message-modal {
+  position: relative;
+}
+
+/*
+ * Layout Paragraphs modals use z-index up to 9100/99999 (see layout-paragraphs.css).
+ * Stack Message box and entity embed above LP when nested inside Rich text.
+ * Body classes are toggled in mass-inline-message-dialog.js.
+ */
+body.mass-inline-message-dialog-open .ui-dialog.lpb-dialog,
+body.mass-inline-message-dialog-open .ui-dialog:has(form.layout-paragraphs-component-form) {
+  z-index: 9000 !important;
+}
+
+body.mass-inline-message-dialog-open .ui-dialog.mass-inline-message-dialog {
+  z-index: 100050 !important;
+}
+
+body.mass-inline-message-embed-open .ui-dialog.mass-inline-message-embed-dialog {
+  z-index: 100060 !important;
+}
+
+/*
+ * Nested Message text editor: table/image balloon toolbars must sit above the
+ * Message box modal (100050). Core CKEditor uses --ck-z-modal (1261), so the
+ * default balloon z-index (~18915) is hidden behind this dialog.
+ */
+body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_visible,
+body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow,
+html:has([data-fullscreen="fullscreenoverlay"]) body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_visible,
+html:has([data-fullscreen="fullscreenoverlay"]) body.mass-inline-message-dialog-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
+  z-index: 100055 !important;
+}
+
+body.mass-inline-message-dialog-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible,
+html:has([data-fullscreen="fullscreenoverlay"]) body.mass-inline-message-dialog-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible {
+  z-index: 100055 !important;
+}
+
+body.mass-inline-message-embed-open .ck.ck-balloon-panel.ck-balloon-panel_visible,
+body.mass-inline-message-embed-open .ck.ck-balloon-panel.ck-balloon-panel_with-arrow {
+  z-index: 100065 !important;
+}
+
+body.mass-inline-message-embed-open .ck.ck-dropdown__panel.ck-dropdown__panel-visible {
+  z-index: 100065 !important;
+}
+
+/* Claro title bar contrast for Message box and stacked CKEditor embed modals. */
+.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar,
+.ui-dialog.entity-select-dialog > .ui-dialog-titlebar,
+.ui-dialog:has(#mass-inline-message-dialog-form) > .ui-dialog-titlebar {
+  color: var(--jui-dialog-title-color, #fff);
+  background-color: var(--jui-dialog-title-bg-color, #232429);
+}
+
+.ui-dialog.mass-inline-message-dialog > .ui-dialog-titlebar .ui-dialog-title,
+.ui-dialog.entity-select-dialog > .ui-dialog-titlebar .ui-dialog-title,
+.ui-dialog:has(#mass-inline-message-dialog-form) > .ui-dialog-titlebar .ui-dialog-title {
+  color: inherit;
+}
+
+/* Match wider editor dialogs like entity embed in admin UI. */
+.ui-dialog--narrow.mass-inline-message-dialog {
+  max-width: 1200px;
+}
+
+@media screen and (min-width: 768px) {
+  .ui-dialog--narrow.mass-inline-message-dialog .mass-inline-message-dialog-form {
+    min-width: 730px;
+  }
+}
+
+@media screen and (min-width: 1000px) {
+  .ui-dialog--narrow.mass-inline-message-dialog .mass-inline-message-dialog-form {
+    min-width: 950px;
+  }
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .filter-guidelines,
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-filter-wrapper > .form-item__label[for*="format"] {
+  display: none;
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-text-format-wrapper .ck-editor {
+  max-width: 100%;
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-text-format-wrapper .ck-editor__editable {
+  min-height: 8rem;
+}
+
+.ui-dialog.mass-inline-message-dialog .mass-inline-message-dialog-form .js-text-format-wrapper .ck-toolbar {
+  flex-wrap: wrap;
+}

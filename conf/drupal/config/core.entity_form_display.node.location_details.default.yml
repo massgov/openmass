@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.location_details.field_content_organization
     - field.field.node.location_details.field_intended_audience
     - field.field.node.location_details.field_location_details_lede
     - field.field.node.location_details.field_location_details_links_5
@@ -16,6 +17,7 @@ dependencies:
   module:
     - content_moderation
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - link
     - mass_validation
@@ -88,6 +90,7 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - field_location_details_metatags
         - url_redirects
         - simple_sitemap
@@ -111,6 +114,28 @@ targetEntityType: node
 bundle: location_details
 mode: default
 content:
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 1
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
+    third_party_settings: {  }
   field_intended_audience:
     type: options_buttons
     weight: -1

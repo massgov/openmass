@@ -128,6 +128,49 @@ class Molecules {
     return array_merge($actionStep, $downloadLinks);
   }
 
+  public static function prepareNumberedStep($entity, array $referenced_fields, array &$cache_tags = []) {
+    $numberedStep = [
+      'title' => Helper::fieldFullView($entity, $referenced_fields['title']),
+      'richText' => [
+        'rteElements' => [
+          Atoms::prepareTextField($entity, $referenced_fields['richText']),
+        ],
+      ],
+    ];
+
+    $downloadLinks = [];
+    if (array_key_exists('documents', $referenced_fields) && Helper::isFieldPopulated($entity, $referenced_fields['documents'])) {
+      $documents = Helper::getReferencedEntitiesFromField($entity, $referenced_fields['documents']);
+      foreach ($documents as $document) {
+        if ($document->bundle() !== 'documents_multiple' || !Helper::isFieldPopulated($document, 'field_file_download_multiple')) {
+          continue;
+        }
+
+        $downloads = Helper::getReferencedEntitiesFromField($document, 'field_file_download_multiple');
+        foreach ($downloads as $download) {
+          $downloadLink = self::prepareDownloadLink($download, [], $cache_tags);
+          if (!empty($downloadLink)) {
+            $downloadLinks[] = $downloadLink;
+          }
+        }
+      }
+      if (!empty($downloadLinks)) {
+        $numberedStep['downloadLinks'] = Helper::removeArrayDuplicates($downloadLinks);
+      }
+    }
+
+    if (array_key_exists('more_link', $referenced_fields) && Helper::isFieldPopulated($entity, $referenced_fields['more_link'])) {
+      $link = Helper::separatedLink($entity->get($referenced_fields['more_link'])[0]);
+      $numberedStep['button'] = [
+        'href' => $link['href'],
+        'text' => $link['text'],
+        'theme' => 'c-primary-alt',
+      ];
+    }
+
+    return $numberedStep;
+  }
+
   /**
    * Returns the imagePromo variable structure.
    *

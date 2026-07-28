@@ -1,0 +1,56 @@
+uuid: fe0c7be7-ce8b-467b-a343-583d3c3b47bc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.numbered_step.field_next_step_details
+    - field.field.paragraph.numbered_step.field_next_step_link
+    - field.field.paragraph.numbered_step.field_next_step_title
+    - field.field.paragraph.numbered_step.field_step_documents
+    - paragraphs.paragraphs_type.numbered_step
+  module:
+    - entity_reference_revisions
+    - mass_content
+    - text
+id: paragraph.numbered_step.default
+targetEntityType: paragraph
+bundle: numbered_step
+mode: default
+content:
+  field_next_step_details:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_next_step_link:
+    type: dynamic_link_separate
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    weight: 3
+    region: content
+  field_next_step_title:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_step_documents:
+    type: entity_reference_revisions_entity_view
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
+hidden: {  }
