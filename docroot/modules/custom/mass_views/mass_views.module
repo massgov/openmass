@@ -432,13 +432,9 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
 }
 
 /**
- * Limits the accessibility report to the most recently scanned Editoria11y page.
+ * Limits the accessibility report to the latest scan for the node's current URL.
  *
- * A node can accumulate multiple ed11y_page rows (e.g. after URL changes). The
- * report should reflect the latest rescan, not stale rows from older paths.
- *
- * @param \Drupal\views\Plugin\views\query\QueryPluginBase $query
- *   The Views query plugin.
+ * Ignores stale ed11y_page rows left behind after alias changes.
  */
 function _mass_views_accessibility_report_limit_to_latest_ed11y_page(QueryPluginBase $query): void {
   if (!method_exists($query, 'getTableQueue')) {
@@ -457,9 +453,11 @@ function _mass_views_accessibility_report_limit_to_latest_ed11y_page(QueryPlugin
     return;
   }
 
-  // Use a correlated subquery with a literal route name so we do not introduce
-  // Select placeholders that collide with the parent Views query arguments.
-  $subquery = "SELECT MAX(ed11y_page_latest.updated) FROM {ed11y_page} ed11y_page_latest WHERE ed11y_page_latest.entity_id = $page_alias.entity_id AND ed11y_page_latest.route_name = 'entity.node.canonical'";
+  // Match current alias (or /node/{nid}); BINARY avoids collation mismatches.
+  $current_path = "COALESCE((SELECT pa.alias FROM {path_alias} pa WHERE pa.path = CONCAT('/node/', $page_alias.entity_id) AND pa.status = 1 AND (pa.langcode = $page_alias.page_language OR pa.langcode = 'und') ORDER BY CASE WHEN pa.langcode = $page_alias.page_language THEN 0 ELSE 1 END, pa.id DESC LIMIT 1), CONCAT('/node/', $page_alias.entity_id))";
+  $query->addWhereExpression(0, "BINARY $page_alias.page_path = BINARY ($current_path)");
+
+  $subquery = "SELECT MAX(ed11y_page_latest.updated) FROM {ed11y_page} ed11y_page_latest WHERE ed11y_page_latest.entity_id = $page_alias.entity_id AND ed11y_page_latest.route_name = 'entity.node.canonical' AND BINARY ed11y_page_latest.page_path = BINARY ($current_path)";
   $query->addWhereExpression(0, "$page_alias.updated = ($subquery)");
 }
 
