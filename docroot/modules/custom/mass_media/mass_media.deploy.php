@@ -76,3 +76,51 @@ function mass_media_deploy_update_documents_usage(&$sandbox) {
   }
   return "Processed {$sandbox['progress']} items.";
 }
+
+/**
+ * Synchronize document media names with field_title values.
+ */
+function mass_media_deploy_sync_document_names_with_titles(&$sandbox) {
+  $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] = TRUE;
+
+  $query = \Drupal::entityQuery('media')->accessCheck(FALSE);
+  $query->condition('bundle', 'document');
+
+  if (empty($sandbox)) {
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $sandbox['updated'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $batch_size = 5000;
+  $mids = $query->condition('mid', $sandbox['current'], '>')
+    ->sort('mid')
+    ->range(0, $batch_size)
+    ->execute();
+
+  $media_storage = \Drupal::entityTypeManager()->getStorage('media');
+  $documents = $media_storage->loadMultiple($mids);
+
+  foreach ($documents as $document) {
+    $sandbox['current'] = $document->id();
+    $title = trim((string) $document->get('field_title')->value);
+    if ($title !== '' && $document->label() !== $title) {
+      $document->set('name', $title);
+      $document->setNewRevision(FALSE);
+      $document->save();
+      $sandbox['updated']++;
+    }
+    $sandbox['progress']++;
+  }
+
+  $sandbox['#finished'] = empty($sandbox['max']) ? 1 : ($sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Synchronized @updated of @total document media names.', [
+      '@updated' => $sandbox['updated'],
+      '@total' => $sandbox['progress'],
+    ]);
+  }
+  return "Processed {$sandbox['progress']} items.";
+}
