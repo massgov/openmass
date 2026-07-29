@@ -391,6 +391,9 @@ class Helper {
     if ($url->isRouted() && $url->getInternalPath()) {
       $params = $url->getRouteParameters();
       $entity_type = key($params);
+      if (!$entity_type || !\Drupal::entityTypeManager()->hasDefinition($entity_type)) {
+        return NULL;
+      }
       $entity = \Drupal::entityTypeManager()->getStorage($entity_type)->load($params[$entity_type]);
       return $entity;
     }

@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_entity_usage\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_entity_usage\UsageTrackingBlocker;
+use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -53,13 +54,13 @@ class UsageTrackingBlockerTest extends MassExistingSiteBase {
       ],
     ]);
 
-    $this->createNode([
+    $node = $this->createNode([
       'type' => 'org_page',
       'title' => 'Test Org Page',
       'moderation_state' => $state,
       'field_organization_sections' => [$organization_section],
     ]);
-    return $rich_text;
+    return [$rich_text, $node];
   }
 
   /**
@@ -91,13 +92,31 @@ class UsageTrackingBlockerTest extends MassExistingSiteBase {
   public function testParagraphs() {
     $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
 
-    $paragraph = $this->createNestedParagraph("Any content", MassModeration::UNPUBLISHED);
+    [$paragraph] = $this->createNestedParagraph("Any content", MassModeration::UNPUBLISHED);
     $check = $tracking_blocker->check('paragraph', $paragraph->getRevisionId());
     $this->assertFalse($check);
 
-    $paragraph = $this->createNestedParagraph("Any content", MassModeration::PUBLISHED);
+    [$paragraph] = $this->createNestedParagraph("Any content", MassModeration::PUBLISHED);
     $check = $tracking_blocker->check('paragraph', $paragraph->getRevisionId());
     $this->assertTrue($check);
+  }
+
+  /**
+   * Tests that detached nested paragraphs are not trackable.
+   */
+  public function testDetachedNestedParagraphsAreBlocked() {
+    $tracking_blocker = new UsageTrackingBlocker(\Drupal::database(), \Drupal::service('entity_type.manager'));
+
+    [$paragraph, $node] = $this->createNestedParagraph("Any content", MassModeration::PUBLISHED);
+    $this->assertTrue($tracking_blocker->check('paragraph', $paragraph->getRevisionId()));
+
+    $node = Node::load($node->id());
+    $node->set('field_organization_sections', []);
+    $node->set('moderation_state', MassModeration::PUBLISHED);
+    $node->setNewRevision(TRUE);
+    $node->save();
+
+    $this->assertFalse($tracking_blocker->check('paragraph', $paragraph->getRevisionId()));
   }
 
 }

@@ -21,12 +21,12 @@ references:
     restore_cache:
       name: Restore Composer Cache
       keys:
-        - site-composer-v19-{{ checksum "composer.lock" }}
+        - site-composer-v20-{{ checksum "composer.lock" }}
 
   save_composer_cache: &save_composer_cache
     save_cache:
       name: Save Composer cache
-      key: site-composer-v19-{{ checksum "composer.lock" }}
+      key: site-composer-v20-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
@@ -325,6 +325,7 @@ jobs:
                 command: |
                   TESTS_TO_RUN=$(phpunit -c /var/www/code/phpunit.xml.dist --list-test-files --colors=never | sed -n 's/^ - //p')
                   echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -I{} sh -c 'f=\"\$1\"; phpunit \"\$f\" --log-junit \"/tmp/test-results/dtt/\${f##*/}.xml\"' _ {}" --verbose --split-by=timings
+                no_output_timeout: 20m
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
