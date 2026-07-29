@@ -36,6 +36,12 @@
 #  - description: Third change item that needs a description along with an issue.
 #    issue: DP-19843
 #
-Fixed:
-  - description: Security issues suggested by Codex.
+Security:
+  - description: Match the CORS allowlist on /api/v1 endpoints against the exact origin host, so lookalike hostnames no longer get an Access-Control-Allow-Origin header.
+    issue: DP-46097
+  - description: Restrict the HTTP host headers the site answers to with trusted_host_patterns.
+    issue: DP-46097
+  - description: Send Referrer-Policy, X-Content-Type-Options and a report-only Content-Security-Policy response header.
+    issue: DP-46097
+  - description: Update npm dependencies flagged by Dependabot.
     issue: DP-46097
