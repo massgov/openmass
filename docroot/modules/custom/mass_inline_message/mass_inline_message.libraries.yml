@@ -1,0 +1,26 @@
+ckeditor5.mass_inline_message:
+  js:
+    js/build/mass_inline_message.js: { minified: true }
+  css:
+    theme:
+      css/ckeditor5-mass-inline-message.css: {}
+  dependencies:
+    - core/ckeditor5
+    - core/drupal
+    - mayflower/global_css
+    - mass_inline_message/dialog
+
+dialog:
+  css:
+    theme:
+      css/mass-inline-message-dialog.css: {}
+  js:
+    js/mass-inline-message-dialog.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.ajax
+    - core/drupal.dialog.ajax
+    - core/jquery
+    - editor/drupal.editor
+    - editor/drupal.editor.dialog
+    - mass_admin_theme/entity_embed_dialog

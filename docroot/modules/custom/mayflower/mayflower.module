@@ -111,6 +111,16 @@ function mayflower_library_info_build() {
       'mayflower/modernizr',
     ],
   ];
+  // CSS-only variant of mayflower/global for admin/editor contexts that need
+  // Mayflower styles without the vendor JS (which replaces Drupal's jQuery).
+  $libraries['global_css'] = [
+    'version' => $mf_installed_version . '-' . $mf_installed_reference,
+    'css' => [
+      'theme' => [
+        "/$artifacts/assets/css/index-generated.css" => [],
+      ],
+    ],
+  ];
   $libraries['layout_paragraphs'] = [
     'version' => $mf_installed_version . '-' . $mf_installed_reference,
     'js' => [

@@ -7,8 +7,7 @@
       var count = parseInt(settings.linkingPagesCount || 0, 10);
       var unpublishStates = settings.unpublishStates || ['archived', 'unpublished', 'trash'];
       var title = settings.modalTitle || 'Heads up';
-      var msg1 = settings.modalMessageSingular;
-      var msgN = settings.modalMessagePlural;
+      var modalMessage = settings.modalMessage;
 
 
       // If nothing links here, there is nothing to warn about.
@@ -16,8 +15,9 @@
         return;
       }
 
-      once('mass-unpublish-warn', 'form.node-form', context).forEach(function (formEl) {
+      once('mass-unpublish-warn', 'form.node-form, form.media-form', context).forEach(function (formEl) {
         var $form = $(formEl);
+        var pendingSubmitter = null;
 
         function getTargetState() {
           var nested = $form.find('[name="moderation_state[0][state]"]').val();
@@ -47,8 +47,59 @@
           return text || Drupal.t('Unpublish');
         }
 
+        /**
+         * Returns the primary Save button in the form footer.
+         *
+         * Node forms contain many nested .form-actions regions (paragraphs,
+         * IEF, etc.). The main Save button lives in the page footer.
+         */
+        function getMainSubmitButton() {
+          var footerSelectors = [
+            '.layout-region--footer .form-actions',
+            '.layout-region-node-footer .form-actions',
+            '.layout-region-doc-footer .form-actions',
+            '#edit-actions'
+          ];
+          var $footerSubmit;
+          var i;
+
+          for (i = 0; i < footerSelectors.length; i++) {
+            $footerSubmit = $form.find(footerSelectors[i] + ' [type="submit"]:not([disabled])');
+            if ($footerSubmit.length) {
+              return $footerSubmit.last();
+            }
+          }
+
+          return $();
+        }
+
+        function resubmitForm() {
+          var form = formEl;
+          var submitter = pendingSubmitter;
+
+          $form.find('input[name="mass_linking_unpublish_confirmed"]').val('1');
+          $form.off('submit.mass-unpublish-warn click.mass-unpublish-warn-submit');
+
+          if (!submitter || !form.contains(submitter)) {
+            var $mainSubmit = getMainSubmitButton();
+            submitter = $mainSubmit.length ? $mainSubmit.get(0) : null;
+          }
+
+          if (submitter && typeof form.requestSubmit === 'function') {
+            form.requestSubmit(submitter);
+            return;
+          }
+
+          if (submitter) {
+            submitter.click();
+            return;
+          }
+
+          form.submit();
+        }
+
         function openConfirm() {
-          var text = (count === 1) ? msg1 : msgN.replace('@count', count);
+          var text = modalMessage;
           var $wrapper = $('<div class="mass-linking-unpublish-modal"><p>' + text + '</p></div>');
 
           var dialog = Drupal.dialog($wrapper.get(0), {
@@ -59,38 +110,29 @@
                 text: Drupal.t('Continue and move to @state', {'@state': getTargetStateLabel()}),
                 classes: 'button button--primary',
                 click: function () {
-                  // 1) mark confirmed
-                  $form.find('input[name="mass_linking_unpublish_confirmed"]').val('1');
-
-                  // 2) close modal
                   dialog.close();
-
-                  // 3) unbind our submit handler to avoid re-intercepting
-                  $form.off('submit.mass-unpublish-warn');
-
-                  // 4) prefer clicking the actual submit button (some workflows attach handlers there)
-                  var $submit = $form.find('.form-actions [type="submit"]:not([disabled]):first');
-
-                  setTimeout(function () {
-                    if ($submit.length) {
-                      $submit[0].click();
-                    }
-                    else {
-                      $form.get(0).submit();
-                    }
-                  }, 0);
+                  // Allow the dialog to close before resubmitting.
+                  setTimeout(resubmitForm, 0);
                 }
               },
               {
                 text: Drupal.t('Cancel'),
                 classes: 'button',
-                click: function () { dialog.close(); }
+                click: function () {
+                  pendingSubmitter = null;
+                  dialog.close();
+                }
               }
             ],
             closeOnEscape: true
           });
           dialog.showModal();
         }
+
+        // Track which submit button initiated the save (node forms have many).
+        $form.on('click.mass-unpublish-warn-submit', '[type="submit"]', function () {
+          pendingSubmitter = this;
+        });
 
         $form.on('submit.mass-unpublish-warn', function (e) {
           // If already confirmed, proceed.
@@ -102,6 +144,9 @@
           var isUnpublishing = state && unpublishStates.indexOf(state) !== -1;
 
           if (isUnpublishing) {
+            if (e.originalEvent && e.originalEvent.submitter) {
+              pendingSubmitter = e.originalEvent.submitter;
+            }
             e.preventDefault();
             openConfirm();
             return false;

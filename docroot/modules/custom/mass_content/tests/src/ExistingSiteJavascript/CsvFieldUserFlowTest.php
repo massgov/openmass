@@ -64,9 +64,9 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
    */
   private function createWideCsvFile(string $name): File {
     $rows = [
-      'Agency,ColA,ColB,ColC,ColD,ColE,ColF,ColG',
-      'Alpha Office,Very long value A1,Very long value B1,Very long value C1,Very long value D1,Very long value E1,Very long value F1,Very long value G1',
-      'Beta Office,Very long value A2,Very long value B2,Very long value C2,Very long value D2,Very long value E2,Very long value F2,Very long value G2',
+      'Agency,ColA,ColB,ColC,ColD,ColE,ColF,ColG,ColH,ColI,ColJ,ColK',
+      'Alpha Office,Very long value A1,Very long value B1,Very long value C1,Very long value D1,Very long value E1,Very long value F1,Very long value G1,Very long value H1,Very long value I1,Very long value J1,Very long value K1',
+      'Beta Office,Very long value A2,Very long value B2,Very long value C2,Very long value D2,Very long value E2,Very long value F2,Very long value G2,Very long value H2,Very long value I2,Very long value J2,Very long value K2',
     ];
     return $this->createCsvFile($name, implode("\n", $rows) . "\n");
   }
@@ -92,20 +92,276 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Creates a section_long_form paragraph wrapping a csv_table paragraph.
+   * Creates a section_long_form paragraph wrapping one or more csv_table paragraphs.
+   *
+   * @param \Drupal\paragraphs\Entity\Paragraph|array $csvTables
+   *   A single csv_table paragraph or a list of them.
    */
-  private function createSectionParagraph(Paragraph $csvTable): Paragraph {
+  private function createSectionParagraph($csvTables): Paragraph {
+    if (!is_array($csvTables)) {
+      $csvTables = [$csvTables];
+    }
     $section = Paragraph::create([
       'type' => 'section_long_form',
-      'field_section_long_form_content' => [
-        [
-          'entity' => $csvTable,
-        ],
-      ],
+      'field_section_long_form_content' => array_map(static function ($paragraph) {
+        return ['entity' => $paragraph];
+      }, $csvTables),
     ]);
     $section->save();
     $this->markEntityForCleanup($section);
     return $section;
+  }
+
+  /**
+   * Default CSV table settings for accessibility scenarios.
+   */
+  private function defaultCsvTableSettings(array $overrides = []): array {
+    return array_merge([
+      'searching' => 1,
+      'pageLength' => 5,
+      'lengthChange' => 1,
+      'responsive' => 'childRow',
+      'download' => 1,
+      'urls' => [
+        'autolink' => 0,
+      ],
+    ], $overrides);
+  }
+
+  /**
+   * Waits until the expected number of DataTables instances are present.
+   *
+   * Note: csv-field.js removes the csv-table class from the wrapper after init;
+   * the table keeps dataTable classes and settings stay on div[data-settings].
+   */
+  private function waitForCsvTables(int $expected_count = 1): void {
+    $assert = $this->assertSession();
+    $assert->waitForElement('css', '.dt-container table.dataTable, .dataTables_wrapper table.dataTable, table.dataTable.display');
+
+    $deadline = time() + 20;
+    do {
+      $count = count($this->getSession()->getPage()->findAll('css', 'table.dataTable.display, table.dataTable'));
+      if ($count >= $expected_count) {
+        $this->assertGreaterThanOrEqual($expected_count, $count);
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->fail('Expected ' . $expected_count . ' rendered CSV DataTable(s), found ' . $count . '.');
+  }
+
+  /**
+   * Returns the CSV field wrapper that stores data-settings (post-init markup).
+   */
+  private function getCsvTableSettingsWrapper(int $index = 0) {
+    $wrappers = $this->getSession()->getPage()->findAll('css', 'div[data-settings]');
+    $this->assertArrayHasKey($index, $wrappers, 'Expected CSV table wrapper at index ' . $index . '.');
+    return $wrappers[$index];
+  }
+
+  /**
+   * Waits until the CSV table is initialized and interactive.
+   */
+  private function waitForCsvTableReady(bool $expect_initial_rows = TRUE, string $initial_row_text = 'Alpha Office'): void {
+    $this->waitForCsvTables();
+    $this->assertSession()->waitForElement('css', 'button.csv-field-search-submit', 30);
+
+    if (!$expect_initial_rows) {
+      return;
+    }
+
+    $this->waitForCsvTableRowText($initial_row_text);
+  }
+
+  /**
+   * Whether any table body row contains the given text.
+   */
+  private function csvTableBodyContainsText(string $text): bool {
+    foreach ($this->getSession()->getPage()->findAll('css', 'table.dataTable tbody tr') as $row) {
+      if (str_contains($row->getText(), $text)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Waits until a row with the given text appears in the CSV table body.
+   */
+  private function waitForCsvTableRowText(string $text, int $timeout = 30): void {
+    $deadline = time() + $timeout;
+    do {
+      if ($this->csvTableBodyContainsText($text)) {
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->fail('Timed out waiting for CSV table row containing: ' . $text);
+  }
+
+  /**
+   * Waits until no table body row contains the given text.
+   */
+  private function waitForCsvTableRowTextAbsent(string $text, int $timeout = 30): void {
+    $deadline = time() + $timeout;
+    do {
+      if (!$this->csvTableBodyContainsText($text)) {
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->fail('Timed out waiting for CSV table row to disappear: ' . $text);
+  }
+
+  /**
+   * Waits until filtered table text appears after a search submit.
+   */
+  private function waitForCsvTableText(string $text, int $timeout = 30): void {
+    $this->assertSession()->waitForText($text, $timeout);
+    $this->waitForCsvTableRowText($text, $timeout);
+  }
+
+  /**
+   * Sets the search value and submits the CSV table search form.
+   */
+  private function searchCsvTable(string $search_term, ?string $absent_row_text = NULL): void {
+    $assert = $this->assertSession();
+    $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
+    $search_input->setValue($search_term);
+    $this->submitCsvTableSearch($search_input);
+    $this->waitForCsvTableRowText($search_term);
+    if ($absent_row_text !== NULL) {
+      $this->waitForCsvTableRowTextAbsent($absent_row_text);
+    }
+  }
+
+  /**
+   * Asserts pagination and length controls have unique aria-labelledby values.
+   */
+  private function assertUniqueCsvTableLandmarkLabels(int $expected_table_count): void {
+    $page = $this->getSession()->getPage();
+
+    $pagination_navs = $page->findAll('css', '.dt-paging nav[aria-labelledby], .dataTables_paginate nav[aria-labelledby]');
+    $length_selects = $page->findAll('css', '.dt-length select[aria-labelledby], .dataTables_length select[aria-labelledby]');
+
+    $this->assertCount($expected_table_count, $pagination_navs);
+    $this->assertCount($expected_table_count, $length_selects);
+
+    $pagination_labels = array_map(static function ($element) {
+      return $element->getAttribute('aria-labelledby');
+    }, $pagination_navs);
+    $length_labels = array_map(static function ($element) {
+      return $element->getAttribute('aria-labelledby');
+    }, $length_selects);
+
+    $this->assertCount($expected_table_count, array_unique($pagination_labels));
+    $this->assertCount($expected_table_count, array_unique($length_labels));
+
+    foreach ($pagination_labels as $labelledby) {
+      $this->assertNotEmpty($labelledby);
+    }
+
+    $this->assertSession()->elementNotExists('css', '.dt-paging nav[aria-label="pagination"], .dataTables_paginate nav[aria-label="pagination"]');
+  }
+
+  /**
+   * Returns sorted unique page-length option values from length selects.
+   */
+  private function getPageLengthOptionValues(): array {
+    $values = [];
+    foreach ($this->getSession()->getPage()->findAll('css', '.dt-length select option, .dataTables_length select option') as $option) {
+      $values[] = (int) $option->getValue();
+    }
+    $values = array_values(array_unique($values));
+    sort($values);
+    return $values;
+  }
+
+  /**
+   * Counts visible body rows in the first rendered CSV DataTable.
+   */
+  private function countVisibleCsvTableBodyRows(): int {
+    return count($this->getSession()->getPage()->findAll('css', 'table.dataTable.display tbody tr, table.dataTable tbody tr'));
+  }
+
+  /**
+   * Clicks a paging control when overlays intercept native WebDriver clicks.
+   */
+  private function clickCsvTablePagingNext(): void {
+    $this->getSession()->executeScript(
+      "var el = document.querySelector('.dt-paging-button.next:not(.disabled), .dt-paging .next:not(.disabled), .dataTables_paginate .next:not(.disabled)'); if (el) { el.click(); }"
+    );
+  }
+
+  /**
+   * Submits CSV table search (custom Search button or Enter fallback).
+   */
+  private function submitCsvTableSearch($search_input): void {
+    $page = $this->getSession()->getPage();
+    if ($page->find('css', 'button.csv-field-search-submit')) {
+      // CI overlays (e.g. ed11y) can intercept native WebDriver clicks.
+      $this->getSession()->executeScript(
+        "var btn = document.querySelector('button.csv-field-search-submit'); if (btn) { btn.click(); }"
+      );
+      return;
+    }
+    // Fallback when the custom submit button is not present.
+    $search_input->keyDown(13);
+    $search_input->keyUp(13);
+  }
+
+  /**
+   * Asserts the CSV table search control is present.
+   */
+  private function assertCsvTableSearchControlPresent(): void {
+    $this->assertSession()->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
+    $this->assertSession()->elementExists('css', 'button.csv-field-search-submit');
+  }
+
+  /**
+   * Whether the page-length control is visible in the rendered CSV table.
+   */
+  private function isCsvTableLengthControlVisible(): bool {
+    return (bool) $this->getSession()->evaluateScript(<<<'JS'
+      (function () {
+        const length = document.querySelector('.dt-length, .dataTables_length');
+        if (!length) {
+          return false;
+        }
+        return length.offsetParent !== null && window.getComputedStyle(length).display !== 'none';
+      })();
+JS
+    );
+  }
+
+  /**
+   * Waits until the page-length control reaches the expected visibility state.
+   */
+  private function waitForCsvTableLengthControlVisible(bool $visible, int $timeout = 20): void {
+    $deadline = time() + $timeout;
+    do {
+      if ($this->isCsvTableLengthControlVisible() === $visible) {
+        return;
+      }
+      usleep(250000);
+    } while (time() < $deadline);
+
+    $this->assertCsvTableLengthControlVisible($visible);
+  }
+
+  /**
+   * Asserts whether the page-length control is visible in the CSV table.
+   */
+  private function assertCsvTableLengthControlVisible(bool $visible): void {
+    if ($visible) {
+      $this->assertTrue($this->isCsvTableLengthControlVisible(), 'Expected CSV table length control to be visible.');
+      return;
+    }
+
+    $this->assertFalse($this->isCsvTableLengthControlVisible(), 'Expected CSV table length control to be hidden.');
   }
 
   /**
@@ -227,14 +483,11 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $this->drupalGet('node/' . $node->id());
 
-    $assert = $this->assertSession();
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $search_input = $assert->elementExists('css', '.dataTables_filter input[type="search"], .dt-search input[type="search"]');
-    $search_input->setValue('Unique Agency');
-    $this->getSession()->wait(5000, "document.body.innerText.indexOf('Unique Agency') !== -1");
+    $this->waitForCsvTableReady();
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
 
-    $assert->pageTextContains('Unique Agency');
-    $assert->pageTextNotContains('Alpha Office');
+    $this->assertSession()->pageTextContains('Unique Agency');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
   }
 
   /**
@@ -267,18 +520,15 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $length_select = $assert->elementExists('css', '.dataTables_length select, .dt-length select');
     $length_select->selectOption('10');
-    $this->getSession()->wait(5000, "document.body.innerText.indexOf('Kappa Office') !== -1");
+    $this->waitForCsvTableText('Kappa Office');
 
     $assert->pageTextContains('Kappa Office');
     $assert->pageTextNotContains('Unique Agency');
 
-    $next_button = $page->find('css', '.dataTables_paginate .next, .dt-paging .next, .dt-paging-button.next');
+    $next_button = $page->find('css', '.dataTables_paginate .next:not(.disabled), .dt-paging .next:not(.disabled), .dt-paging-button.next:not(.disabled)');
     if ($next_button) {
-      // Use JS click to avoid intermittent overlay interception in CI/headless.
-      $this->getSession()->executeScript(
-        "var el = document.querySelector('.dataTables_paginate .next, .dt-paging .next, .dt-paging-button.next'); if (el) { el.click(); }"
-      );
-      $this->getSession()->wait(5000, "document.body.innerText.indexOf('Unique Agency') !== -1");
+      $this->clickCsvTablePagingNext();
+      $this->waitForCsvTableText('Unique Agency');
       $assert->pageTextContains('Unique Agency');
     }
   }
@@ -308,25 +558,50 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('node/' . $node->id());
 
     $assert = $this->assertSession();
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $table = $assert->elementExists('css', '.dataTable.display');
-    $settings = $table->getAttribute('data-settings');
+    $this->waitForCsvTableReady(FALSE);
+    $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
     $this->assertStringContainsString('"hideSearchingData":1', $settings);
-    $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
-    $search_input->setValue('Unique Agency');
-    $search_button = $this->getSession()->getPage()->find('css', 'button.dt-search-submit');
-    if ($search_button) {
-      $search_button->click();
-    }
-    else {
-      // Fallback for DataTables default search mode (no custom submit button).
-      $search_input->keyDown(13);
-      $search_input->keyUp(13);
-    }
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->assertCsvTableSearchControlPresent();
+    $this->waitForCsvTableLengthControlVisible(FALSE);
 
-    $this->getSession()->wait(5000, "document.body.innerText.indexOf('Unique Agency') !== -1");
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
     $assert->pageTextContains('Unique Agency');
-    $assert->pageTextNotContains('Alpha Office');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->waitForCsvTableLengthControlVisible(TRUE);
+  }
+
+  /**
+   * Ensures hide-until-search behavior works on a narrow viewport.
+   */
+  public function testCsvFlowMobileHideUntilSearch(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-mobile-controls.csv');
+    $csv_table = $this->createCsvTableParagraph($file, [
+      'searching' => 1,
+      'hideSearchingData' => 1,
+      'searchLabel' => 'Search by name or location',
+      'pageLength' => 5,
+      'lengthChange' => 1,
+      'responsive' => 'childRow',
+      'download' => 0,
+      'urls' => [
+        'autolink' => 0,
+      ],
+    ], 'Employee Lookup');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow Mobile Controls');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->getSession()->resizeWindow(390, 844, 'current');
+    $this->waitForCsvTableReady(FALSE);
+    $this->assertCsvTableSearchControlPresent();
+    $this->waitForCsvTableLengthControlVisible(FALSE);
+
+    $this->searchCsvTable('Unique Agency');
+    $this->assertSession()->pageTextContains('Unique Agency');
+    $this->waitForCsvTableLengthControlVisible(TRUE);
   }
 
   /**
@@ -395,10 +670,8 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $assert = $this->assertSession();
     $assert->waitForElement('css', '.dataTables_wrapper');
     $this->getSession()->resizeWindow(480, 900, 'current');
-    $this->getSession()->wait(3000);
-
-    $control = $this->getSession()->getPage()->find('css', 'table.dataTable tbody tr td.dtr-control');
-    $this->assertNotNull($control, 'Responsive control column should be visible at narrow width.');
+    $assert->waitForElement('css', 'table.dataTable tbody tr td.dtr-control');
+    $assert->elementExists('css', 'table.dataTable tbody tr td.dtr-control');
   }
 
   /**
@@ -424,34 +697,33 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('node/' . $node->id());
 
     $assert = $this->assertSession();
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $this->getSession()->resizeWindow(480, 900, 'current');
-    $this->getSession()->wait(3000);
+    $assert->waitForElement('css', '.dt-container, .dataTables_wrapper');
+    $this->getSession()->resizeWindow(360, 900, 'current');
 
-    $non_focusable_hidden_header_violations = $this->getSession()->evaluateScript(
-      "(function() {
-        var headers = document.querySelectorAll('.dataTables_wrapper thead th');
-        var violations = 0;
-        headers.forEach(function(th) {
-          var rect = th.getBoundingClientRect();
-          var style = window.getComputedStyle(th);
-          var isResponsiveHidden = th.classList.contains('dtr-hidden') ||
-            (style.position === 'absolute' && rect.width <= 1 && rect.height <= 1);
+    $hidden_headers = [];
+    $deadline = time() + 20;
+    do {
+      $hidden_headers = $this->getSession()->getPage()->findAll(
+        'css',
+        'table.dataTable thead th.dtr-hidden, table.dataTable thead th[style*="display: none"]'
+      );
+      if (!empty($hidden_headers)) {
+        break;
+      }
+      usleep(500000);
+    } while (time() < $deadline);
 
-          if (!isResponsiveHidden) {
-            return;
-          }
+    $this->assertNotEmpty($hidden_headers, 'Expected at least one responsive-hidden column header at narrow width.');
 
-          var headerTabIndex = th.getAttribute('tabindex');
-          var hasFocusableDescendant = th.querySelector('a[href], button, input, select, textarea, [tabindex]:not([tabindex=\"-1\"])') !== null;
-          if (headerTabIndex !== '-1' || hasFocusableDescendant) {
-            violations++;
-          }
-        });
-        return violations;
-      })();"
-    );
-    $this->assertSame(0, (int) $non_focusable_hidden_header_violations, 'Hidden responsive headers must not be keyboard focusable.');
+    foreach ($hidden_headers as $header) {
+      $this->assertSame('-1', $header->getAttribute('tabindex'));
+      foreach ($header->findAll('css', '.dt-column-order') as $sort_control) {
+        $tabindex = $sort_control->getAttribute('tabindex');
+        if ($tabindex !== NULL) {
+          $this->assertSame('-1', $tabindex);
+        }
+      }
+    }
   }
 
   /**
@@ -609,16 +881,245 @@ class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
 
     $this->drupalGet($path);
 
-    $assert = $this->assertSession();
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $search_input = $assert->elementExists('css', '.dataTables_filter input[type="search"], .dt-search input[type="search"]');
-    $search_input->setValue('Unique Agency');
-    $this->getSession()->wait(5000, "document.body.innerText.indexOf('Unique Agency') !== -1");
-    $assert->pageTextNotContains('Alpha Office');
+    $this->waitForCsvTableReady();
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
 
     $this->drupalGet($path);
-    $assert->waitForElement('css', '.dataTables_wrapper');
-    $assert->pageTextContains('Alpha Office');
+    $this->waitForCsvTableReady();
+    $this->assertTrue($this->csvTableBodyContainsText('Alpha Office'));
+  }
+
+  /**
+   * A11Y0000412: Pagination and length controls use unique aria-labelledby per table.
+   */
+  public function testCsvA11yMultipleTablesUniqueLandmarkLabels(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file_one = $this->createCsvFile(
+      'csv-a11y-multi-one.csv',
+      "Name,Website\nAlpha,https://www.mass.gov/alpha\n"
+    );
+    $file_two = $this->createCsvFile(
+      'csv-a11y-multi-two.csv',
+      "Name,Website\nBeta,https://www.mass.gov/beta\n"
+    );
+
+    $table_one = $this->createCsvTableParagraph(
+      $file_one,
+      $this->defaultCsvTableSettings(['tableLabel' => 'First Table']),
+      'First Table'
+    );
+    $table_two = $this->createCsvTableParagraph(
+      $file_two,
+      $this->defaultCsvTableSettings(['tableLabel' => 'Second Table']),
+      'Second Table'
+    );
+    $section = $this->createSectionParagraph([$table_one, $table_two]);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Multiple Tables');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTables(2);
+    $this->assertUniqueCsvTableLandmarkLabels(2);
+  }
+
+  /**
+   * A11Y0000375: Skip link appears for tables with links and targets table footer.
+   */
+  public function testCsvA11ySkipLinkForTablesWithLinks(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $with_links = $this->createCsvFile(
+      'csv-a11y-skip-with-links.csv',
+      "Name,Website\nAlpha,https://www.mass.gov/alpha\n"
+    );
+    $without_links = $this->createCsvFile(
+      'csv-a11y-skip-no-links.csv',
+      "Name,Department\nAlpha,Health\n"
+    );
+
+    $linked_table = $this->createCsvTableParagraph(
+      $with_links,
+      $this->defaultCsvTableSettings([
+        'urls' => [
+          'autolink' => 1,
+          'urlColumnNumber' => '2',
+        ],
+      ]),
+      'Linked Table'
+    );
+    $plain_table = $this->createCsvTableParagraph(
+      $without_links,
+      $this->defaultCsvTableSettings(),
+      'Plain Table'
+    );
+    $section = $this->createSectionParagraph([$linked_table, $plain_table]);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Skip Link');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTables(2);
+
+    $skip_links = $this->getSession()->getPage()->findAll('css', 'a.csv-field-skip-link');
+    $this->assertCount(1, $skip_links, 'Only the table with hyperlinks should have a skip link.');
+    $this->assertStringContainsString('Linked Table', $skip_links[0]->getText());
+    $this->assertStringContainsString('footer', strtolower($skip_links[0]->getText()));
+
+    $footer_target_id = ltrim($skip_links[0]->getAttribute('href'), '#');
+    $this->assertNotEmpty($footer_target_id);
+    $this->assertSession()->elementExists('css', '.csv-field-skip-footer#' . $footer_target_id);
+  }
+
+  /**
+   * A11Y0000344: Search uses a button; rows stay visible until search is submitted.
+   */
+  public function testCsvA11ySearchButtonShowsRowsByDefault(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-a11y-search-button.csv');
+    $csv_table = $this->createCsvTableParagraph(
+      $file,
+      $this->defaultCsvTableSettings(['pageLength' => 10]),
+      'Search Button Table'
+    );
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Search Button');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTableReady();
+    $this->assertCsvTableSearchControlPresent();
+
+    $assert = $this->assertSession();
+    $assert->elementExists('css', 'button.csv-field-search-submit');
+    $this->assertTrue($this->csvTableBodyContainsText('Alpha Office'));
+
+    $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
+    $search_input->setValue('Unique Agency');
+    $this->assertTrue($this->csvTableBodyContainsText('Alpha Office'), 'Typing alone must not filter results.');
+
+    $this->searchCsvTable('Unique Agency', 'Alpha Office');
+    $assert->pageTextContains('Unique Agency');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+  }
+
+  /**
+   * A11Y0000344: Hide-until-search still hides the table until search is submitted.
+   */
+  public function testCsvA11yHideUntilSearchStillRequiresSubmit(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-a11y-hide-until-search.csv');
+    $csv_table = $this->createCsvTableParagraph($file, $this->defaultCsvTableSettings([
+      'hideSearchingData' => 1,
+      'searchLabel' => 'Search by agency',
+    ]), 'Hide Until Search Table');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Hide Until Search');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTableReady(FALSE);
+
+    $assert = $this->assertSession();
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'));
+    $this->waitForCsvTableLengthControlVisible(FALSE);
+
+    $search_input = $assert->elementExists('css', '.dt-search input[type="search"], .dataTables_filter input[type="search"]');
+    $search_input->setValue('Unique Agency');
+    $this->assertFalse($this->csvTableBodyContainsText('Alpha Office'), 'Typing alone must not reveal rows when hide-until-search is enabled.');
+    $this->waitForCsvTableLengthControlVisible(FALSE);
+
+    $this->searchCsvTable('Unique Agency');
+    $assert->pageTextContains('Unique Agency');
+    $this->assertTrue($this->csvTableBodyContainsText('Unique Agency'));
+    $this->waitForCsvTableLengthControlVisible(TRUE);
+  }
+
+  /**
+   * Download link uses generic text, filename in title, and table-specific aria-label.
+   */
+  public function testCsvA11yDownloadLinkTextAndAria(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createCsvFile(
+      'csv-a11y-download.csv',
+      "Name,Code\nRow,VALUE\n"
+    );
+    $csv_table = $this->createCsvTableParagraph($file, $this->defaultCsvTableSettings([
+      'tableLabel' => 'Quarterly Report',
+    ]), 'Quarterly Report');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Download Link');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTables();
+
+    $assert = $this->assertSession();
+    $download_link = $assert->elementExists('css', 'div[data-settings] a[download]');
+    $this->assertSame('Download table data as CSV', $download_link->getText());
+    $this->assertStringContainsString('csv-a11y-download.csv', $download_link->getAttribute('title'));
+    $this->assertStringContainsString(
+      'Download table data as CSV for Quarterly Report',
+      $download_link->getAttribute('aria-label')
+    );
+    $this->assertStringNotContainsString('csv-a11y-download.csv', $download_link->getText());
+  }
+
+  /**
+   * Page length is limited to 5, 10, or 15; legacy values normalize to 15.
+   */
+  public function testCsvA11yPageLengthOptionsAndNormalization(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-a11y-page-length.csv');
+    $csv_table = $this->createCsvTableParagraph($file, $this->defaultCsvTableSettings([
+      'pageLength' => 25,
+    ]), 'Page Length Table');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Page Length');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTables();
+
+    $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
+    $this->assertStringContainsString('"pageLength":15', $settings);
+    $this->assertSame([5, 10, 15], $this->getPageLengthOptionValues());
+  }
+
+  /**
+   * Default page length is 5 rows when no legacy high value is stored.
+   */
+  public function testCsvA11yDefaultPageLengthIsFive(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-a11y-default-page-length.csv');
+    $csv_table = $this->createCsvTableParagraph($file, $this->defaultCsvTableSettings(), 'Default Page Length Table');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Default Page Length');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTables();
+
+    $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
+    $this->assertStringContainsString('"pageLength":5', $settings);
+    $this->assertSame(5, $this->countVisibleCsvTableBodyRows());
+  }
+
+  /**
+   * Pagination buttons keep native button semantics (no role="link").
+   */
+  public function testCsvA11yPaginationButtonsNoLinkRole(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-a11y-pagination-role.csv');
+    $csv_table = $this->createCsvTableParagraph($file, $this->defaultCsvTableSettings(), 'Pagination Role Table');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV A11Y Pagination Role');
+
+    $this->drupalGet('node/' . $node->id());
+    $this->waitForCsvTables();
+
+    $assert = $this->assertSession();
+    $assert->elementsCount('css', '.dt-paging button[role="link"], .dataTables_paginate button[role="link"]', 0);
+    $assert->elementExists('css', '.dt-paging button, .dataTables_paginate button');
   }
 
 }

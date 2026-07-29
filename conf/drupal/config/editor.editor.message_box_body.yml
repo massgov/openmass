@@ -1,0 +1,224 @@
+uuid: 9a4b5c6d-7e8f-9012-3456-789abcdef012
+langcode: en
+status: true
+dependencies:
+  config:
+    - filter.format.message_box_body
+  module:
+    - ckeditor5
+format: message_box_body
+editor: ckeditor5
+settings:
+  toolbar:
+    items:
+      - bold
+      - italic
+      - superscript
+      - subscript
+      - '|'
+      - link
+      - mediaEntityDownload
+      - '|'
+      - bulletedList
+      - numberedList
+      - '|'
+      - file_browser
+      - insertTable
+      - '|'
+      - style
+      - '|'
+      - Fullscreen
+      - codeBlock
+      - specialCharacters
+      - removeFormat
+      - sourceEditing
+  plugins:
+    ckeditor5_codeBlock:
+      languages:
+        -
+          label: 'Plain text'
+          language: plaintext
+        -
+          label: C
+          language: c
+        -
+          label: 'C#'
+          language: cs
+        -
+          label: C++
+          language: cpp
+        -
+          label: CSS
+          language: css
+        -
+          label: Diff
+          language: diff
+        -
+          label: HTML
+          language: html
+        -
+          label: Java
+          language: java
+        -
+          label: JavaScript
+          language: javascript
+        -
+          label: PHP
+          language: php
+        -
+          label: Python
+          language: python
+        -
+          label: Ruby
+          language: ruby
+        -
+          label: TypeScript
+          language: typescript
+        -
+          label: XML
+          language: xml
+        -
+          label: SQL
+          language: sql
+        -
+          label: JSON
+          language: json
+    ckeditor5_list:
+      properties:
+        reversed: false
+        startIndex: true
+        styles: false
+      multiBlock: true
+    ckeditor5_paste_filter_pasteFilter:
+      enabled: true
+      filters:
+        -
+          enabled: true
+          weight: -10
+          search: '<o:p><\/o:p>'
+          replace: ''
+        -
+          enabled: true
+          weight: -9
+          search: '(<[^>]*) (style="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -8
+          search: '(<[^>]*) (face="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -7
+          search: '(<[^>]*) (class="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -6
+          search: '(<[^>]*) (valign="[^"]*")'
+          replace: $1
+        -
+          enabled: true
+          weight: -5
+          search: '<font[^>]*>'
+          replace: ''
+        -
+          enabled: true
+          weight: -4
+          search: '<\/font>'
+          replace: ''
+        -
+          enabled: true
+          weight: -3
+          search: '<span[^>]*>'
+          replace: ''
+        -
+          enabled: true
+          weight: -2
+          search: '<\/span>'
+          replace: ''
+        -
+          enabled: true
+          weight: -1
+          search: '<p>&nbsp;<\/p>'
+          replace: ''
+        -
+          enabled: true
+          weight: 0
+          search: '<p><\/p>'
+          replace: ''
+        -
+          enabled: true
+          weight: 1
+          search: '<b><\/b>'
+          replace: ''
+        -
+          enabled: true
+          weight: 2
+          search: '<i><\/i>'
+          replace: ''
+        -
+          enabled: true
+          weight: 3
+          search: '<a name="OLE_LINK[^"]*">(.*?)<\/a>'
+          replace: $1
+    ckeditor5_sourceEditing:
+      allowed_tags:
+        - '<cite>'
+        - '<dl>'
+        - '<dt>'
+        - '<dd>'
+        - '<span>'
+        - '<img src alt height width data-entity-type data-entity-uuid data-entity-substitution data-align data-caption>'
+        - '<a hreflang>'
+        - '<ul start>'
+        - '<drupal-entity data-entity-type data-entity-substitution data-embed-button>'
+        - '<kbd>'
+        - '<samp>'
+    ckeditor5_style:
+      styles:
+        -
+          label: 'No List Style'
+          element: '<ul class="list-style-none">'
+        -
+          label: Disc
+          element: '<ul class="list-style-disc">'
+        -
+          label: Circle
+          element: '<ul class="list-style-circle">'
+        -
+          label: Square
+          element: '<ul class="list-style-square">'
+        -
+          label: Decimal
+          element: '<ol class="list-style-decimal">'
+        -
+          label: 'Decimal Leading Zero'
+          element: '<ol class="list-style-decimal-leading-zero">'
+        -
+          label: 'Upper Roman'
+          element: '<ol class="list-style-upper-roman">'
+        -
+          label: 'Lower Roman'
+          element: '<ol class="list-style-lower-roman">'
+        -
+          label: 'Upper Alpha'
+          element: '<ol class="list-style-upper-alpha">'
+        -
+          label: 'Lower Alpha'
+          element: '<ol class="list-style-lower-alpha">'
+    linkit_extension:
+      linkit_enabled: true
+      linkit_profile: author
+    media_entity_download_ckeditor:
+      entity_browser_enabled: true
+      enabled_entity_browsers:
+        - media_browser
+image_upload:
+  status: true
+  scheme: public
+  directory: inline-images
+  max_size: null
+  max_dimensions:
+    width: null
+    height: null

@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.info_details.field_banner_image
     - field.field.node.info_details.field_collections
     - field.field.node.info_details.field_contact
+    - field.field.node.info_details.field_content_organization
     - field.field.node.info_details.field_data_flag
     - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
@@ -170,6 +171,7 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - field_infodetails_metatags
         - url_redirects
         - search
@@ -254,6 +256,9 @@ content:
     region: content
     settings:
       theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
       dots: 0
       size: 60
       placeholder: ''
@@ -265,6 +270,7 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_contact:
     type: entity_reference_autocomplete
@@ -275,6 +281,28 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 20
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_data_flag:
     type: options_buttons
@@ -528,7 +556,7 @@ content:
     third_party_settings: {  }
   field_infodetails_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 21
     region: content
     settings:
       sidebar: false
@@ -626,20 +654,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 4
+    weight: 23
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 5
+    weight: 24
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 6
+    weight: 25
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -678,7 +706,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 3
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }

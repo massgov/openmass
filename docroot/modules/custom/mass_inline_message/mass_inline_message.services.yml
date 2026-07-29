@@ -1,0 +1,15 @@
+services:
+  mass_inline_message.hooks:
+    class: Drupal\mass_inline_message\Hook\MassInlineMessageHooks
+    tags:
+      - { name: drupal.hook }
+
+  mass_inline_message.renderer:
+    class: Drupal\mass_inline_message\MassInlineMessageRenderer
+    arguments: ['@renderer']
+
+  mass_inline_message.modal_renderer:
+    class: Drupal\mass_inline_message\Render\MassInlineMessageModalRenderer
+    arguments: ['@title_resolver', '@renderer']
+    tags:
+      - { name: render.main_content_renderer, format: drupal_modal.mass_inline_message }
