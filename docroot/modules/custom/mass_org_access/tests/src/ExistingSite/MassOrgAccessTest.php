@@ -1031,16 +1031,64 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * Builds a node add form and returns the Permission Groups widget #prefix.
    */
   private function permissionGroupsWidgetPrefix(string $bundle): string {
+    return (string) ($this->permissionGroupsWidget($bundle)['#prefix'] ?? '');
+  }
+
+  /**
+   * Builds a node add form and returns the Permission Groups widget subtree.
+   */
+  private function permissionGroupsWidget(string $bundle): array {
     $node = \Drupal::entityTypeManager()->getStorage('node')->create([
       'type' => $bundle,
-      'title' => 'Debug widget ' . $this->randomMachineName(),
+      'title' => 'Widget ' . $this->randomMachineName(),
     ]);
     $form_object = \Drupal::entityTypeManager()
       ->getFormObject('node', 'default')
       ->setEntity($node);
     $form_state = (new FormState())->setFormObject($form_object);
     $form = \Drupal::formBuilder()->buildForm($form_object, $form_state);
-    return (string) ($form['field_content_organization']['#prefix'] ?? '');
+    return $form['field_content_organization'] ?? [];
+  }
+
+  /**
+   * "Browse organizations" launcher is hidden on non-org_page bundles.
+   *
+   * The dialog opens the entity_reference_tree picker — the one way an admin
+   * could edit Permission Groups directly. On every bundle except org_page the
+   * field is derived from Organizations, so the launcher is stripped and the
+   * widget reads as read-only.
+   */
+  public function testBrowseOrganizationsHiddenOnNonOrgPage(): void {
+    $widget = $this->permissionGroupsWidget('info_details');
+    $this->assertArrayHasKey(
+      'dialog_link',
+      $widget['widget'] ?? [],
+      'entity_reference_tree widget must expose a dialog_link element (test premise).'
+    );
+    $this->assertFalse(
+      $widget['widget']['dialog_link']['#access'] ?? TRUE,
+      'Browse organizations launcher must be hidden on non-org_page bundles.'
+    );
+  }
+
+  /**
+   * "Browse organizations" launcher stays visible on org_page.
+   *
+   * Org_page is the one bundle where Permission Groups are curated by hand, so
+   * the launcher must remain accessible — this is where the taxonomy hierarchy
+   * picker is actually used.
+   */
+  public function testBrowseOrganizationsVisibleOnOrgPage(): void {
+    $widget = $this->permissionGroupsWidget('org_page');
+    $this->assertArrayHasKey(
+      'dialog_link',
+      $widget['widget'] ?? [],
+      'entity_reference_tree widget must expose a dialog_link element on org_page.'
+    );
+    $this->assertNotFalse(
+      $widget['widget']['dialog_link']['#access'] ?? TRUE,
+      'Browse organizations launcher must stay accessible on org_page — the curated source.'
+    );
   }
 
   /**
