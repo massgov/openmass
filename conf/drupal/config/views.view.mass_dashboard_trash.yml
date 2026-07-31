@@ -615,9 +615,9 @@ display:
           field_api_classes: false
         moderation_state:
           id: moderation_state
-          table: node_field_data
+          table: node_field_revision
           field: moderation_state
-          relationship: vid
+          relationship: none
           group_type: group
           admin_label: ''
           entity_type: node
@@ -1379,6 +1379,7 @@ display:
             score: score
             pageviews: pageviews
             operations_1: operations_1
+            moderation_state: moderation_state
           default: changed_1
           info:
             node_bulk_form:
@@ -1450,6 +1451,13 @@ display:
               empty_column: false
               responsive: ''
             operations_1:
+              align: ''
+              separator: ''
+              empty_column: false
+              responsive: ''
+            moderation_state:
+              sortable: true
+              default_sort_order: asc
               align: ''
               separator: ''
               empty_column: false
