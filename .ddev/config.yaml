@@ -39,4 +39,5 @@ web_environment:
   - LOWER_ENVIR_AUTH_PASS
 hooks:
   pre-start:
+    - exec-host: .ddev/commands/host/ecr-login
     - exec-host: echo "No output is shown during the first container build. It may take a minute to install Tugboat, Jira, CircleCI, GitHub, and New Relic  CLI tools."

@@ -1,0 +1,30 @@
+#!/bin/bash
+set -euo pipefail
+
+## Description: Authenticate Docker with the private database image registry.
+## Usage: ecr-login
+## Example: "ddev ecr-login"
+
+source .ddev/.env
+
+: "${MASS_DB_AWS_ACCOUNT_ID:?Set MASS_DB_AWS_ACCOUNT_ID in .ddev/.env}"
+: "${MASS_DB_AWS_REGION:?Set MASS_DB_AWS_REGION in .ddev/.env}"
+: "${MASS_DB_AWS_PROFILE_NAME:?Set MASS_DB_AWS_PROFILE_NAME in .ddev/.env}"
+
+registry="${MASS_DB_AWS_ACCOUNT_ID}.dkr.ecr.${MASS_DB_AWS_REGION}.amazonaws.com"
+
+if ! password="$(aws ecr get-login-password \
+  --region "${MASS_DB_AWS_REGION}" \
+  --profile "${MASS_DB_AWS_PROFILE_NAME}" 2>/dev/null)"; then
+  echo "Your AWS SSO session has expired. Re-authenticating with profile '${MASS_DB_AWS_PROFILE_NAME}'..." >&2
+  aws sso login --profile "${MASS_DB_AWS_PROFILE_NAME}"
+  password="$(aws ecr get-login-password \
+    --region "${MASS_DB_AWS_REGION}" \
+    --profile "${MASS_DB_AWS_PROFILE_NAME}")"
+fi
+
+if ! printf '%s\n' "${password}" \
+  | docker login --username AWS --password-stdin "${registry}"; then
+  echo "Could not log Docker in to AWS ECR registry ${registry}." >&2
+  exit 1
+fi
