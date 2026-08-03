@@ -1051,7 +1051,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * "Browse organizations" launcher is hidden on non-org_page bundles.
+   * Hides the "Browse organizations" launcher on non-org_page bundles.
    *
    * The dialog opens the entity_reference_tree picker — the one way an admin
    * could edit Permission Groups directly. On every bundle except org_page the
@@ -1072,7 +1072,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * "Browse organizations" launcher stays visible on org_page.
+   * Keeps the "Browse organizations" launcher visible on org_page.
    *
    * Org_page is the one bundle where Permission Groups are curated by hand, so
    * the launcher must remain accessible — this is where the taxonomy hierarchy
