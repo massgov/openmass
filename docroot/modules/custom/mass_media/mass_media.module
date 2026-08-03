@@ -62,6 +62,9 @@ function mass_media_media_update(EntityInterface $entity) {
 
   $file_uri_target = \Drupal::service('stream_wrapper_manager')->getTarget($file_uri);
   $file_destination = 'private://' . $file_uri_target;
+  if (mass_media_skip_directory_file_move($file, $file_system, 'media update')) {
+    return;
+  }
   $dirname = $file_system->dirname($file_destination);
   if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
     throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
@@ -283,6 +286,9 @@ function mass_media_media_presave(MediaInterface $entity) {
       }
 
       if (!empty($file_destination)) {
+        if (mass_media_skip_directory_file_move($file, $file_system, 'media presave')) {
+          return;
+        }
         $dirname = $file_system->dirname($file_destination);
         if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
           throw new \RuntimeException("Unable to prepare directory for file move '$dirname'");
@@ -341,6 +347,24 @@ function mass_media_paragraph_presave(ParagraphInterface $paragraph) {
 
     $media->save();
   }
+}
+
+/**
+ * Checks whether a file move should be skipped because the source is a directory.
+ */
+function mass_media_skip_directory_file_move(FileInterface $file, FileSystemInterface $file_system, string $context): bool {
+  $uri = $file->getFileUri();
+  $realpath = $file_system->realpath($uri);
+  if ($realpath !== FALSE && is_dir($realpath)) {
+    Drupal::logger('content')->warning('Skipped @context move for file entity @fid because @uri resolves to a directory.', [
+      '@context' => $context,
+      '@fid' => $file->id(),
+      '@uri' => $uri,
+    ]);
+    return TRUE;
+  }
+
+  return FALSE;
 }
 
 /**
