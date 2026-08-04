@@ -432,9 +432,15 @@ function mass_views_views_query_alter(ViewExecutable $view, QueryPluginBase $que
 }
 
 /**
- * Limits the accessibility report to the latest scan for the node's current URL.
+ * Limits the accessibility report to scans for the node's current URL.
  *
  * Ignores stale ed11y_page rows left behind after alias changes.
+ *
+ * Editoria11y stores page_path from $entity->toUrl('canonical')->toString(),
+ * which can include a language prefix (/es/alias) and query string. path_alias
+ * never has either. Today all rows are en with no prefix, so path equality
+ * works; a translated-node scan would not match until this comparison is
+ * updated to account for prefixes/query params.
  */
 function _mass_views_accessibility_report_limit_to_latest_ed11y_page(QueryPluginBase $query): void {
   if (!method_exists($query, 'getTableQueue')) {
@@ -450,15 +456,18 @@ function _mass_views_accessibility_report_limit_to_latest_ed11y_page(QueryPlugin
   }
 
   if (!$page_alias) {
+    // Without the ed11y_page relationship the staleness filter cannot run;
+    // log so a Views UI / config change does not silently reintroduce DP-48112.
+    \Drupal::logger('mass_views')->warning('Accessibility report staleness filter skipped: ed11y_page was not found in the view query table queue.');
     return;
   }
 
-  // Match current alias (or /node/{nid}); BINARY avoids collation mismatches.
+  // Match current alias (or /node/{nid}).
+  // CAST AS BINARY is required: ed11y_page.page_path and path_alias.alias use
+  // different collations (e.g. utf8mb4_0900_ai_ci vs utf8mb4_general_ci), and a
+  // plain = throws MySQL error 1267. Prefer CAST over deprecated BINARY.
   $current_path = "COALESCE((SELECT pa.alias FROM {path_alias} pa WHERE pa.path = CONCAT('/node/', $page_alias.entity_id) AND pa.status = 1 AND (pa.langcode = $page_alias.page_language OR pa.langcode = 'und') ORDER BY CASE WHEN pa.langcode = $page_alias.page_language THEN 0 ELSE 1 END, pa.id DESC LIMIT 1), CONCAT('/node/', $page_alias.entity_id))";
-  $query->addWhereExpression(0, "BINARY $page_alias.page_path = BINARY ($current_path)");
-
-  $subquery = "SELECT MAX(ed11y_page_latest.updated) FROM {ed11y_page} ed11y_page_latest WHERE ed11y_page_latest.entity_id = $page_alias.entity_id AND ed11y_page_latest.route_name = 'entity.node.canonical' AND BINARY ed11y_page_latest.page_path = BINARY ($current_path)";
-  $query->addWhereExpression(0, "$page_alias.updated = ($subquery)");
+  $query->addWhereExpression(0, "CAST($page_alias.page_path AS BINARY) = CAST(($current_path) AS BINARY)");
 }
 
 /**

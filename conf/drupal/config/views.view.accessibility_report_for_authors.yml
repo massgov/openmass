@@ -555,12 +555,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        content_results:
-          id: content_results
-          table: ed11y_page
-          field: content_results
-          relationship: editoria11y_result_to_page
-          group_type: max
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
+          relationship: none
+          group_type: sum
           admin_label: ''
           plugin_id: numeric
           label: 'Issue count'
@@ -719,12 +719,12 @@ display:
           empty: true
           title: 'No known issues at this url'
       sorts:
-        content_results:
-          id: content_results
-          table: ed11y_page
-          field: content_results
-          relationship: editoria11y_result_to_page
-          group_type: max
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
+          relationship: none
+          group_type: sum
           admin_label: ''
           plugin_id: standard
           order: DESC
@@ -783,50 +783,6 @@ display:
             autocomplete_dependent: 0
             autocomplete_contextual: 0
             autocomplete_autosubmit: 0
-          is_grouped: false
-          group_info:
-            label: ''
-            description: ''
-            identifier: ''
-            optional: true
-            widget: select
-            multiple: false
-            remember: false
-            default_group: All
-            default_group_multiple: {  }
-            group_items: {  }
-        content_results:
-          id: content_results
-          table: ed11y_page
-          field: content_results
-          relationship: editoria11y_result_to_page
-          group_type: group
-          admin_label: ''
-          plugin_id: numeric
-          operator: '>'
-          value:
-            min: ''
-            max: ''
-            value: '0'
-          group: 1
-          exposed: false
-          expose:
-            operator_id: ''
-            label: ''
-            description: ''
-            use_operator: false
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-            identifier: ''
-            required: false
-            remember: false
-            multiple: false
-            remember_roles:
-              authenticated: authenticated
-            min_placeholder: ''
-            max_placeholder: ''
-            placeholder: ''
           is_grouped: false
           group_info:
             label: ''
@@ -1287,7 +1243,7 @@ display:
             created: created
             changed: changed
             uid: uid
-            content_results: content_results
+            content_count: content_count
             pageviews: pageviews
           default: pageviews
           info:
@@ -1340,7 +1296,7 @@ display:
               separator: ''
               empty_column: false
               responsive: ''
-            content_results:
+            content_count:
               sortable: true
               default_sort_order: asc
               align: ''
@@ -1684,12 +1640,12 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        content_results:
-          id: content_results
-          table: ed11y_page
-          field: content_results
-          relationship: editoria11y_result_to_page
-          group_type: max
+        content_count:
+          id: content_count
+          table: ed11y_result
+          field: content_count
+          relationship: none
+          group_type: sum
           admin_label: ''
           plugin_id: numeric
           label: 'Issue count'
@@ -2202,7 +2158,7 @@ display:
           plugin_id: text
           empty: true
           content:
-            value: "<p>Caution: this data is based on real-time scans done when authors view pages while editing on edit.mass.gov. It should not be considered a complete report for the following reasons.</p>\r\n<ul>\r\n<li>Authors are able edit pages in a way that they never view the page after the edit. If they don't view it, it isn't checked.</li>\r\n<li>If Editoria11y finds no issue on a page, it stores nothing. In the data model, there is no way to tell the difference between a page that has no issues and a page that was never checked.</li>\r\n<li>If a page was not viewed by a logged-in author on edit.mass.gov after the Editoria11y feature was released 2/5/2024, it will not appear on the report.</li>\r\n</ul>\r\n<p>Consider using SiteImprove data for reports. It crawls all author created pages that are not hidden from search with the exception of news and events.</p>"
+            value: "<p>Caution: this data is based on real-time scans done when authors view pages while editing on edit.mass.gov. It should not be considered a complete report for the following reasons.</p>\r\n<ul>\r\n<li>Authors are able edit pages in a way that they never view the page after the edit. If they don't view it, it isn't checked.</li>\r\n<li>If Editoria11y finds no issue on a page, it stores nothing. In the data model, there is no way to tell the difference between a page that has no issues and a page that was never checked.</li>\r\n<li>If a page was not viewed by a logged-in author on edit.mass.gov after the Editoria11y feature was released 2/5/2024, it will not appear on the report.</li>\r\n<li>If a page's URL changed and it has not been re-viewed since, the report ignores the outdated scan and the page will not appear until someone views it at the current URL.</li>\r\n</ul>\r\n<p>Consider using SiteImprove data for reports. It crawls all author created pages that are not hidden from search with the exception of news and events.</p>"
             format: basic_html
           tokenize: false
       display_extenders:
