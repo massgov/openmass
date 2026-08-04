@@ -56,8 +56,9 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
   /**
    * The full live candidate list contains no duplicate IDs.
    *
-   * Guards the langcode/default_langcode join correlation: a translated
-   * trashed entity would otherwise fan out into multiple rows.
+   * A live-data canary: it can only fail once real translated trash exists,
+   * so the langcode correlation itself is pinned by
+   * testTranslatedEntityMatchesOnceAndOnlyViaDefaultTranslation().
    */
   public function testCandidateIdsContainNoDuplicates() {
     $query = $this->createPurgeCandidateQuery();
@@ -187,6 +188,7 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
 
     $query = $this->createPurgeCandidateQuery();
     $this->assertTrue($query->isEntityEligible('node', $nid, 50000), 'Sanity: trashed fixture is eligible before shadowing.');
+    $shadowedBefore = $query->countShadowedTrashRows('node');
 
     $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     $syntheticId = $this->insertModerationRow([
@@ -201,7 +203,7 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
       $this->assertFalse($query->isEntityEligible('node', $nid, 50000), 'A newer non-trash moderation record must shadow the stale trash row.');
       $ids = array_map('intval', $query->getCandidateIds('node', self::PURGE_TEST_FETCH_MAX, 50000));
       $this->assertNotContains($nid, $ids);
-      $this->assertGreaterThanOrEqual(1, $query->countShadowedTrashRows('node'), 'The shadowed-rows diagnostic must count the shadowed fixture.');
+      $this->assertSame($shadowedBefore + 1, $query->countShadowedTrashRows('node'), 'The shadowed-rows diagnostic must count exactly the shadowed fixture on top of pre-existing rows.');
     }
     finally {
       $this->deleteModerationRow($syntheticId);
@@ -267,8 +269,76 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
    */
   public function testUnsupportedEntityTypeIsRejected() {
     $query = $this->createPurgeCandidateQuery();
-    $this->expectException(\InvalidArgumentException::class);
-    $query->getCandidateIds('user', 10, 50000);
+    foreach (['user', 'paragraph'] as $entity_type) {
+      try {
+        $query->getCandidateIds($entity_type, 10, 50000);
+        $this->fail(sprintf('Entity type "%s" must be rejected.', $entity_type));
+      }
+      catch (\InvalidArgumentException $e) {
+        $this->assertStringContainsString($entity_type, $e->getMessage());
+      }
+    }
+  }
+
+  /**
+   * A translated entity matches once, and only via its default translation.
+   *
+   * No moderated bundle on this site is translatable, so the multi-langcode
+   * shape is reproduced with raw rows mirroring the real schema: an extra
+   * "es" row in node_field_data (default_langcode=0) plus matching "es"
+   * moderation rows. Guards both join conditions: langcode correlation
+   * (no cartesian fan-out) and default-translation-only matching (a trashed
+   * non-default translation alone never deletes the whole entity).
+   */
+  public function testTranslatedEntityMatchesOnceAndOnlyViaDefaultTranslation() {
+    $db = $this->getConnection();
+    $query = $this->createPurgeCandidateQuery();
+
+    // Case A: default translation trashed, "es" translation rows also trash
+    // -> exactly one candidate row.
+    $nidTrashed = $this->createTrashedOrgPageWithActivity(10000);
+    $this->insertEsTranslationRows($nidTrashed, 'trash');
+
+    // Case B: default translation published, only the "es" moderation row is
+    // trash -> never a candidate.
+    $node = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Trashbin purge translated control ' . uniqid('', TRUE),
+      'field_sub_title' => $this->randomString(20),
+      'moderation_state' => 'published',
+    ]);
+    $nidPublished = (int) $node->id();
+    $this->forceNodeActivity($nidPublished, (int) $node->getRevisionId(), 5000);
+    $this->insertEsTranslationRows($nidPublished, 'trash');
+
+    try {
+      $ids = array_map('intval', $query->getCandidateIds('node', self::PURGE_TEST_FETCH_MAX, 50000));
+      $this->assertSame([$nidTrashed], array_values(array_intersect($ids, [$nidTrashed])), 'Fully trashed translated entity must appear exactly once.');
+      $this->assertNotContains($nidPublished, $ids, 'A trashed non-default translation alone must not make the entity a candidate.');
+      $this->assertFalse($query->isEntityEligible('node', $nidPublished, time() + 60));
+    }
+    finally {
+      $db->delete('node_field_data')->condition('nid', [$nidTrashed, $nidPublished], 'IN')->condition('langcode', 'es')->execute();
+      $db->delete('content_moderation_state_field_data')->condition('content_entity_id', [$nidTrashed, $nidPublished], 'IN')->condition('content_entity_type_id', 'node')->condition('langcode', 'es')->execute();
+    }
+  }
+
+  /**
+   * Copies a node's "en" rows as an "es" translation directly in SQL.
+   */
+  private function insertEsTranslationRows(int $nid, string $moderation_state): void {
+    $db = $this->getConnection();
+
+    $base = (array) $db->query('SELECT * FROM {node_field_data} WHERE nid = :nid AND langcode = :lang', [':nid' => $nid, ':lang' => 'en'])->fetchObject();
+    $base['langcode'] = 'es';
+    $base['default_langcode'] = 0;
+    $db->insert('node_field_data')->fields($base)->execute();
+
+    $cms = (array) $db->query("SELECT * FROM {content_moderation_state_field_data} WHERE content_entity_type_id = 'node' AND content_entity_id = :nid AND langcode = 'en'", [':nid' => $nid])->fetchObject();
+    $cms['langcode'] = 'es';
+    $cms['default_langcode'] = 0;
+    $cms['moderation_state'] = $moderation_state;
+    $db->insert('content_moderation_state_field_data')->fields($cms)->execute();
   }
 
   /**

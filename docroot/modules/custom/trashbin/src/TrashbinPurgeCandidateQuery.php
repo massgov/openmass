@@ -16,6 +16,16 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
  */
 final class TrashbinPurgeCandidateQuery {
 
+  /**
+   * Validated entity type definitions, keyed by entity type ID.
+   *
+   * Memoized because validatePurgeable() runs a schema introspection query
+   * and is reached once per candidate during a purge run.
+   *
+   * @var \Drupal\Core\Entity\ContentEntityTypeInterface[]
+   */
+  private array $validated = [];
+
   public function __construct(
     private Connection $connection,
     private EntityTypeManagerInterface $entityTypeManager,
@@ -47,7 +57,7 @@ final class TrashbinPurgeCandidateQuery {
     $query->orderBy('trash_last_activity', 'ASC');
     $query->orderBy('b.' . $id_key, 'ASC');
 
-    return $query->execute()->fetchCol() ?: [];
+    return $query->execute()->fetchCol();
   }
 
   /**
@@ -69,7 +79,7 @@ final class TrashbinPurgeCandidateQuery {
     $query->condition('b.' . $id_key, $entity_id);
     $query->range(0, 1);
 
-    return (bool) $query->execute()->fetchField();
+    return $query->execute()->fetchField() !== FALSE;
   }
 
   /**
@@ -89,7 +99,9 @@ final class TrashbinPurgeCandidateQuery {
     $query = $this->connection->select($base_table, 'b');
     $this->joinModerationState($query, $definition, $entity_type_id);
     $query->condition('md.moderation_state', 'trash');
-    $query->exists($this->newerModerationRecordQuery());
+    // A trash row shadowed by a newer trash row is still purgeable through
+    // the newest row, so only non-trash shadows count as "never purged".
+    $query->exists($this->newerModerationRecordQuery(TRUE));
     $query->addExpression('COUNT(DISTINCT b.' . $id_key . ')');
 
     return (int) $query->execute()->fetchField();
@@ -161,10 +173,13 @@ final class TrashbinPurgeCandidateQuery {
   /**
    * Correlated subquery: a newer moderation record for the same revision.
    */
-  private function newerModerationRecordQuery(): SelectInterface {
+  private function newerModerationRecordQuery(bool $non_trash_only = FALSE): SelectInterface {
     $newer = $this->connection->select('content_moderation_state_field_data', 'md2');
     $newer->addExpression('1');
     $newer->where('md2.content_entity_type_id = md.content_entity_type_id AND md2.content_entity_id = md.content_entity_id AND md2.content_entity_revision_id = md.content_entity_revision_id AND md2.id > md.id');
+    if ($non_trash_only) {
+      $newer->condition('md2.moderation_state', 'trash', '<>');
+    }
     return $newer;
   }
 
@@ -177,6 +192,10 @@ final class TrashbinPurgeCandidateQuery {
    *   in its revision table.
    */
   private function validatePurgeable(string $entity_type_id): ContentEntityTypeInterface {
+    if (isset($this->validated[$entity_type_id])) {
+      return $this->validated[$entity_type_id];
+    }
+
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
     $definition = $storage->getEntityType();
 
@@ -209,7 +228,11 @@ final class TrashbinPurgeCandidateQuery {
       throw new \InvalidArgumentException(sprintf('Entity type "%s" stores its revision creation time outside "%s" and cannot be purged.', $entity_type_id, $revision_table));
     }
 
-    return $definition;
+    if (!$this->connection->schema()->fieldExists($base_table, 'changed')) {
+      throw new \InvalidArgumentException(sprintf('Entity type "%s" stores its changed time outside "%s" and cannot be purged.', $entity_type_id, $base_table));
+    }
+
+    return $this->validated[$entity_type_id] = $definition;
   }
 
 }

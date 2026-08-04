@@ -43,15 +43,17 @@ final class TrashbinCommands extends DrushCommands {
     // For a destructive command a malformed option must fail loudly instead
     // of silently coercing to 0 — which is the delete-everything mode for
     // days-ago and a no-op for max.
-    if (is_bool($options['days-ago']) || !ctype_digit((string) $options['days-ago'])) {
-      throw new \InvalidArgumentException(sprintf('--days-ago must be a non-negative integer, got "%s".', var_export($options['days-ago'], TRUE)));
+    $days_ago_raw = $options['days-ago'] ?? 180;
+    $max_raw = $options['max'] ?? 1000;
+    if (is_bool($days_ago_raw) || !ctype_digit((string) $days_ago_raw)) {
+      throw new \InvalidArgumentException(sprintf('--days-ago must be a non-negative integer, got "%s".', var_export($days_ago_raw, TRUE)));
     }
-    if (is_bool($options['max']) || !ctype_digit((string) $options['max'])) {
-      throw new \InvalidArgumentException(sprintf('--max must be a non-negative integer, got "%s".', var_export($options['max'], TRUE)));
+    if (is_bool($max_raw) || !ctype_digit((string) $max_raw)) {
+      throw new \InvalidArgumentException(sprintf('--max must be a non-negative integer, got "%s".', var_export($max_raw, TRUE)));
     }
-    $days_ago = (int) $options['days-ago'];
+    $days_ago = (int) $days_ago_raw;
     if ($days_ago > self::DAYS_AGO_MAX) {
-      throw new \InvalidArgumentException(sprintf('--days-ago must not exceed %d, got "%s".', self::DAYS_AGO_MAX, $options['days-ago']));
+      throw new \InvalidArgumentException(sprintf('--days-ago must not exceed %d, got "%s".', self::DAYS_AGO_MAX, $days_ago_raw));
     }
 
     // Capture command start time to avoid racing with edits during execution.
@@ -62,7 +64,7 @@ final class TrashbinCommands extends DrushCommands {
 
     $ids = $this->purgeCandidateQuery->getCandidateIds(
       $entity_type,
-      (int) $options['max'],
+      (int) $max_raw,
       $cutoff
     );
 
@@ -105,7 +107,7 @@ final class TrashbinCommands extends DrushCommands {
         // warning here means the moderation data itself needs cleanup.
         $state = $entity->hasField('moderation_state') ? $entity->get('moderation_state')->value : NULL;
         if ($state !== 'trash') {
-          $this->logger()->warning('Skipping "{title}". ID={id}; stale moderation data: SQL reports trash but the entity reports "{state}".', [
+          $this->logger()->warning('Skipping "{title}". ID={id}; stale moderation data or concurrent modification: SQL reports trash but the entity reports "{state}".', [
             'title' => $entity->label(),
             'id' => $entity->id(),
             'state' => $state ?? 'none',
@@ -141,9 +143,10 @@ final class TrashbinCommands extends DrushCommands {
         // \Error must abort the run rather than continue on top of an
         // abnormally unwound transaction.
         $failed++;
+        $previous = $e->getPrevious();
         $this->logger()->error('Failed to purge entity ID={id}: {class}: {message}', [
           'id' => $id,
-          'class' => get_class($e),
+          'class' => get_class($e) . ($previous ? ' (' . get_class($previous) . ')' : ''),
           'message' => $e->getMessage(),
         ]);
         $storage->resetCache([$id]);

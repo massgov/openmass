@@ -131,18 +131,26 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
 
   /**
    * One entity failing must not abort the batch, and the run exits non-zero.
+   *
+   * Three candidates: one whose load throws, one whose load returns NULL
+   * (deleted concurrently), and a healthy one — the batch must survive the
+   * first two and still delete the third.
    */
   public function testFailureOnOneEntityDoesNotAbortBatch() {
     $realStorage = \Drupal::entityTypeManager()->getStorage('node');
 
     $poisonNid = $this->createTrashedOrgPageWithActivity(9000);
-    $secondNid = $this->createTrashedOrgPageWithActivity(9500);
-    $this->assertWindowContains('node', 2, [$poisonNid, $secondNid]);
+    $ghostNid = $this->createTrashedOrgPageWithActivity(9250);
+    $healthyNid = $this->createTrashedOrgPageWithActivity(9500);
+    $this->assertWindowContains('node', 3, [$poisonNid, $ghostNid, $healthyNid]);
 
     $storageMock = $this->createMock(EntityStorageInterface::class);
-    $storageMock->method('load')->willReturnCallback(function ($id) use ($poisonNid, $realStorage) {
+    $storageMock->method('load')->willReturnCallback(function ($id) use ($poisonNid, $ghostNid, $realStorage) {
       if ((int) $id === $poisonNid) {
         throw new \RuntimeException('Simulated corrupted entity.');
+      }
+      if ((int) $id === $ghostNid) {
+        return NULL;
       }
       return $realStorage->load($id);
     });
@@ -154,16 +162,37 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
     $command = $this->createCommand(etm: $etm);
 
     try {
-      $command->purge('node', ['max' => 2, 'days-ago' => 180]);
+      $command->purge('node', ['max' => 3, 'days-ago' => 180]);
       $this->fail('A failed entity must make the run exit non-zero via RuntimeException.');
     }
     catch (\RuntimeException $e) {
       $this->assertStringContainsString('Failed to purge 1', $e->getMessage());
     }
 
-    $realStorage->resetCache([$poisonNid, $secondNid]);
+    $realStorage->resetCache([$poisonNid, $ghostNid, $healthyNid]);
     $this->assertNotNull($realStorage->load($poisonNid), 'The poison entity itself must remain untouched.');
-    $this->assertNull($realStorage->load($secondNid), 'The batch must continue past the failure and delete the next entity.');
+    $this->assertNotNull($realStorage->load($ghostNid), 'A NULL load must be skipped, not treated as a failure.');
+    $this->assertNull($realStorage->load($healthyNid), 'The batch must continue past failures and delete the healthy entity.');
+  }
+
+  /**
+   * With more eligible candidates than --max, the oldest ones are deleted.
+   */
+  public function testMaxCapsTheBatchOldestFirst() {
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+
+    $nidOldest = $this->createTrashedOrgPageWithActivity(10000);
+    $nidMiddle = $this->createTrashedOrgPageWithActivity(20000);
+    $nidNewest = $this->createTrashedOrgPageWithActivity(30000);
+    $this->assertWindowContains('node', 2, [$nidOldest, $nidMiddle]);
+
+    $command = $this->createCommand();
+    $command->purge('node', ['max' => 2, 'days-ago' => 180]);
+
+    $storage->resetCache([$nidOldest, $nidMiddle, $nidNewest]);
+    $this->assertNull($storage->load($nidOldest), 'Oldest fixture must be deleted within the cap.');
+    $this->assertNull($storage->load($nidMiddle), 'Second-oldest fixture must be deleted within the cap.');
+    $this->assertNotNull($storage->load($nidNewest), 'The fixture beyond --max must survive.');
   }
 
   /**
@@ -183,13 +212,14 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
   }
 
   /**
-   * The documented --days-ago=0 delete-all mode stays accepted.
+   * The documented --days-ago=0 delete-all mode and the cap boundary hold.
    */
   public function testDaysAgoZeroIsAccepted() {
     $nid = $this->createTrashedOrgPage();
 
     $command = $this->createCommand();
     $command->purge('node', ['max' => 0, 'days-ago' => 0]);
+    $command->purge('node', ['max' => 0, 'days-ago' => TrashbinCommands::DAYS_AGO_MAX]);
 
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $storage->resetCache([$nid]);
@@ -202,7 +232,7 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
   public function testMalformedOptionsAreRejected() {
     $command = $this->createCommand();
 
-    foreach (['abc', '-5', '', '18O', TRUE, '426000000000000'] as $bad) {
+    foreach (['abc', '-5', '', '18O', TRUE, '426000000000000', (string) (TrashbinCommands::DAYS_AGO_MAX + 1)] as $bad) {
       try {
         $command->purge('node', ['max' => 1, 'days-ago' => $bad]);
         $this->fail(sprintf('days-ago %s must be rejected.', var_export($bad, TRUE)));
@@ -239,11 +269,11 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
    */
   private function sweepEpochFixtures(): void {
     $map = [
-      'node' => ['node_field_data', 'nid'],
-      'media' => ['media_field_data', 'mid'],
+      'node' => ['node_field_data', 'nid', 'title'],
+      'media' => ['media_field_data', 'mid', 'name'],
     ];
-    foreach ($map as $entity_type => [$table, $key]) {
-      $ids = \Drupal::database()->query('SELECT DISTINCT ' . $key . ' FROM {' . $table . '} WHERE changed < 100000')->fetchCol();
+    foreach ($map as $entity_type => [$table, $key, $label]) {
+      $ids = \Drupal::database()->query('SELECT DISTINCT ' . $key . ' FROM {' . $table . '} WHERE changed < 100000 AND ' . $label . " LIKE 'Trashbin %'")->fetchCol();
       if ($ids) {
         $storage = \Drupal::entityTypeManager()->getStorage($entity_type);
         $storage->delete($storage->loadMultiple($ids));

@@ -95,7 +95,9 @@ trait TrashbinFixturesTrait {
    * Inserts a synthetic moderation state row; returns its id for cleanup.
    */
   private function insertModerationRow(array $values): int {
-    $id = (int) \Drupal::database()->query('SELECT MAX(id) FROM {content_moderation_state_field_data}')->fetchField() + 1000;
+    // Large offset: a row leaked by a killed run must not sit in the path of
+    // the real content_moderation_state auto-increment.
+    $id = (int) \Drupal::database()->query('SELECT MAX(id) FROM {content_moderation_state_field_data}')->fetchField() + 1000000;
     \Drupal::database()->insert('content_moderation_state_field_data')
       ->fields($values + [
         'id' => $id,
