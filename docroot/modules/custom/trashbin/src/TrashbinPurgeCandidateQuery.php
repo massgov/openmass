@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace Drupal\trashbin;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Query\SelectInterface;
 use Drupal\Core\Entity\ContentEntityTypeInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
@@ -35,7 +37,7 @@ final class TrashbinPurgeCandidateQuery {
    *   Entity IDs in purge order.
    *
    * @throws \InvalidArgumentException
-   *   When the entity type cannot be purged (see buildCandidateQuery()).
+   *   When the entity type cannot be purged (see validatePurgeable()).
    */
   public function getCandidateIds(string $entity_type_id, int $max, int $cutoff): array {
     [$query, $id_key, $activity] = $this->buildCandidateQuery($entity_type_id, $cutoff);
@@ -59,7 +61,7 @@ final class TrashbinPurgeCandidateQuery {
    *   Unix timestamp cutoff captured at command start.
    *
    * @throws \InvalidArgumentException
-   *   When the entity type cannot be purged (see buildCandidateQuery()).
+   *   When the entity type cannot be purged (see validatePurgeable()).
    */
   public function isEntityEligible(string $entity_type_id, int|string $entity_id, int $cutoff): bool {
     [$query, $id_key] = $this->buildCandidateQuery($entity_type_id, $cutoff);
@@ -71,16 +73,110 @@ final class TrashbinPurgeCandidateQuery {
   }
 
   /**
+   * Counts trash records excluded because a newer moderation record exists.
+   *
+   * These rows never become purge candidates; a persistently non-zero count
+   * signals stale workflow-migration data worth cleaning up.
+   *
+   * @throws \InvalidArgumentException
+   *   When the entity type cannot be purged (see validatePurgeable()).
+   */
+  public function countShadowedTrashRows(string $entity_type_id): int {
+    $definition = $this->validatePurgeable($entity_type_id);
+    $base_table = $definition->getDataTable() ?: $definition->getBaseTable();
+    $id_key = $definition->getKey('id');
+
+    $query = $this->connection->select($base_table, 'b');
+    $this->joinModerationState($query, $definition, $entity_type_id);
+    $query->condition('md.moderation_state', 'trash');
+    $query->exists($this->newerModerationRecordQuery());
+    $query->addExpression('COUNT(DISTINCT b.' . $id_key . ')');
+
+    return (int) $query->execute()->fetchField();
+  }
+
+  /**
    * Builds the shared purge candidate SELECT (joins, trash, cutoff).
    *
    * @return array{0: \Drupal\Core\Database\Query\SelectInterface, 1: string, 2: string}
    *   Query, entity ID key, and the last-activity SQL expression.
    *
    * @throws \InvalidArgumentException
-   *   When the entity type has no data/base table, is not revisionable, does
-   *   not track a changed time, or does not record a revision creation time.
+   *   When the entity type cannot be purged (see validatePurgeable()).
    */
   private function buildCandidateQuery(string $entity_type_id, int $cutoff): array {
+    $definition = $this->validatePurgeable($entity_type_id);
+    $base_table = $definition->getDataTable() ?: $definition->getBaseTable();
+    $id_key = $definition->getKey('id');
+    $rev_key = $definition->getKey('revision');
+    $revision_table = $definition->getRevisionTable();
+    $revision_created_key = $definition->getRevisionMetadataKey('revision_created');
+
+    $query = $this->connection->select($base_table, 'b');
+    $this->joinModerationState($query, $definition, $entity_type_id);
+
+    $query->innerJoin(
+      $revision_table,
+      'rt',
+      'rt.' . $rev_key . ' = b.' . $rev_key . ' AND rt.' . $id_key . ' = b.' . $id_key
+    );
+
+    $query->condition('md.moderation_state', 'trash');
+
+    // Workflow migrations can leave an entity with two moderation records
+    // pointing at the same revision; a stale "trash" row shadowed by a newer
+    // record for the same revision must not make the entity purgeable.
+    // "Newest id" is a proxy for "the record of the workflow currently
+    // assigned to the bundle": it can only under-select, never over-select,
+    // and the command's entity-API re-check remains the final authority —
+    // do not drop that check as redundant.
+    $query->notExists($this->newerModerationRecordQuery());
+
+    $activity = 'GREATEST(b.changed, COALESCE(rt.' . $revision_created_key . ', b.changed))';
+    $query->where($activity . ' < :cutoff', [':cutoff' => $cutoff]);
+
+    return [$query, $id_key, $activity];
+  }
+
+  /**
+   * Joins content_moderation_state_field_data as "md" for the current revision.
+   */
+  private function joinModerationState(SelectInterface $query, EntityTypeInterface $definition, string $entity_type_id): void {
+    $id_key = $definition->getKey('id');
+    $rev_key = $definition->getKey('revision');
+
+    $join = 'md.content_entity_type_id = :etype AND md.content_entity_id = b.' . $id_key . ' AND md.content_entity_revision_id = b.' . $rev_key;
+    if ($definition->isTranslatable()) {
+      // Both tables carry one row per translation: correlate the langcodes
+      // and decide on the default translation only, so a translated entity
+      // matches once and a trashed non-default translation alone never
+      // deletes the whole entity.
+      $default_langcode_key = $definition->getKey('default_langcode') ?: 'default_langcode';
+      $join .= ' AND md.langcode = b.langcode';
+      $query->condition('b.' . $default_langcode_key, 1);
+    }
+    $query->innerJoin('content_moderation_state_field_data', 'md', $join, [':etype' => $entity_type_id]);
+  }
+
+  /**
+   * Correlated subquery: a newer moderation record for the same revision.
+   */
+  private function newerModerationRecordQuery(): SelectInterface {
+    $newer = $this->connection->select('content_moderation_state_field_data', 'md2');
+    $newer->addExpression('1');
+    $newer->where('md2.content_entity_type_id = md.content_entity_type_id AND md2.content_entity_id = md.content_entity_id AND md2.content_entity_revision_id = md.content_entity_revision_id AND md2.id > md.id');
+    return $newer;
+  }
+
+  /**
+   * Validates that an entity type is structurally purgeable.
+   *
+   * @throws \InvalidArgumentException
+   *   When the entity type has no data/base table, is not revisionable, does
+   *   not track a changed time, or does not record a revision creation time
+   *   in its revision table.
+   */
+  private function validatePurgeable(string $entity_type_id): ContentEntityTypeInterface {
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
     $definition = $storage->getEntityType();
 
@@ -89,9 +185,7 @@ final class TrashbinPurgeCandidateQuery {
       throw new \InvalidArgumentException(sprintf('Entity type "%s" does not have a base/data table and cannot be purged.', $entity_type_id));
     }
 
-    $id_key = $definition->getKey('id');
-    $rev_key = $definition->getKey('revision');
-    if (!$id_key || !$rev_key) {
+    if (!$definition->getKey('id') || !$definition->getKey('revision')) {
       throw new \InvalidArgumentException(sprintf('Entity type "%s" must be revisionable to use trashbin purge (missing id/revision keys).', $entity_type_id));
     }
 
@@ -111,40 +205,11 @@ final class TrashbinPurgeCandidateQuery {
       throw new \InvalidArgumentException(sprintf('Entity type "%s" does not record a revision creation time and cannot be purged.', $entity_type_id));
     }
 
-    $query = $this->connection->select($base_table, 'b');
-
-    $moderation_join = 'md.content_entity_type_id = :etype AND md.content_entity_id = b.' . $id_key . ' AND md.content_entity_revision_id = b.' . $rev_key;
-    if ($definition->isTranslatable()) {
-      // Both tables carry one row per translation: correlate the langcodes
-      // and decide on the default translation only, so a translated entity
-      // matches once and a trashed non-default translation alone never
-      // deletes the whole entity.
-      $moderation_join .= ' AND md.langcode = b.langcode';
-      $query->condition('b.default_langcode', 1);
+    if (!$this->connection->schema()->fieldExists($revision_table, $revision_created_key)) {
+      throw new \InvalidArgumentException(sprintf('Entity type "%s" stores its revision creation time outside "%s" and cannot be purged.', $entity_type_id, $revision_table));
     }
-    $query->innerJoin('content_moderation_state_field_data', 'md', $moderation_join, [':etype' => $entity_type_id]);
 
-    $query->innerJoin(
-      $revision_table,
-      'rt',
-      'rt.' . $rev_key . ' = b.' . $rev_key . ' AND rt.' . $id_key . ' = b.' . $id_key
-    );
-
-    $query->condition('md.moderation_state', 'trash');
-
-    // Workflow migrations can leave an entity with two moderation records
-    // pointing at the same revision; only the newest reflects the workflow
-    // currently assigned to the bundle. A stale "trash" row shadowed by a
-    // newer record for the same revision must not make the entity purgeable.
-    $newer = $this->connection->select('content_moderation_state_field_data', 'md2');
-    $newer->addExpression('1');
-    $newer->where('md2.content_entity_type_id = md.content_entity_type_id AND md2.content_entity_id = md.content_entity_id AND md2.content_entity_revision_id = md.content_entity_revision_id AND md2.id > md.id');
-    $query->notExists($newer);
-
-    $activity = 'GREATEST(b.changed, COALESCE(rt.' . $revision_created_key . ', b.changed))';
-    $query->where($activity . ' < :cutoff', [':cutoff' => $cutoff]);
-
-    return [$query, $id_key, $activity];
+    return $definition;
   }
 
 }

@@ -3,7 +3,6 @@
 namespace Drupal\Tests\trashbin\ExistingSite;
 
 use Drupal\Core\Database\Connection;
-use Drupal\file\Entity\File;
 use Drupal\trashbin\TrashbinPurgeCandidateQuery;
 use MassGov\Dtt\MassExistingSiteBase;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
@@ -18,6 +17,7 @@ use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
+  use TrashbinFixturesTrait;
 
   /**
    * List-fetch limit for fixture assertions.
@@ -54,18 +54,48 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
   }
 
   /**
-   * Rows at or after the cutoff are excluded.
+   * The full live candidate list contains no duplicate IDs.
+   *
+   * Guards the langcode/default_langcode join correlation: a translated
+   * trashed entity would otherwise fan out into multiple rows.
+   */
+  public function testCandidateIdsContainNoDuplicates() {
+    $query = $this->createPurgeCandidateQuery();
+    $ids = $query->getCandidateIds('node', 500000, time() + 60);
+    $this->assertSame(count($ids), count(array_unique($ids)), 'Candidate list must not contain duplicate IDs.');
+  }
+
+  /**
+   * Rows at or after the cutoff are excluded; strictly-older rows are not.
    */
   public function testCutoffExcludesEntitiesWhoseLastActivityIsNotOldEnough() {
     $cutoff = 50000;
     $nidEligible = $this->createTrashedOrgPageWithActivity(10000);
+    $nidBoundary = $this->createTrashedOrgPageWithActivity(50000);
     $nidTooRecent = $this->createTrashedOrgPageWithActivity(60000);
 
     $query = $this->createPurgeCandidateQuery();
     $ids = array_map('intval', $query->getCandidateIds('node', self::PURGE_TEST_FETCH_MAX, $cutoff));
 
     $this->assertContains($nidEligible, $ids);
+    $this->assertNotContains($nidBoundary, $ids, 'Activity exactly at the cutoff must be excluded (strict comparison).');
     $this->assertNotContains($nidTooRecent, $ids);
+  }
+
+  /**
+   * A NULL revision timestamp falls back to changed instead of excluding.
+   */
+  public function testNullRevisionTimestampFallsBackToChanged() {
+    $nid = $this->createTrashedOrgPageWithActivity(10000);
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
+    $this->getConnection()->update('node_revision')
+      ->fields(['revision_timestamp' => NULL])
+      ->condition('vid', (int) $node->getRevisionId())
+      ->execute();
+
+    $query = $this->createPurgeCandidateQuery();
+    $ids = array_map('intval', $query->getCandidateIds('node', self::PURGE_TEST_FETCH_MAX, 50000));
+    $this->assertContains($nid, $ids, 'NULL revision timestamp must not silently exclude the row forever.');
   }
 
   /**
@@ -99,7 +129,9 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
    * Regression test: the original purge implementation joined moderation
    * state by revision ID alone, so a trashed moderation row of another
    * entity type whose revision ID collided with a node's vid deleted
-   * published nodes.
+   * published nodes. Two synthetic rows are used: one excluded by the
+   * entity-id condition, and one matching entity id AND revision id that
+   * only the content_entity_type_id condition can exclude.
    */
   public function testTrashedRowOfOtherEntityTypeDoesNotMakeNodeEligible() {
     $node = $this->createNode([
@@ -112,11 +144,21 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
     $vid = (int) $node->getRevisionId();
     $this->forceNodeActivity($nid, $vid, 5000);
 
-    $syntheticId = $this->insertModerationRow([
+    $syntheticIds = [];
+    $syntheticIds[] = $this->insertModerationRow([
       'workflow' => 'media_states',
       'moderation_state' => 'trash',
       'content_entity_type_id' => 'media',
       'content_entity_id' => 999999999,
+      'content_entity_revision_id' => $vid,
+    ]);
+    // Same entity id and revision id as the node: only the entity-type
+    // condition in the join excludes this one.
+    $syntheticIds[] = $this->insertModerationRow([
+      'workflow' => 'media_states',
+      'moderation_state' => 'trash',
+      'content_entity_type_id' => 'media',
+      'content_entity_id' => $nid,
       'content_entity_revision_id' => $vid,
     ]);
 
@@ -127,7 +169,9 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
       $this->assertFalse($query->isEntityEligible('node', $nid, time() + 60));
     }
     finally {
-      $this->deleteModerationRow($syntheticId);
+      foreach ($syntheticIds as $syntheticId) {
+        $this->deleteModerationRow($syntheticId);
+      }
     }
   }
 
@@ -157,6 +201,7 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
       $this->assertFalse($query->isEntityEligible('node', $nid, 50000), 'A newer non-trash moderation record must shadow the stale trash row.');
       $ids = array_map('intval', $query->getCandidateIds('node', self::PURGE_TEST_FETCH_MAX, 50000));
       $this->assertNotContains($nid, $ids);
+      $this->assertGreaterThanOrEqual(1, $query->countShadowedTrashRows('node'), 'The shadowed-rows diagnostic must count the shadowed fixture.');
     }
     finally {
       $this->deleteModerationRow($syntheticId);
@@ -167,38 +212,25 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
    * Media candidates work through the media revision_created column.
    */
   public function testMediaCandidatesUseRevisionCreatedColumn() {
-    $destination = 'public://' . $this->randomMachineName(12) . '.txt';
-    \Drupal::service('file_system')->copy('core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt', $destination, TRUE);
-    $file = File::create(['uri' => $destination]);
-    $file->setPermanent();
-    $file->save();
-    $this->markEntityForCleanup($file);
-
-    $media = $this->createMedia([
-      'bundle' => 'document',
-      'name' => 'Trashbin purge media candidate ' . uniqid('', TRUE),
-      'field_title' => 'Trashbin purge media candidate',
-      'field_upload_file' => ['target_id' => $file->id()],
-      'moderation_state' => 'published',
-    ]);
-    $media->set('moderation_state', 'trash');
-    $media->save();
-
-    $mid = (int) $media->id();
-    $vid = (int) $media->getRevisionId();
-    $this->getConnection()->update('media_field_data')
-      ->fields(['changed' => 10000])
-      ->condition('mid', $mid)
-      ->execute();
-    $this->getConnection()->update('media_revision')
-      ->fields(['revision_created' => 10000])
-      ->condition('vid', $vid)
-      ->execute();
+    $mid = $this->createTrashedDocumentMediaWithActivity(10000);
 
     $query = $this->createPurgeCandidateQuery();
     $ids = array_map('intval', $query->getCandidateIds('media', self::PURGE_TEST_FETCH_MAX, 50000));
     $this->assertContains($mid, $ids);
     $this->assertTrue($query->isEntityEligible('media', $mid, 50000));
+  }
+
+  /**
+   * A just-trashed entity is eligible against a start-time cutoff.
+   *
+   * This is the query-level half of the --days-ago=0 contract: everything
+   * trashed before the command started qualifies regardless of age.
+   */
+  public function testJustTrashedEntityIsEligibleWithStartTimeCutoff() {
+    $nid = $this->createTrashedOrgPage();
+
+    $query = $this->createPurgeCandidateQuery();
+    $this->assertTrue($query->isEntityEligible('node', $nid, time() + 60));
   }
 
   /**
@@ -251,63 +283,6 @@ class TrashbinPurgeCandidateQueryTest extends MassExistingSiteBase {
 
   private function getConnection(): Connection {
     return \Drupal::database();
-  }
-
-  /**
-   * Creates an org_page in trash and forces last-activity timestamps in SQL.
-   */
-  private function createTrashedOrgPageWithActivity(int $activityTimestamp): int {
-    $node = $this->createNode([
-      'type' => 'org_page',
-      'title' => 'Trashbin purge candidate ' . uniqid('', TRUE),
-      'field_sub_title' => $this->randomString(20),
-      'moderation_state' => 'published',
-    ]);
-    $node->set('moderation_state', 'trash');
-    $node->save();
-
-    $nid = (int) $node->id();
-    $this->forceNodeActivity($nid, (int) $node->getRevisionId(), $activityTimestamp);
-
-    return $nid;
-  }
-
-  /**
-   * Forces changed + revision_timestamp for a node directly in SQL.
-   */
-  private function forceNodeActivity(int $nid, int $vid, int $activityTimestamp): void {
-    $this->getConnection()->update('node_field_data')
-      ->fields(['changed' => $activityTimestamp])
-      ->condition('nid', $nid)
-      ->execute();
-    $this->getConnection()->update('node_revision')
-      ->fields(['revision_timestamp' => $activityTimestamp])
-      ->condition('vid', $vid)
-      ->execute();
-  }
-
-  /**
-   * Inserts a synthetic moderation state row; returns its id for cleanup.
-   */
-  private function insertModerationRow(array $values): int {
-    $id = (int) $this->getConnection()->query('SELECT MAX(id) FROM {content_moderation_state_field_data}')->fetchField() + 1000;
-    $this->getConnection()->insert('content_moderation_state_field_data')
-      ->fields($values + [
-        'id' => $id,
-        'revision_id' => $id,
-        'langcode' => 'en',
-        'uid' => 1,
-        'default_langcode' => 1,
-        'revision_translation_affected' => 1,
-      ])
-      ->execute();
-    return $id;
-  }
-
-  private function deleteModerationRow(int $id): void {
-    $this->getConnection()->delete('content_moderation_state_field_data')
-      ->condition('id', $id)
-      ->execute();
   }
 
 }
