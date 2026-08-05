@@ -2,10 +2,8 @@
 
 namespace Drupal\mass_utility\Drush\Commands;
 
-use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Drush\Commands\AutowireTrait;
@@ -18,8 +16,6 @@ final class MassUtilityCommands extends DrushCommands {
   use AutowireTrait;
 
   public function __construct(
-    protected Connection $connection,
-    protected MessengerInterface $messenger,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected ClientInterface $httpClient,
   ) {
