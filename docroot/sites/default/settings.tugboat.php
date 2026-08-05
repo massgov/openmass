@@ -26,5 +26,5 @@ $settings['trusted_host_patterns'][] = '^.+\.tugboatqa\.com$';
 //}
 
 $settings['trusted_host_patterns'] = [
-  '\.tugboatqa\.com_$',
+  '\.tugboatqa\.com$',
 ];
