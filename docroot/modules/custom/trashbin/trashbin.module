@@ -57,13 +57,3 @@ function trashbin_query_entity_reference_alter(AlterableInterface $query) {
     $query->condition('cm.moderation_state', 'trash', '!=');
   }
 }
-
-/**
- * Implements hook_query_TAG_alter().
- *
- * Returns only trashed entities when tagged accordingly.
- */
-function trashbin_query_trashbin_only_trash_alter(AlterableInterface $query): void {
-  $query->addJoin('LEFT', 'content_moderation_state_field_data', 'md', 'md.content_entity_revision_id = base_table.vid');
-  $query->condition('md.moderation_state', 'trash', '=');
-}
