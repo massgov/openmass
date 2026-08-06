@@ -21,3 +21,7 @@
 //    exit;
 //  }
 //}
+
+$settings['trusted_host_patterns'] = [
+  '\.tugboatqa\.com$',
+];
