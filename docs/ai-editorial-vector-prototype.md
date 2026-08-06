@@ -1,0 +1,368 @@
+# AI editorial vector prototype
+
+This prototype adds a "Contextual Page Check" report to AI Content Advisor. It indexes a bounded set of Drupal pages into a local pgvector database, then uses those related pages as context when an editor runs an AI Content Advisor report for a page.
+
+## Architecture
+
+```mermaid
+flowchart TD
+  A["Drupal 11 nodes"] --> B["AI Index view mode"]
+  B --> C["Rendered, flattened text"]
+  C --> D["Drupal prototype tables"]
+  D --> E["Ollama embedding model"]
+  E --> F["PostgreSQL + pgvector"]
+  F --> G["Related page context"]
+  G --> H["AI Content Advisor report"]
+```
+
+The prototype module is `docroot/modules/custom/mass_ai_editorial`.
+
+It adds:
+
+- A `node.ai_index` view mode for rendering content into a canonical text representation.
+- Local Drupal tables for queued documents and rendered text chunks.
+- A DDEV `pgvector` service for vector search.
+- Drush commands for queueing, rendering, embedding, stats, and search.
+- A `Contextual Page Check` AI Content Advisor report type.
+- A form integration that adds related pgvector context when that report type is run.
+
+## Why this approach
+
+- Drupal stays the source of truth. The indexed text is derived from Drupal rendering, not from a reconstructed copy of the content model.
+- The `ai_index` view mode avoids manually walking nested Paragraph entities and avoids rebuilding pages through JSON:API.
+- Indexing is incremental. Changed published nodes in tracked organizations are queued for reprocessing.
+- The proof of concept is intentionally bounded to Department of Unemployment Assistance content so local testing does not require indexing all Mass.gov pages.
+- pgvector is used locally because the same general model can move to AWS Aurora PostgreSQL with pgvector later.
+- Ollama is used for local embeddings so developers do not need cloud AI credentials just to populate the vector database.
+
+## Local requirements
+
+Install and start the normal local Drupal/DDEV stack for this repo first.
+
+You also need Ollama running on your host machine:
+
+```bash
+brew install ollama
+ollama serve
+```
+
+In another terminal, pull the embedding model:
+
+```bash
+ollama pull nomic-embed-text
+```
+
+Optional sanity check:
+
+```bash
+curl http://localhost:11434/api/tags
+```
+
+The prototype expects DDEV's web container to reach Ollama at:
+
+```text
+http://host.docker.internal:11434
+```
+
+## pgvector service
+
+This PR adds a DDEV service at `.ddev/docker-compose.pgvector.yaml`.
+
+From inside DDEV:
+
+```text
+host: pgvector
+port: 5432
+database: ai_editorial
+user: ai_editorial
+password: ai_editorial
+```
+
+From the host machine:
+
+```text
+host: 127.0.0.1
+port: 5433
+database: ai_editorial
+user: ai_editorial
+password: ai_editorial
+```
+
+The initial pgvector schema is in `.ddev/pgvector/init/001-ai-editorial.sql`.
+
+It creates:
+
+- `ai_document`
+- `ai_document_chunk`
+- `embedding vector(768)`
+- An HNSW cosine index on chunk embeddings
+
+The `768` dimension matches Ollama's `nomic-embed-text` model. If a different embedding model is used later, the vector column dimension and the Drush embedding command's dimension check must match that model.
+
+Start or restart DDEV so the pgvector service is created:
+
+```bash
+ddev restart
+```
+
+Check that the container exists:
+
+```bash
+ddev describe
+```
+
+## Drupal setup
+
+Enable the prototype module:
+
+```bash
+ddev drush en mass_ai_editorial -y
+ddev drush cr
+```
+
+If the module was already enabled before the report type config was added, import the config or reinstall the module in a disposable local environment. A fresh enable installs the `Contextual Page Check` report type automatically.
+
+AI Content Advisor still needs a chat provider configured for report generation. This prototype only uses Ollama for embeddings. The author-facing report uses the provider configured in `ai_content_advisor.configuration`, such as Claude Sonnet through the site's existing AI provider setup.
+
+If the configured AI Content Advisor provider uses AWS Bedrock, local DDEV also needs the AWS environment variables available in the web container. Add the variable names to `.ddev/config.yaml` under `web_environment`, and use values from an approved existing environment:
+
+```yaml
+web_environment:
+  - AWS_ACCESS_KEY_ID
+  - AWS_SECRET_ACCESS_KEY
+  - AWS_REGION=us-east-1
+```
+
+Do not commit credential values to `.ddev/config.yaml`. Keep secrets in local environment configuration or another approved local secret source.
+
+## Populate the vector database
+
+The local proof of concept indexes the Department of Unemployment Assistance slice used by the editorial admin search. The default organization ID is `5376`, and the default limit is `99`.
+
+### Content type scope
+
+The POC Drush queue command indexes published nodes for the selected organization, except for content types listed in `AiEditorialIndexer::EXCLUDED_BUNDLES`:
+
+```text
+docroot/modules/custom/mass_ai_editorial/src/AiEditorialIndexer.php
+```
+
+That exclusion list is used in two places:
+
+- `mass-ai-editorial:queue-poc` excludes those bundles when selecting the initial organization slice.
+- Incremental indexing skips those bundles when a published node is saved.
+
+Update `EXCLUDED_BUNDLES` when the POC should include or exclude additional content types. After changing the list, rebuild the local index so Drupal and pgvector reflect the new scope:
+
+```bash
+ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
+ddev drush mass-ai-editorial:process-queue --limit=200
+ddev drush mass-ai-editorial:embed-ollama --limit=250
+```
+
+Queue the POC content and reset previous prototype rows:
+
+```bash
+ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
+```
+
+Render queued nodes with the `ai_index` view mode and split the rendered text into chunks:
+
+```bash
+ddev drush mass-ai-editorial:process-queue --limit=200
+```
+
+Generate embeddings with local Ollama and upsert them into pgvector:
+
+```bash
+ddev drush mass-ai-editorial:embed-ollama --limit=250
+```
+
+Check Drupal-side indexing status:
+
+```bash
+ddev drush mass-ai-editorial:stats
+```
+
+Check pgvector status:
+
+```bash
+ddev drush mass-ai-editorial:pgvector-stats
+```
+
+For the DUA POC, a fully populated local run should show matching document, chunk, and embedded chunk counts between the Drupal-side stats and pgvector stats. The exact document and chunk counts depend on the `--limit` value, the current `EXCLUDED_BUNDLES` list, and rendered page content.
+
+If `embed-ollama` reports that no chunks need embeddings, the vector database is already current for the rendered chunks.
+
+## Test vector search directly
+
+Run a semantic search from Drush:
+
+```bash
+ddev drush mass-ai-editorial:search "weekly unemployment claim" --limit=5
+```
+
+Another useful test:
+
+```bash
+ddev drush mass-ai-editorial:search "overpayment waiver" --limit=5
+```
+
+The command prints the similarity score, node ID, chunk number, title, and URL for nearby chunks.
+
+## Test the Content Advisor report
+
+Open a page in the indexed slice, for example:
+
+```text
+https://mass.local/how-to/file-your-weekly-unemployment-claim/content-advisor
+```
+
+Choose:
+
+```text
+Contextual Page Check
+```
+
+Then click:
+
+```text
+Analyze
+```
+
+The report should use:
+
+- The current page's rendered `ai_index` text.
+- Related pages from pgvector.
+- Breadcrumb text.
+- Link targets preserved as `[href: ...]`.
+- "Offered by" links from the rendered view mode.
+- Incoming links from Entity Usage.
+
+The prompt is tuned to show only actionable editorial suggestions. It should omit related pages that require no action and omit suggested links that are already linked.
+
+## Link normalization
+
+The flattened text keeps hyperlink targets so the report can tell what the page already links to. Internal Mass.gov links are normalized to root-relative paths before they are written to the index:
+
+```text
+https://www.mass.gov/how-to/file-your-weekly-unemployment-claim
+https://mass.gov/how-to/file-your-weekly-unemployment-claim
+https://mass.local/how-to/file-your-weekly-unemployment-claim
+```
+
+All become:
+
+```text
+/how-to/file-your-weekly-unemployment-claim
+```
+
+This avoids confusing the chat model with a mix of production hostnames, local hostnames, and root-relative links that all point to the same site path. External URLs are left unchanged.
+
+If link normalization logic changes, re-render and re-embed the indexed content:
+
+```bash
+ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
+ddev drush mass-ai-editorial:process-queue --limit=200
+ddev drush mass-ai-editorial:embed-ollama --limit=250
+```
+
+## Related-page context limits
+
+The Content Advisor report does not send every indexed page to the chat model. It first asks pgvector for pages that are semantically close to the current page, then appends a bounded amount of that related-page context to the prompt.
+
+The current limits are adaptive. They are calculated in `mass_ai_editorial_contextual_page_check_context_limits()` in `docroot/modules/custom/mass_ai_editorial/mass_ai_editorial.module`.
+
+The default is five related pages and up to three matching chunks from each related page. Pages with more incoming or outgoing links get a wider comparison set:
+
+| Page signal | Related pages | Max chunks per page |
+| --- | ---: | ---: |
+| Default page | 5 | 3 |
+| 15 or more outgoing links, or 15 or more incoming links | 8 | 3 |
+| 40 or more combined incoming and outgoing links | 10 | 3 |
+| 60 or more combined links, 40 or more incoming links, or 40 or more outgoing links | 12 | 3 |
+
+Outgoing links are counted from the flattened indexed text. Breadcrumb links and incoming-link summary links are excluded from the outgoing count. Incoming links come from Entity Usage when available, with a fallback to the indexed incoming-link summary.
+
+This limit only affects what the chat model sees during one report run. It does not change which pages are indexed or embedded in pgvector.
+
+Chunk inclusion is adaptive. The best-matching chunk for each related page is always included. A second chunk is included only when its similarity score is within about `0.04` of the best chunk. A third chunk is included only when its similarity score is within about `0.06` of the best chunk. This gives the model more context when several sections of a related page are similarly relevant, while keeping single-section matches compact.
+
+To make the report compare against more or fewer pages, adjust the thresholds or assigned `$page_limit` values in `mass_ai_editorial_contextual_page_check_context_limits()`:
+
+```php
+if ($outgoing_links >= 15 || $incoming_links >= 15) {
+  $page_limit = 8;
+}
+```
+
+The helper returns the page limit and max chunks-per-page limit:
+
+```php
+return [$page_limit, 3];
+```
+
+To allow more or less evidence from each related page, change the second returned value. For example, `return [$page_limit, 2];` allows up to two matching chunks per related page.
+
+Higher values can improve recall, but they also make reports slower, noisier, and more likely to hit provider token limits. For the local POC, a max of three adaptive chunks per related page is a reasonable default because it captures multi-section matches without automatically sending three chunks for every related page.
+
+## Incremental indexing behavior
+
+When a published node changes, `mass_ai_editorial` queues it if it belongs to an organization tracked in Drupal state:
+
+```text
+mass_ai_editorial.tracked_org_ids
+```
+
+The `queue-poc` command tracks the selected organization by default. For this POC, that means DUA content is queued again after edits.
+
+After changing a page, run:
+
+```bash
+ddev drush mass-ai-editorial:process-queue --limit=25
+ddev drush mass-ai-editorial:embed-ollama --limit=100
+```
+
+Only queued and changed content should need rendering and embedding.
+
+## Troubleshooting
+
+If pgvector tables do not exist, make sure DDEV was restarted after adding `.ddev/docker-compose.pgvector.yaml`:
+
+```bash
+ddev restart
+```
+
+If the pgvector database was created before the init SQL existed, the init file will not run automatically against the existing Docker volume. In a disposable local environment, recreate the DDEV service volume, then restart DDEV.
+
+If embeddings fail, verify Ollama is running on the host:
+
+```bash
+curl http://localhost:11434/api/tags
+```
+
+If DDEV cannot reach Ollama, confirm the embedding command is using:
+
+```text
+--ollama-url=http://host.docker.internal:11434
+```
+
+If the Content Advisor report fails but embeddings work, check the site's configured AI Content Advisor provider. Ollama is not currently used for the report text; it is only used to generate embeddings.
+
+If the report has no related page context, check both status commands:
+
+```bash
+ddev drush mass-ai-editorial:stats
+ddev drush mass-ai-editorial:pgvector-stats
+```
+
+## Useful command reference
+
+```bash
+ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
+ddev drush mass-ai-editorial:process-queue --limit=200
+ddev drush mass-ai-editorial:embed-ollama --limit=250
+ddev drush mass-ai-editorial:stats
+ddev drush mass-ai-editorial:pgvector-stats
+ddev drush mass-ai-editorial:search "weekly unemployment claim" --limit=5
+```

@@ -1,0 +1,57 @@
+uuid: 8a73cea4-d34b-4fa1-bdbb-2655ebde3879
+langcode: en
+status: true
+dependencies: {  }
+id: contextual_page_check
+label: 'Contextual Page Check'
+description: 'Checks the current page against semantically related indexed pages for actionable editorial follow-ups.'
+prompt: |
+  Review the current Mass.gov page against the related indexed page excerpts provided below.
+
+  Your job is to find practical editorial follow-ups caused by duplication, overlap, conflicting guidance, title problems, breadcrumb/parent problems, or missing useful links.
+  The related pages are not report findings. They are raw evidence retrieved by semantic similarity. Use them to decide which editorial changes or verification tasks are worth an author's attention.
+
+  Definitions:
+  - Duplicate: another page appears to satisfy substantially the same user need with substantially the same guidance.
+  - Overlapping but useful: pages share material but each has a clear separate purpose; report this when an editor should clarify, restructure, merge, cross-link, or verify the distinction.
+  - Complementary: pages are related and should maybe link to each other, but they do different jobs; report this when a new link would help users move between tasks.
+  - Potentially conflicting: pages address the same user situation but give different instructions, requirements, deadlines, fees, contacts, eligibility rules, or next steps that may not both be true.
+  - Unrelated: the retrieved page is not materially related.
+
+  Constraints:
+  1. Do not claim there is a definite duplicate or conflict unless the evidence is specific. If the evidence suggests a possible duplicate, overlap, conflict, title issue, parent issue, or useful link, frame it as something the editor should verify.
+  2. If the related excerpts are incomplete but point to a plausible issue, say exactly what an editor should verify.
+  3. Do not recommend deleting or merging a page without explaining what user need would still be covered.
+  4. Prefer concise, editor-actionable findings.
+  5. Review the Breadcrumb line. Because the breadcrumb is defined by the page's primary parent, flag it if the parentage does not logically match the page's user need, audience, or place in the related content set.
+  6. Review the page title. Flag it if the title does not accurately describe the page content, is too broad or too narrow, or is confusingly similar to titles of related pages in the same topic area.
+  7. Do not include informational observations that do not lead to a specific editorial change or verification task.
+  8. Do not list related pages with "no action needed" or similar wording. Omit them entirely.
+  9. Do not list suggested links that already appear in the current page text. Omit "already linked" items entirely.
+  10. If there are no actionable findings in a section, write "No editorial changes recommended."
+  11. Do not explain why omitted related pages are acceptable. Omitted pages should leave no trace in the report.
+  12. Do not default to "No editorial changes recommended" just because a finding is uncertain. A clear verification task is an actionable recommendation.
+
+  Return markdown using these headings:
+  ## Overall finding
+  Briefly summarize the most important editorial changes or verification tasks recommended. If none are recommended after reviewing the related pages, write "No editorial changes recommended."
+
+  ## Title fit
+  Include a title finding if the title should change, may be too broad or narrow, or should be verified against a specific related page. Otherwise write "No editorial changes recommended."
+
+  ## Breadcrumb and parent fit
+  Include a breadcrumb finding if the parent appears wrong, if a related page suggests a better parent, or if the parent should be verified. Otherwise write "No editorial changes recommended."
+
+  ## Contextual page findings
+  Include related pages that require an editorial action or verification. Omit related pages that are merely similar and do not require action. For each included page, include:
+  - Relationship classification
+  - Related page title and node ID
+  - Evidence from the current page
+  - Evidence from the related page excerpt
+  - What an editor should verify
+  - Suggested editorial action
+
+  ## Suggested links
+  List only new links that should be added to this page. Omit pages that are already linked from this page or do not clearly improve the user's path. If no new links should be added, write "No editorial changes recommended."
+feedback_enabled: true
+minify_html: false
