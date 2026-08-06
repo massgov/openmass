@@ -18,10 +18,14 @@ function mass_org_access_views_query_alter(ViewExecutable $view, QueryPluginBase
     'rpt_permission_group_audit_nodes' => [
       'base_table' => 'node_field_revision',
       'permission_table' => 'node_revision__field_content_organization',
+      'revision_author_table' => 'node_revision',
+      'revision_author_field' => 'revision_uid',
     ],
     'rpt_permission_group_audit_documents' => [
       'base_table' => 'media_field_revision',
       'permission_table' => 'media_revision__field_content_organization',
+      'revision_author_table' => 'media_revision',
+      'revision_author_field' => 'revision_user',
     ],
   ];
 
@@ -33,7 +37,7 @@ function mass_org_access_views_query_alter(ViewExecutable $view, QueryPluginBase
   $connection = $query->getConnection();
   $revision_alias = $query->ensureTable($view_config['base_table']);
 
-  // Show only rows where the author and revision share no Permission
+  // Show only rows where the relevant user and revision share no Permission
   // Group terms at all.
   $shared_permission_group = $connection->select('user__field_user_org', 'uo');
   $shared_permission_group->addExpression('1');
@@ -42,9 +46,19 @@ function mass_org_access_views_query_alter(ViewExecutable $view, QueryPluginBase
     'nco',
     'nco.field_content_organization_target_id = uo.field_user_org_target_id'
   );
+  $author_alias = $revision_alias;
+  $author_field = $view_config['revision_author_field'] ?? 'uid';
+  if (isset($view_config['revision_author_table'])) {
+    $author_alias = 'revision_author';
+    $shared_permission_group->innerJoin(
+      $view_config['revision_author_table'],
+      $author_alias,
+      "{$author_alias}.vid = {$revision_alias}.vid"
+    );
+  }
   $shared_permission_group->condition('uo.deleted', 0);
   $shared_permission_group->condition('nco.deleted', 0);
-  $shared_permission_group->where("uo.entity_id = {$revision_alias}.uid");
+  $shared_permission_group->where("uo.entity_id = {$author_alias}.{$author_field}");
   $shared_permission_group->where("nco.revision_id = {$revision_alias}.vid");
   $shared_permission_group->where("nco.langcode = {$revision_alias}.langcode");
 
