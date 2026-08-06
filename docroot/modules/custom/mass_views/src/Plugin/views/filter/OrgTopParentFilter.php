@@ -58,16 +58,19 @@ class OrgTopParentFilter extends FilterPluginBase {
       $org_ids[] = (int) $top_id;
     }
 
-    // 2) Create the INNER JOIN to the org reference field table.
     $nid_alias = $this->query->ensureTable('node_field_data', $this->relationship);
-    $join = $this->query->getJoinData('node__field_organizations', 'node_field_data');
-    $join->type = 'LEFT';
-    $org_table_alias = $this->query->ensureTable('node__field_organizations', $this->relationship, $join);
 
-    // 3) Build an OR where-group: (nid IN org_ids) OR (field_organizations_target_id IN org_ids)
+    // Use EXISTS instead of JOINing node__field_organizations. That table has
+    // one row per org delta; a JOIN fans out rows and inflates SUM() fields
+    // (e.g. accessibility report issue counts: 252 issues x 2 orgs = 504).
     $or_group = $this->query->setWhereGroup('OR');
     $this->query->addWhere($or_group, "$nid_alias.nid", $org_ids, 'IN');
-    $this->query->addWhere($or_group, "$org_table_alias.field_organizations_target_id", $org_ids, 'IN');
+    $placeholder = $this->placeholder() . '[]';
+    $this->query->addWhereExpression(
+      $or_group,
+      "EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.field_organizations_target_id IN ($placeholder))",
+      [$placeholder => $org_ids]
+    );
   }
 
   /**

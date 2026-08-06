@@ -36,22 +36,25 @@ class OrgFilter extends FilterPluginBase {
    * {@inheritdoc}
    */
   public function query() {
-    // ONLY add the relationships if we have a value to filter on.
+    // ONLY add the conditions if we have a value to filter on.
     if ($value = $this->getValue()) {
-      // Pre-create the join we need, but convert it to an INNER JOIN for
-      // performance.
-      $relationship = 'node_field_data';
-      $join = $this->query->getJoinData('node__field_organizations', $relationship);
-      $join->type = 'INNER';
-
-      // Ensure we have the tables we need.
       $nid_alias = $this->query->ensureTable('node_field_data', $this->relationship);
-      $org_table_alias = $this->query->ensureTable('node__field_organizations', $this->relationship, $join);
 
-      $p1 = $this->placeholder() . '[]';
-
-      $snippet = "$nid_alias.nid " . $this->operator . " $p1 OR $org_table_alias.field_organizations_target_id " . $this->operator . " $p1";
-      $this->query->addWhereExpression($this->options['group'], $snippet, [$p1 => $value]);
+      // Use EXISTS instead of JOINing node__field_organizations. That table has
+      // one row per org delta; a JOIN fans out rows and inflates SUM() fields
+      // (e.g. accessibility report issue counts).
+      $p_nid = $this->placeholder() . '[]';
+      $p_org = $this->placeholder() . '[]';
+      if ($this->operator === '!=') {
+        $snippet = "$nid_alias.nid NOT IN ($p_nid) AND NOT EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.field_organizations_target_id IN ($p_org))";
+      }
+      else {
+        $snippet = "$nid_alias.nid IN ($p_nid) OR EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.field_organizations_target_id IN ($p_org))";
+      }
+      $this->query->addWhereExpression($this->options['group'], $snippet, [
+        $p_nid => $value,
+        $p_org => $value,
+      ]);
     }
   }
 
