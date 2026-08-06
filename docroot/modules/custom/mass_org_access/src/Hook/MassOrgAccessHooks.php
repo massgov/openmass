@@ -157,6 +157,18 @@ class MassOrgAccessHooks {
     $widget['#attributes']['readonly'] = 'readonly';
     $widget['#wrapper_attributes']['class'][] = 'oog-readonly-source-hidden';
 
+    // The entity_reference_tree widget adds a "Browse organizations" dialog
+    // launcher next to the autocomplete input. On org_page — the one bundle
+    // where Permission Groups are curated by hand — it stays. Everywhere else
+    // the field is derived from the entity's Organization(s) and admins should
+    // not change it in the UI; hide the launcher so the whole widget reads as
+    // read-only (the readonly autocomplete on its own leaves the popup route
+    // open, letting an admin still edit via the dialog).
+    if ($entity->bundle() !== 'org_page'
+      && isset($field_widget_complete_form['widget']['dialog_link'])) {
+      $field_widget_complete_form['widget']['dialog_link']['#access'] = FALSE;
+    }
+
     $labels = [];
     foreach ($context['items']->referencedEntities() as $term) {
       if ($term instanceof EntityInterface) {
