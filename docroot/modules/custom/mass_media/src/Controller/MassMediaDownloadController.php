@@ -23,12 +23,9 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MassMediaDownloadController extends ControllerBase {
 
   /**
-   * Browser and CDN cache lifetime for public document downloads (7 days).
-   *
-   * Matches the stale-while-revalidate window used by mass_caching and the
-   * max-age on the previous 301 redirect to public file URLs.
+   * Browser and CDN cache lifetime for public document downloads (60 seconds).
    */
-  private const PUBLIC_FILE_MAX_AGE = 604800;
+  private const PUBLIC_FILE_MAX_AGE = 60;
 
   /**
    * Request stack.
@@ -149,11 +146,24 @@ class MassMediaDownloadController extends ControllerBase {
 
         // Only fetch when we are not on mass.gov production host.
         if (!empty($originHost) && strcasecmp($requestHost, $originHost) !== 0) {
-          $originDir = trim((string) ($stageConfig->get('origin_dir') ?? 'files'));
+          $originDir = trim((string) $stageConfig->get('origin_dir'));
+          if ($originDir === '') {
+            $originDir = $this->stageFileProxyDownloadManager->filePublicPath();
+          }
           $relativePath = str_replace('public://', '', $file_uri);
-          $options = ['verify' => (bool) $stageConfig->get('verify')];
+          $excludedExtensions = $stageConfig->get('excluded_extensions')
+            ? array_map('trim', explode(',', $stageConfig->get('excluded_extensions')))
+            : [];
+          $extension = pathinfo($relativePath, PATHINFO_EXTENSION);
 
-          $this->fetchMissingPublicFileFromOrigin($origin, $originDir, $relativePath, $options);
+          if (!in_array($extension, $excludedExtensions, TRUE)) {
+            $options = [
+              'verify' => (bool) $stageConfig->get('verify'),
+              'headers' => $this->createProxyHeadersArray((string) $stageConfig->get('proxy_headers')),
+            ];
+
+            $this->fetchMissingPublicFileFromOrigin($origin, $originDir, $relativePath, $options);
+          }
         }
       }
     }
@@ -174,6 +184,13 @@ class MassMediaDownloadController extends ControllerBase {
       if ($result == -1) {
         throw new AccessDeniedHttpException();
       }
+    }
+    // Core reloads files by URI in hook_file_download(), which can select an
+    // older unreferenced entity when duplicate public-file URIs exist. Public
+    // files are already directly accessible, so use the requested entity's
+    // headers when no hook supplied any.
+    if (empty($headers) && $scheme === 'public') {
+      $headers = $file->getDownloadHeaders();
     }
     if (empty($headers)) {
       throw new AccessDeniedHttpException();
@@ -273,6 +290,20 @@ class MassMediaDownloadController extends ControllerBase {
    */
   private function fileExists(string $file_uri): bool {
     return is_file($file_uri);
+  }
+
+  /**
+   * Converts Stage File Proxy's configured header string to a headers array.
+   */
+  private function createProxyHeadersArray(string $headers_string): array {
+    $headers = [];
+    foreach (explode("\n", $headers_string) as $line) {
+      $header = explode('|', trim($line));
+      if (count($header) > 1) {
+        $headers[$header[0]] = $header[1];
+      }
+    }
+    return $headers;
   }
 
   /**

@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_media\ExistingSite;
 
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
@@ -23,7 +24,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
    */
   public function testMediaDownload() {
     // Create a file to upload.
-    $destination = 'public://llama-23.txt';
+    $destination = 'public://llama-23-' . $this->randomMachineName() . '.txt';
     $file = File::create([
       'uri' => $destination,
     ]);
@@ -45,6 +46,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+    $this->markEntityForCleanup($file);
 
     $this->visit($media->toUrl()->toString() . '/download');
     $expected_path = $media->toUrl()->toString() . '/download';
@@ -60,9 +62,8 @@ class MediaDownloadTest extends MassExistingSiteBase {
 
     $cache_control = $this->getSession()->getResponseHeader('Cache-Control');
     $this->assertNotEmpty($cache_control);
-    $this->assertStringContainsString('max-age=604800', $cache_control);
+    $this->assertStringContainsString('max-age=60', $cache_control);
     $this->assertStringContainsString('public', $cache_control);
-    $this->assertStringContainsString('s-maxage=604800', $cache_control);
 
     $last_modified = $this->getSession()->getResponseHeader('Last-Modified');
     $this->assertNotEmpty($last_modified);
@@ -72,10 +73,50 @@ class MediaDownloadTest extends MassExistingSiteBase {
   }
 
   /**
+   * Public downloads use the file entity referenced by the media item.
+   */
+  public function testMediaDownloadWithDuplicateFileUri(): void {
+    $destination = 'public://llama-download-duplicate-' . $this->randomMachineName() . '.txt';
+    file_put_contents($destination, 'DUPLICATE URI BYTES');
+
+    // Create an older, unreferenced file entity sharing the same URI. Core's
+    // file_download hook will load this entity first and return no headers.
+    $older_file = File::create([
+      'uri' => $destination,
+    ]);
+    $older_file->setPermanent();
+    $older_file->save();
+
+    $referenced_file = File::create([
+      'uri' => $destination,
+    ]);
+    $referenced_file->setPermanent();
+    $referenced_file->save();
+
+    $media = $this->createMedia([
+      'title' => 'Llama duplicate URI',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $referenced_file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    $this->markEntityForCleanup($older_file);
+    $this->markEntityForCleanup($referenced_file);
+
+    $content = $this->drupalGet(ltrim($media->toUrl()->toString() . '/download', '/'));
+
+    $this->assertSame(200, $this->getSession()->getStatusCode());
+    $this->assertStringContainsString('DUPLICATE URI BYTES', $content);
+    $this->assertStringContainsString('text/plain', $this->getSession()->getResponseHeader('Content-Type'));
+  }
+
+  /**
    * PDF downloads should display inline in the browser by default.
    */
   public function testMediaDownloadPdfServesInlineDisposition(): void {
-    $destination = 'public://llama-download.pdf';
+    $destination = 'public://llama-download-' . $this->randomMachineName() . '.pdf';
     file_put_contents($destination, '%PDF-1.4 llama');
     $file = File::create([
       'uri' => $destination,
@@ -92,6 +133,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+    $this->markEntityForCleanup($file);
 
     $this->visit($media->toUrl()->toString() . '/download');
 
@@ -109,7 +151,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
    * Non-viewable file types should download by default.
    */
   public function testMediaDownloadZipServesAttachmentDisposition(): void {
-    $destination = 'public://llama-download.zip';
+    $destination = 'public://llama-download-' . $this->randomMachineName() . '.zip';
     file_put_contents($destination, 'PK llama');
     $file = File::create([
       'uri' => $destination,
@@ -126,6 +168,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+    $this->markEntityForCleanup($file);
 
     $this->visit($media->toUrl()->toString() . '/download');
 
@@ -138,7 +181,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
    * The attachment query parameter should force a download.
    */
   public function testMediaDownloadAttachmentQueryParam(): void {
-    $destination = 'public://llama-download-attachment.pdf';
+    $destination = 'public://llama-download-attachment-' . $this->randomMachineName() . '.pdf';
     file_put_contents($destination, '%PDF-1.4 llama');
     $file = File::create([
       'uri' => $destination,
@@ -155,6 +198,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
+    $this->markEntityForCleanup($file);
 
     $this->visit($media->toUrl()->toString() . '/download?attachment');
 
@@ -171,7 +215,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
    */
   public function testMediaDownloadServesUpdatedFileAfterReplacement() {
     // v1 file.
-    $destination1 = 'public://llama-download-v1.txt';
+    $destination1 = 'public://llama-download-v1-' . $this->randomMachineName() . '.txt';
     file_put_contents($destination1, 'Version 1');
     $file1 = File::create([
       'uri' => $destination1,
@@ -180,7 +224,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $file1->save();
 
     // v2 file.
-    $destination2 = 'public://llama-download-v2.txt';
+    $destination2 = 'public://llama-download-v2-' . $this->randomMachineName() . '.txt';
     file_put_contents($destination2, 'Version 2');
     $file2 = File::create([
       'uri' => $destination2,
@@ -219,6 +263,12 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $media->set('moderation_state', MassModeration::PUBLISHED);
     $media->save();
 
+    // Reload file1 because the media update moves it to private storage.
+    $file1 = File::load($file1->id());
+    $this->assertNotNull($file1);
+    $this->markEntityForCleanup($file1);
+    $this->markEntityForCleanup($file2);
+
     $content_v2 = $this->drupalGet($download_path);
     $this->assertStringContainsString('Version 2', $content_v2);
     $this->assertStringNotContainsString('Version 1', $content_v2);
@@ -246,25 +296,26 @@ class MediaDownloadTest extends MassExistingSiteBase {
     ]);
     $this->container->get('config.factory')->clearStaticCache();
 
-    $destination = 'public://llama-download-cache-tags.txt';
-    file_put_contents($destination, 'Cache tag test');
-    $file = File::create([
-      'uri' => $destination,
-    ]);
-    $file->setPermanent();
-    $file->save();
-
-    $media = $this->createMedia([
-      'title' => 'Llama cache tags',
-      'bundle' => 'document',
-      'field_upload_file' => [
-        'target_id' => $file->id(),
-      ],
-      'status' => 1,
-      'moderation_state' => MassModeration::PUBLISHED,
-    ]);
-
     try {
+      $destination = 'public://llama-download-cache-tags-' . $this->randomMachineName() . '.txt';
+      file_put_contents($destination, 'Cache tag test');
+      $file = File::create([
+        'uri' => $destination,
+      ]);
+      $file->setPermanent();
+      $file->save();
+
+      $media = $this->createMedia([
+        'title' => 'Llama cache tags',
+        'bundle' => 'document',
+        'field_upload_file' => [
+          'target_id' => $file->id(),
+        ],
+        'status' => 1,
+        'moderation_state' => MassModeration::PUBLISHED,
+      ]);
+      $this->markEntityForCleanup($file);
+
       $this->visit($media->toUrl()->toString() . '/download');
 
       $edge_cache_tag = $this->getSession()->getResponseHeader('Edge-Cache-Tag');
@@ -283,7 +334,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
    * Anonymous users must not be able to download those bytes.
    */
   public function testMediaDownloadPrivateFileDeniedForUnpublishedDocument(): void {
-    $destination = 'public://llama-download-private-unpublished.txt';
+    $destination = 'public://llama-download-private-unpublished-' . $this->randomMachineName() . '.txt';
     file_put_contents($destination, 'UNPUBLISHED PRIVATE BYTES');
     $file = File::create([
       'uri' => $destination,
@@ -305,7 +356,8 @@ class MediaDownloadTest extends MassExistingSiteBase {
 
     $unpublished_file = File::load($media->field_upload_file->target_id);
     $this->assertNotNull($unpublished_file);
-    $this->assertEquals('private', \Drupal\Core\StreamWrapper\StreamWrapperManager::getScheme($unpublished_file->getFileUri()));
+    $this->markEntityForCleanup($unpublished_file);
+    $this->assertEquals('private', StreamWrapperManager::getScheme($unpublished_file->getFileUri()));
 
     $this->visit($media->toUrl()->toString() . '/download');
 
@@ -327,7 +379,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $admin->save();
     $this->drupalLogin($admin);
 
-    $destination = 'private://llama-download-private-restricted.txt';
+    $destination = 'private://llama-download-private-restricted-' . $this->randomMachineName() . '.txt';
     file_put_contents($destination, 'RESTRICTED PRIVATE BYTES');
     $file = File::create([
       'uri' => $destination,
@@ -344,6 +396,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'status' => 1,
       'moderation_state' => 'restricted',
     ]);
+    $this->markEntityForCleanup($file);
 
     $this->drupalLogout();
 
