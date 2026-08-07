@@ -231,7 +231,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
   }
 
   /**
-   * Public downloads expose Akamai Edge-Cache-Tag headers for invalidation.
+   * Public downloads expose Edge-Cache-Tag headers for invalidation.
    */
   public function testMediaDownloadExposesEdgeCacheTags(): void {
     if (!\Drupal::moduleHandler()->moduleExists('akamai')) {

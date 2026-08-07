@@ -210,7 +210,7 @@ class MassMediaDownloadController extends ControllerBase {
     $response->addCacheableDependency($file);
     $response->getCacheableMetadata()->addCacheContexts(['url.site']);
     // Prevent Dynamic Page Cache from serializing the BinaryFileResponse
-    // object. HTTP cache headers (max-age/s-maxage) and Akamai Edge-Cache-Tag
+    // object. HTTP cache headers (max-age/s-maxage) and Edge-Cache-Tag
     // headers are set separately for CDN caching and invalidation.
     $response->getCacheableMetadata()->setCacheMaxAge(0);
 
@@ -218,7 +218,7 @@ class MassMediaDownloadController extends ControllerBase {
   }
 
   /**
-   * Applies HTTP cache headers so Akamai can cache public document downloads.
+   * Applies HTTP cache headers to allow for public document downloads via CDN.
    */
   private function configureResponseCache(BinaryFileResponse $response, bool $is_public): void {
     if (!$is_public) {
@@ -228,7 +228,6 @@ class MassMediaDownloadController extends ControllerBase {
     }
 
     $response->setMaxAge(self::PUBLIC_FILE_MAX_AGE);
-    $response->setSharedMaxAge(self::PUBLIC_FILE_MAX_AGE);
   }
 
   /**

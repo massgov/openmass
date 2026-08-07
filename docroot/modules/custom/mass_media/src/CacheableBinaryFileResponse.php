@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 /**
  * A BinaryFileResponse that exposes Drupal cacheability metadata.
  *
- * Allows cache tag propagation to Akamai Edge-Cache-Tag headers and Drupal's
+ * Allows cache tag propagation to Edge-Cache-Tag headers and Drupal's
  * internal dynamic page cache for file download routes.
  */
 class CacheableBinaryFileResponse extends BinaryFileResponse implements CacheableResponseInterface {
