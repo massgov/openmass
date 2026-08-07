@@ -1,19 +1,100 @@
+diff --git a/entity_usage_queue_tracking.install b/entity_usage_queue_tracking.install
+new file mode 100644
+index 000000000..9e627939e
+--- /dev/null
++++ b/entity_usage_queue_tracking.install
+@@ -0,0 +1,47 @@
++<?php
++
++/**
++ * @file
++ * Install, update, and uninstall functions.
++ */
++
++/**
++ * Removes legacy deletion items from the entity usage tracking queue.
++ */
++function entity_usage_queue_tracking_update_9001(): string {
++  $connection = \Drupal::database();
++  $delete_operations = [
++    'predelete',
++    'revision_delete',
++    'translation_delete',
++  ];
++  $deleted = 0;
++
++  // Check both database queue tables in case the queue backend changed after
++  // an item was created.
++  foreach (['queue', 'queue_unique'] as $table) {
++    if (!$connection->schema()->tableExists($table)) {
++      continue;
++    }
++
++    $item_ids = [];
++    $items = $connection->select($table, 'q')
++      ->fields('q', ['item_id', 'data'])
++      ->condition('name', 'entity_usage_tracker')
++      ->execute();
++    foreach ($items as $item) {
++      $data = unserialize($item->data, ['allowed_classes' => FALSE]);
++      if (is_array($data) && in_array($data['operation'] ?? '', $delete_operations, TRUE)) {
++        $item_ids[] = $item->item_id;
++      }
++    }
++
++    foreach (array_chunk($item_ids, 500) as $item_id_chunk) {
++      $deleted += $connection->delete($table)
++        ->condition('item_id', $item_id_chunk, 'IN')
++        ->execute();
++    }
++  }
++
++  return "Removed $deleted legacy entity usage deletion queue items.";
++}
 diff --git a/entity_usage_queue_tracking.module b/entity_usage_queue_tracking.module
-index 387fbd0e70..7c7445abed 100644
+index 387fbd0e70..f8161ce11 100644
 --- a/entity_usage_queue_tracking.module
 +++ b/entity_usage_queue_tracking.module
-@@ -12,7 +12,6 @@ function entity_usage_queue_tracking_module_implements_alter(array &$implementat
+@@ -10,9 +10,6 @@ function entity_usage_queue_tracking_module_implements_alter(array &$implementat
+   $overrides = [
+     'entity_insert',
      'entity_update',
-     'entity_predelete',
-     'entity_translate_delete',
+-    'entity_predelete',
+-    'entity_translate_delete',
 -    'entity_revision_delete',
    ];
  
    if (!in_array($hook, $overrides, TRUE)) {
-@@ -80,19 +79,6 @@ function entity_usage_queue_tracking_entity_translation_delete(EntityInterface $
+@@ -54,45 +51,6 @@ function entity_usage_queue_tracking_entity_update(EntityInterface $entity) {
    }
  }
  
+-/**
+- * Implements hook_entity_predelete().
+- */
+-function entity_usage_queue_tracking_entity_predelete(EntityInterface $entity) {
+-  if (\Drupal::config('entity_usage_queue_tracking.settings')->get('queue_tracking') && entity_usage_queue_tracking_is_trackable($entity)) {
+-    \Drupal::queue('entity_usage_tracker')->createItem([
+-      'operation' => 'predelete',
+-      'entity_type' => $entity->getEntityTypeId(),
+-      'entity_id' => $entity->id(),
+-    ]);
+-  }
+-}
+-
+-/**
+- * Implements hook_entity_translation_delete().
+- */
+-function entity_usage_queue_tracking_entity_translation_delete(EntityInterface $translation) {
+-  if (\Drupal::config('entity_usage_queue_tracking.settings')->get('queue_tracking') && entity_usage_queue_tracking_is_trackable($translation)) {
+-    \Drupal::queue('entity_usage_tracker')->createItem([
+-      'operation' => 'translation_delete',
+-      'entity_type' => $translation->getEntityTypeId(),
+-      'entity_id' => $translation->id(),
+-    ]);
+-  }
+-}
+-
 -/**
 - * Implements hook_entity_revision_delete().
 - */
@@ -30,28 +111,3 @@ index 387fbd0e70..7c7445abed 100644
  function entity_usage_queue_tracking_is_trackable($entity): bool {
    $update_tracker = Drupal::service('entity_usage.entity_update_manager');
    // Get around silly protected method.
-diff --git a/src/Plugin/QueueWorker/EntityUsageTracker.php b/src/Plugin/QueueWorker/EntityUsageTracker.php
-index 5e9ea8c7cc..d491813008 100644
---- a/src/Plugin/QueueWorker/EntityUsageTracker.php
-+++ b/src/Plugin/QueueWorker/EntityUsageTracker.php
-@@ -132,6 +132,20 @@ public static function create(ContainerInterface $container, array $configuratio
-    */
-   public function processItem($data) {
- 
-+    if (($data['operation'] ?? '') === 'revision_delete') {
-+      // Queued revision deletions must never be processed: the queue item does
-+      // not carry the deleted revision ID, so the only revision available at
-+      // processing time is the current default one — deleting usage records by
-+      // that ID destroys usage data of the live revision. Revision deletions
-+      // are already handled synchronously by entity_usage itself with the real
-+      // deleted revision object.
-+      $this->logger->info('Skipped revision_delete queue item for @entity_type:@entity_id.', [
-+        '@entity_type' => $data['entity_type'],
-+        '@entity_id' => $data['entity_id'],
-+      ]);
-+      return;
-+    }
-+
-     $this->logger->info('Processing queue item for entity type: @entity_type, entity ID: @entity_id, operation: @operation.', [
-       '@entity_type' => $data['entity_type'],
-       '@entity_id' => $data['entity_id'],
