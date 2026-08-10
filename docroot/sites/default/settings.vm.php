@@ -52,10 +52,9 @@ $config['media_entity_download.settings']['external_file_storage'] = 1;
 // Disable autologout
 $config['autologout.settings']['timeout'] = 9999999;
 $config['autologout.settings']['max_timeout'] = 9999999;
-// Routes mail to PHP's sendmail_path which then routes to Mailhog.
-if (!getenv('MASS_MAILCHIMP')) {
-  $config['mailsystem.settings']['defaults']['sender'] = 'php_mail';
-  $config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
+// Routes mail to PHP's sendmail_path, which then routes to Mailpit.
+if (!getenv('MASS_SES')) {
+  $config['system.mail']['interface']['default'] = 'php_mail';
 }
 // Development geocoder overrides:
 // Use the "random" geocoder provider in non-Acquia environments so address

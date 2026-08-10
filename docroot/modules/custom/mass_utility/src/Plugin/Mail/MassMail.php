@@ -2,18 +2,56 @@
 
 namespace Drupal\mass_utility\Plugin\Mail;
 
-use Drupal\mailchimp_transactional\Plugin\Mail\Mail;
+use Drupal\amazon_ses\AmazonSesHandlerInterface;
+use Drupal\amazon_ses\MessageBuilderInterface;
+use Drupal\amazon_ses\Plugin\Mail\AmazonSes;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\Queue\QueueFactory;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Render\RendererInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Allow Drupal mailsystem to use Mailchimp Transactional when sending emails.
+ * Formats Mass.gov email and sends it through Amazon SES.
  *
  * @Mail(
  *   id = "mass_mail",
  *   label = @Translation("Mass mailer"),
- *   description = @Translation("Mass customized - sends the message through Mailchimp Transactional.")
+ *   description = @Translation("Formats Mass.gov email and sends it through Amazon SES.")
  * )
  */
-class MassMail extends Mail {
+class MassMail extends AmazonSes {
+
+  /**
+   * Constructs the Mass.gov mail plugin.
+   */
+  public function __construct(
+    $config_factory,
+    AmazonSesHandlerInterface $handler,
+    MessageBuilderInterface $message_builder,
+    QueueFactory $queue_factory,
+    protected RendererInterface $renderer,
+  ) {
+    parent::__construct($config_factory, $handler, $message_builder, $queue_factory);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(
+    ContainerInterface $container,
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+  ) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('amazon_ses.handler'),
+      $container->get('amazon_ses.message_builder'),
+      $container->get('queue'),
+      $container->get('renderer'),
+    );
+  }
 
   /**
    * Concatenate and wrap the email body for either plain-text or HTML emails.
@@ -25,11 +63,22 @@ class MassMail extends Mail {
    *   The formatted $message.
    */
   public function format(array $message) {
-    // Join the body array into one string.
     if (is_array($message['body'])) {
-      // Do nothing. The parent adds weird '&#13;' at end of many lines.
       $message['body'] = implode("\n\n", $message['body']);
     }
+
+    $body = (string) $message['body'];
+    if ($body === strip_tags($body)) {
+      $body = nl2br(Html::escape($body));
+    }
+
+    $build = [
+      '#theme' => 'mass_email',
+      '#subject' => $message['subject'] ?? '',
+      '#body' => Markup::create($body),
+    ];
+    $message['body'] = (string) $this->renderer->renderInIsolation($build);
+    $message['headers']['Content-Type'] = 'text/html; charset=UTF-8';
 
     return $message;
   }

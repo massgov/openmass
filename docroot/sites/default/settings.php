@@ -90,6 +90,7 @@ $config['entity_usage_queue_tracking.settings']['queue_tracking'] = TRUE;
 $settings['queue_service_entity_usage_tracker'] = 'queue_unique.database';
 
 require $app_root . '/' . $site_path . '/settings.aws-bedrock.php';
+require $app_root . '/' . $site_path . '/settings.aws-ses.php';
 
 // If in an Acquia Cloud environment
 if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
@@ -117,7 +118,6 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 
 // Now that secrets file was included, perform config overrides.
 $config['mass_analytics.settings']['looker_studio_url'] = getenv('LOOKER_STUDIO_URL');
-$config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] = getenv('MANDRILL_API_KEY');
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 

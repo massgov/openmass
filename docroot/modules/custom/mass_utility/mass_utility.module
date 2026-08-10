@@ -36,6 +36,21 @@ use Drupal\redirect\Entity\Redirect;
 use Drupal\user\Entity\User;
 
 /**
+ * Implements hook_theme().
+ */
+function mass_utility_theme() {
+  return [
+    'mass_email' => [
+      'variables' => [
+        'subject' => NULL,
+        'body' => NULL,
+      ],
+      'template' => 'email/mass-email',
+    ],
+  ];
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function mass_utility_form_views_form_subtopics_subtopic_reorder_alter(&$form, FormStateInterface $form_state, $form_id) {

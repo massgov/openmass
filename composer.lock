@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5e3281b02fc51a241d60c425a09114c1",
+    "content-hash": "7cf6a942e2346e3557059683ebc8e4d3",
     "packages": [
         {
             "name": "akamai-open/edgegrid-auth",
@@ -3222,6 +3222,62 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/allowed_formats",
                 "issues": "https://www.drupal.org/project/issues/allowed_formats"
+            }
+        },
+        {
+            "name": "drupal/amazon_ses",
+            "version": "3.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/amazon_ses.git",
+                "reference": "3.1.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/amazon_ses-3.1.1.zip",
+                "reference": "3.1.1",
+                "shasum": "c7be027aaa7b1820236ab3bf66a442d9820de611"
+            },
+            "require": {
+                "aws/aws-sdk-php": "^3.54",
+                "drupal/aws": "^2.0",
+                "drupal/core": "^9.1 || ^10 || ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "3.1.1",
+                    "datestamp": "1739911854",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "Ben Davis (davisben)",
+                    "homepage": "https://www.drupal.org/u/davisben",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "Ryan Palmer",
+                    "homepage": "https://www.drupal.org/user/44161"
+                },
+                {
+                    "name": "tkuldeep17",
+                    "homepage": "https://www.drupal.org/user/2498278"
+                }
+            ],
+            "description": "Allows site email to be sent using Amazon SES.",
+            "homepage": "http://drupal.org/project/amazon_ses",
+            "support": {
+                "source": "https://git.drupalcode.org/project/amazon_ses",
+                "issues": "http://drupal.org/project/issues/amazon_ses"
             }
         },
         {
@@ -8029,148 +8085,6 @@
             "homepage": "https://www.drupal.org/project/m4032404",
             "support": {
                 "source": "https://git.drupalcode.org/project/m4032404"
-            }
-        },
-        {
-            "name": "drupal/mailchimp_transactional",
-            "version": "1.1.4",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/mailchimp_transactional.git",
-                "reference": "1.1.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/mailchimp_transactional-1.1.4.zip",
-                "reference": "1.1.4",
-                "shasum": "e6909f4b29f53e40cbae8c35fcfb1e0d03437822"
-            },
-            "require": {
-                "drupal/core": "^9 || ^10 || ^11",
-                "drupal/mailsystem": "^4",
-                "mailchimp/transactional": "^1.0.47"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "1.1.4",
-                    "datestamp": "1742201205",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "bdimaggio",
-                    "homepage": "https://www.drupal.org/user/70688"
-                },
-                {
-                    "name": "dieterholvoet",
-                    "homepage": "https://www.drupal.org/user/3567222"
-                },
-                {
-                    "name": "gcb",
-                    "homepage": "https://www.drupal.org/user/1682976"
-                },
-                {
-                    "name": "levelos",
-                    "homepage": "https://www.drupal.org/user/54135"
-                },
-                {
-                    "name": "tauno",
-                    "homepage": "https://www.drupal.org/user/105595"
-                }
-            ],
-            "description": "Allow for site emails to be sent through Mailchimp Transactional.",
-            "homepage": "https://www.drupal.org/project/mailchimp_transactional",
-            "support": {
-                "source": "https://git.drupalcode.org/project/mailchimp_transactional"
-            }
-        },
-        {
-            "name": "drupal/mailsystem",
-            "version": "4.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/mailsystem.git",
-                "reference": "8.x-4.5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/mailsystem-8.x-4.5.zip",
-                "reference": "8.x-4.5",
-                "shasum": "e52a814a87b343ab69f8d8ef462a9873c1d01158"
-            },
-            "require": {
-                "drupal/core": "^9 || ^10.1 || ^11"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-4.5",
-                    "datestamp": "1723379369",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "berdir",
-                    "homepage": "https://www.drupal.org/user/214652"
-                },
-                {
-                    "name": "emartoni",
-                    "homepage": "https://www.drupal.org/user/3225331"
-                },
-                {
-                    "name": "joseph.olstad",
-                    "homepage": "https://www.drupal.org/user/1321830"
-                },
-                {
-                    "name": "les lim",
-                    "homepage": "https://www.drupal.org/user/84263"
-                },
-                {
-                    "name": "manuel garcia",
-                    "homepage": "https://www.drupal.org/user/213194"
-                },
-                {
-                    "name": "miro_dietiker",
-                    "homepage": "https://www.drupal.org/user/227761"
-                },
-                {
-                    "name": "Nafes",
-                    "homepage": "https://www.drupal.org/user/2489926"
-                },
-                {
-                    "name": "pillarsdotnet",
-                    "homepage": "https://www.drupal.org/user/36148"
-                },
-                {
-                    "name": "renatog",
-                    "homepage": "https://www.drupal.org/user/3326031"
-                },
-                {
-                    "name": "tr",
-                    "homepage": "https://www.drupal.org/user/202830"
-                }
-            ],
-            "description": "Mail System",
-            "homepage": "https://www.drupal.org/project/mailsystem",
-            "support": {
-                "source": "https://git.drupalcode.org/project/mailsystem"
             }
         },
         {
@@ -14095,60 +14009,6 @@
                 "source": "https://github.com/thephpleague/oauth2-client/tree/2.9.0"
             },
             "time": "2025-11-25T22:17:17+00:00"
-        },
-        {
-            "name": "mailchimp/transactional",
-            "version": "1.0.50",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/mailchimp/mailchimp-transactional-php.git",
-                "reference": "701b00f538f36a2a5b138f880ab5eebbfeff4b7d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/mailchimp/mailchimp-transactional-php/zipball/701b00f538f36a2a5b138f880ab5eebbfeff4b7d",
-                "reference": "701b00f538f36a2a5b138f880ab5eebbfeff4b7d",
-                "shasum": ""
-            },
-            "require": {
-                "ext-curl": "*",
-                "ext-json": "*",
-                "ext-mbstring": "*",
-                "guzzlehttp/guzzle": "^6.4 || ^7.2",
-                "php": ">=7.2"
-            },
-            "require-dev": {
-                "friendsofphp/php-cs-fixer": "~2.12",
-                "phpunit/phpunit": "^7",
-                "squizlabs/php_codesniffer": "~2.6"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "MailchimpTransactional\\": "lib/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "proprietary"
-            ],
-            "authors": [
-                {
-                    "name": "Mailchimp",
-                    "homepage": "https://github.com/mailchimp/mailchimp-transactional-php"
-                }
-            ],
-            "homepage": "http://swagger.io",
-            "keywords": [
-                "api",
-                "php",
-                "sdk",
-                "swagger"
-            ],
-            "support": {
-                "source": "https://github.com/mailchimp/mailchimp-transactional-php/tree/v1.0.50"
-            },
-            "time": "2022-11-07T20:12:03+00:00"
         },
         {
             "name": "massgov/mayflower-artifacts",

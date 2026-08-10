@@ -44,11 +44,6 @@ class UnpublishRemindersTest extends MassExistingSiteBase {
     $this->startMailCollection();
     $this->clearQueue('mass_unpublish_reminders_queue');
 
-    // mass.gov use a settings.vm.php config override. Override it so mail collection works.
-    // No better way than GLOBALS. See \Drupal\Core\Config\ConfigFactory::doGet.
-    $GLOBALS['config']['mailsystem.settings']['defaults']['sender'] = 'test_mail_collector';
-    $this->container->get('config.factory')->clearStaticCache();
-
     $last_run = \Drupal::state()->get('mass_unpublish_reminders.last_cron', 0);
     $this->lastRun = $last_run;
     \Drupal::state()->set('mass_unpublish_reminder.last_cron', 0);
