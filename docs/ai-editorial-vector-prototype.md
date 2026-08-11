@@ -278,6 +278,7 @@ The report should use:
 - Breadcrumb text.
 - Indexed context for the immediate breadcrumb parent, when that parent page is in the local index.
 - Indexed context for a small set of internal pages linked from the current page's main body area.
+- Semantic heading markers such as `Heading level 2: Apply online`.
 - Link targets preserved as `[href: ...]`.
 - "Offered by" links from the rendered view mode.
 - Incoming links from Entity Usage.
@@ -315,6 +316,16 @@ ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
 ddev drush mass-ai-editorial:process-queue --limit=200
 ddev drush mass-ai-editorial:embed-ollama --limit=250
 ```
+
+## Chunking behavior
+
+Rendered headings are preserved in the flattened text as semantic markers, for example:
+
+```text
+Heading level 2: Apply online
+```
+
+The chunker uses those heading markers as section boundaries. It tries to keep complete sections together up to a 650-word target size. If a section is too long, it falls back to overlapping word windows for that section only. Neighboring chunks keep a small overlap so the beginning of a section is not isolated from the end of the previous section.
 
 ## Related-page context limits
 

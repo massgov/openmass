@@ -46,6 +46,7 @@ class RenderedTextExtractor {
   public function normalizeHtml(string $html): string {
     $html = preg_replace('@<(script|style|noscript|svg)[^>]*?>.*?</\\1>@si', ' ', $html) ?? $html;
     $html = $this->preserveLinks($html);
+    $html = $this->preserveHeadings($html);
     $html = preg_replace('@<(br|/p|/div|/section|/article|/li|/h[1-6]|/tr)\b[^>]*>@i', "\n", $html) ?? $html;
     $text = Html::decodeEntities(strip_tags($html));
     $text = preg_replace('/[ \t]+/', ' ', $text) ?? $text;
@@ -68,6 +69,21 @@ class RenderedTextExtractor {
       }
 
       return $label . ' [href: ' . $href . ']';
+    }, $html) ?? $html;
+  }
+
+  /**
+   * Rewrites headings so their semantic level survives text flattening.
+   */
+  private function preserveHeadings(string $html): string {
+    return preg_replace_callback('@<h([1-6])\b[^>]*>(.*?)</h\1>@is', function (array $matches): string {
+      $level = (int) $matches[1];
+      $text = trim($this->normalizeLinkLabel($matches[2]));
+      if ($text === '') {
+        return '';
+      }
+
+      return "\n\nHeading level " . $level . ': ' . $text . "\n";
     }, $html) ?? $html;
   }
 
