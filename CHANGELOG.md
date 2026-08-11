@@ -1,5 +1,22 @@
 
 
+## [0.489.0] - August 11, 2026
+
+### Fixed
+  - DP-36234: Trash purge command now matches trashed items per entity type and current workflow record, deletes oldest first, validates its options, re-checks trash state before each delete, and reports a run summary.
+  
+### Changed
+  - DP-39502: Changed page analytics dashboard from looker to powerbi.
+  - DP-48235: Make the Permission Groups field read-only on non-organization pages — hide the "Browse organizations" launcher and rewrite the help text to say the field is managed automatically.
+  
+### Security
+  - DP-46097: Match the CORS allowlist on /api/v1 endpoints against the exact origin host, so lookalike hostnames no longer get an Access-Control-Allow-Origin header.
+  - DP-46097: Restrict the HTTP host headers the site answers to with trusted_host_patterns.
+  - DP-46097: Send Referrer-Policy and X-Content-Type-Options response headers.
+  - DP-46097: Update npm dependencies flagged by Dependabot.
+  
+
+
 ## [0.488.0] - August 4, 2026
 
 ### Added
