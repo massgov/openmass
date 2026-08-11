@@ -119,10 +119,12 @@ class AiEditorialIndexRepository {
   /**
    * Returns queued document rows for processing.
    */
-  public function loadQueuedDocuments(int $limit): array {
+  public function loadQueuedDocuments(int $limit, bool $include_failed = TRUE): array {
+    $statuses = $include_failed ? ['queued', 'failed'] : ['queued'];
+
     return $this->database->select('mass_ai_editorial_document', 'd')
       ->fields('d')
-      ->condition('status', ['queued', 'failed'], 'IN')
+      ->condition('status', $statuses, 'IN')
       ->orderBy('queued_at')
       ->range(0, $limit)
       ->execute()
@@ -161,6 +163,21 @@ class AiEditorialIndexRepository {
     $query->range(0, $limit);
 
     return $query->execute()->fetchAll();
+  }
+
+  /**
+   * Returns current chunk positions for a rendered document.
+   *
+   * @return array<int>
+   *   Chunk deltas currently stored for the local document.
+   */
+  public function loadChunkDeltas(int $document_id): array {
+    return array_map('intval', $this->database->select('mass_ai_editorial_chunk', 'c')
+      ->fields('c', ['chunk_delta'])
+      ->condition('document_id', $document_id)
+      ->orderBy('chunk_delta')
+      ->execute()
+      ->fetchCol());
   }
 
   /**

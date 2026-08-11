@@ -78,6 +78,134 @@ class MassAiEditorialCommands extends DrushCommands {
   }
 
   /**
+   * Queue, render, chunk, and embed content for every published organization.
+   *
+   * @command mass-ai-editorial:index-all-orgs
+   * @aliases maie-index-all-orgs
+   * @option org-limit
+   *   Maximum number of published organization pages to index. Use 0 for all.
+   * @option content-limit
+   *   Maximum number of content nodes to queue per organization. Use 0 for all.
+   * @option reset
+   *   Clear local prototype Drupal tables before queueing.
+   * @option reset-pgvector
+   *   Clear the external pgvector tables before embedding.
+   * @option track
+   *   Track indexed organizations for incremental entity-save queueing.
+   * @option process-batch
+   *   Number of queued documents to render per batch.
+   * @option embed-batch
+   *   Number of chunks to embed per batch.
+   * @option model
+   *   Ollama embedding model.
+   * @option ollama-url
+   *   Ollama base URL reachable from the DDEV web container.
+   * @option pg-dsn
+   *   PostgreSQL PDO DSN for the pgvector database.
+   * @option pg-user
+   *   PostgreSQL username.
+   * @option pg-pass
+   *   PostgreSQL password.
+   * @usage drush mass-ai-editorial:index-all-orgs --reset --reset-pgvector
+   *   Rebuild the local AI editorial index for all published organizations.
+   */
+  public function indexAllOrganizations(array $options = [
+    'org-limit' => 0,
+    'content-limit' => 0,
+    'reset' => FALSE,
+    'reset-pgvector' => FALSE,
+    'track' => TRUE,
+    'process-batch' => 100,
+    'embed-batch' => 100,
+    'model' => 'nomic-embed-text',
+    'ollama-url' => 'http://host.docker.internal:11434',
+    'pg-dsn' => 'pgsql:host=pgvector;port=5432;dbname=ai_editorial',
+    'pg-user' => 'ai_editorial',
+    'pg-pass' => 'ai_editorial',
+  ]): void {
+    if ((bool) $options['reset']) {
+      $this->repository->reset();
+      $this->output()->writeln('<comment>Reset AI editorial prototype tables.</comment>');
+    }
+
+    if ((bool) $options['reset-pgvector']) {
+      $pg = $this->connectPgvector(
+        (string) $options['pg-dsn'],
+        (string) $options['pg-user'],
+        (string) $options['pg-pass'],
+      );
+      $this->resetPgvector($pg);
+      $this->output()->writeln('<comment>Reset pgvector AI editorial tables.</comment>');
+    }
+
+    $org_limit = (int) $options['org-limit'];
+    $content_limit = (int) $options['content-limit'];
+    $process_batch = max(1, (int) $options['process-batch']);
+    $embed_batch = max(1, (int) $options['embed-batch']);
+    $org_ids = $this->loadPublishedOrganizationIds($org_limit > 0 ? $org_limit : NULL);
+
+    if (!$org_ids) {
+      $this->output()->writeln('<comment>No published organization pages were found.</comment>');
+      return;
+    }
+
+    if ((bool) $options['track']) {
+      $tracked = $this->state->get('mass_ai_editorial.tracked_org_ids', []);
+      $tracked = array_merge(array_map('intval', $tracked), $org_ids);
+      $this->state->set('mass_ai_editorial.tracked_org_ids', array_values(array_unique($tracked)));
+    }
+
+    $storage = $this->entityTypeManager->getStorage('node');
+    $queued = 0;
+    $seen_node_ids = [];
+
+    foreach ($org_ids as $org_id) {
+      $node_ids = $this->loadOrganizationNodeIds($org_id, $content_limit > 0 ? $content_limit : NULL);
+      $node_ids = array_values(array_unique($node_ids));
+      $nodes = $storage->loadMultiple($node_ids);
+      $org_queued = 0;
+
+      foreach ($node_ids as $node_id) {
+        if (isset($seen_node_ids[$node_id])) {
+          continue;
+        }
+        $seen_node_ids[$node_id] = TRUE;
+
+        $node = $nodes[$node_id] ?? NULL;
+        if ($node instanceof NodeInterface && $this->indexer->queueNode($node, $org_id) !== NULL) {
+          $queued++;
+          $org_queued++;
+        }
+      }
+
+      $this->output()->writeln(sprintf('org:%d queued=%d', $org_id, $org_queued));
+    }
+
+    $this->output()->writeln(sprintf('<info>Queued %d unique node(s) across %d organization(s).</info>', $queued, count($org_ids)));
+
+    $processed_total = 0;
+    do {
+      $processed = $this->processQueuedBatch($process_batch, FALSE);
+      $processed_total += $processed;
+    } while ($processed > 0);
+    $this->output()->writeln(sprintf('<info>Rendered and chunked %d document(s).</info>', $processed_total));
+
+    $embedded_total = 0;
+    do {
+      $embedded = $this->embedOllamaBatch([
+        'limit' => $embed_batch,
+        'model' => $options['model'],
+        'ollama-url' => $options['ollama-url'],
+        'pg-dsn' => $options['pg-dsn'],
+        'pg-user' => $options['pg-user'],
+        'pg-pass' => $options['pg-pass'],
+      ]);
+      $embedded_total += $embedded;
+    } while ($embedded > 0);
+    $this->output()->writeln(sprintf('<info>Embedded %d chunk(s) with %s.</info>', $embedded_total, (string) $options['model']));
+  }
+
+  /**
    * Render queued documents into canonical text and chunks.
    *
    * @command mass-ai-editorial:process-queue
@@ -88,8 +216,12 @@ class MassAiEditorialCommands extends DrushCommands {
    *   Render and chunk 25 queued documents.
    */
   public function processQueue(array $options = ['limit' => 25]): void {
-    $limit = (int) $options['limit'];
-    $documents = $this->repository->loadQueuedDocuments($limit);
+    $processed = $this->processQueuedBatch((int) $options['limit']);
+    $this->output()->writeln(sprintf('<info>Processed %d queued document(s).</info>', $processed));
+  }
+
+  private function processQueuedBatch(int $limit, bool $include_failed = TRUE): int {
+    $documents = $this->repository->loadQueuedDocuments($limit, $include_failed);
     $storage = $this->entityTypeManager->getStorage('node');
     $processed = 0;
 
@@ -118,7 +250,7 @@ class MassAiEditorialCommands extends DrushCommands {
       }
     }
 
-    $this->output()->writeln(sprintf('<info>Processed %d queued document(s).</info>', $processed));
+    return $processed;
   }
 
   /**
@@ -164,12 +296,19 @@ class MassAiEditorialCommands extends DrushCommands {
     'pg-user' => 'ai_editorial',
     'pg-pass' => 'ai_editorial',
   ]): void {
+    $embedded = $this->embedOllamaBatch($options);
+    if ($embedded > 0) {
+      $this->output()->writeln(sprintf('<info>Embedded %d chunk(s) with %s.</info>', $embedded, (string) $options['model']));
+    }
+  }
+
+  private function embedOllamaBatch(array $options): int {
     $limit = (int) $options['limit'];
     $model = (string) $options['model'];
     $chunks = $this->repository->loadChunksForEmbedding($model, $limit);
     if (!$chunks) {
       $this->output()->writeln('<info>No chunks need embeddings.</info>');
-      return;
+      return 0;
     }
 
     $pg = $this->connectPgvector(
@@ -186,6 +325,7 @@ class MassAiEditorialCommands extends DrushCommands {
       }
 
       $pg_document_id = $this->upsertPgDocument($pg, $chunk);
+      $this->deleteStalePgChunks($pg, $pg_document_id, $this->repository->loadChunkDeltas((int) $chunk->local_document_id));
       $pg_chunk_id = $this->upsertPgChunk($pg, $pg_document_id, $chunk, $model, $embedding);
       $this->repository->markChunkEmbedded((int) $chunk->chunk_id, $model, (string) $pg_chunk_id);
       $embedded++;
@@ -199,7 +339,7 @@ class MassAiEditorialCommands extends DrushCommands {
       ));
     }
 
-    $this->output()->writeln(sprintf('<info>Embedded %d chunk(s) with %s.</info>', $embedded, $model));
+    return $embedded;
   }
 
   /**
@@ -304,6 +444,36 @@ class MassAiEditorialCommands extends DrushCommands {
    * Loads nodes matching the provided admin search organization slice.
    */
   private function loadPocNodeIds(int $org_id, int $limit): array {
+    return $this->loadOrganizationNodeIds($org_id, $limit);
+  }
+
+  /**
+   * Loads published organization page node IDs.
+   *
+   * @return array<int>
+   *   Organization node IDs.
+   */
+  private function loadPublishedOrganizationIds(?int $limit = NULL): array {
+    $query = $this->database->select('node_field_data', 'n');
+    $query->fields('n', ['nid']);
+    $query->condition('n.status', 1);
+    $query->condition('n.type', 'org_page');
+    $query->condition('n.default_langcode', 1);
+    $query->orderBy('n.title');
+    if ($limit !== NULL) {
+      $query->range(0, $limit);
+    }
+
+    return array_map('intval', $query->execute()->fetchCol());
+  }
+
+  /**
+   * Loads published nodes for one organization.
+   *
+   * @return array<int>
+   *   Node IDs.
+   */
+  private function loadOrganizationNodeIds(int $org_id, ?int $limit = NULL): array {
     $query = $this->database->select('node_field_data', 'n');
     $query->distinct();
     $query->leftJoin('node__field_organizations', 'o', 'n.nid = o.entity_id');
@@ -316,7 +486,9 @@ class MassAiEditorialCommands extends DrushCommands {
       ->condition('o.field_organizations_target_id', $org_id);
     $query->condition($or);
     $query->orderBy('n.changed', 'DESC');
-    $query->range(0, $limit);
+    if ($limit !== NULL) {
+      $query->range(0, $limit);
+    }
 
     return array_map('intval', $query->execute()->fetchCol());
   }
@@ -326,6 +498,10 @@ class MassAiEditorialCommands extends DrushCommands {
       \PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION,
       \PDO::ATTR_DEFAULT_FETCH_MODE => \PDO::FETCH_ASSOC,
     ]);
+  }
+
+  private function resetPgvector(\PDO $pg): void {
+    $pg->exec('TRUNCATE TABLE ai_document_chunk, ai_document RESTART IDENTITY');
   }
 
   /**
@@ -426,6 +602,34 @@ class MassAiEditorialCommands extends DrushCommands {
     ]);
 
     return (int) $statement->fetchColumn();
+  }
+
+  /**
+   * Removes pgvector chunks that are no longer present in the latest render.
+   *
+   * @param array<int> $current_deltas
+   *   Current local chunk deltas for the document.
+   */
+  private function deleteStalePgChunks(\PDO $pg, int $pg_document_id, array $current_deltas): void {
+    if (!$current_deltas) {
+      $statement = $pg->prepare('DELETE FROM ai_document_chunk WHERE document_id = :document_id');
+      $statement->execute([':document_id' => $pg_document_id]);
+      return;
+    }
+
+    $placeholders = [];
+    $values = [':document_id' => $pg_document_id];
+    foreach (array_values(array_unique(array_map('intval', $current_deltas))) as $delta_index => $delta) {
+      $placeholder = ':delta_' . $delta_index;
+      $placeholders[] = $placeholder;
+      $values[$placeholder] = $delta;
+    }
+
+    $statement = $pg->prepare(sprintf(
+      'DELETE FROM ai_document_chunk WHERE document_id = :document_id AND chunk_delta NOT IN (%s)',
+      implode(', ', $placeholders)
+    ));
+    $statement->execute($values);
   }
 
 }

@@ -22,7 +22,7 @@ It adds:
 - A `node.ai_index` view mode for rendering content into a canonical text representation.
 - Local Drupal tables for queued documents and rendered text chunks.
 - A DDEV `pgvector` service for vector search.
-- Drush commands for queueing, rendering, embedding, stats, and search.
+- Drush commands for queueing, rendering, embedding, all-organization rebuilds, stats, and search.
 - A `Contextual Page Check` AI Content Advisor report type.
 - A form integration that adds related pgvector context when that report type is run.
 
@@ -31,7 +31,7 @@ It adds:
 - Drupal stays the source of truth. The indexed text is derived from Drupal rendering, not from a reconstructed copy of the content model.
 - The `ai_index` view mode avoids manually walking nested Paragraph entities and avoids rebuilding pages through JSON:API.
 - Indexing is incremental. Changed published nodes in tracked organizations are queued for reprocessing.
-- The proof of concept is intentionally bounded to Department of Unemployment Assistance content so local testing does not require indexing all Mass.gov pages.
+- The proof of concept can be bounded to Department of Unemployment Assistance content for small local tests, or rebuilt across all published organization pages with one Drush command.
 - pgvector is used locally because the same general model can move to AWS Aurora PostgreSQL with pgvector later.
 - Ollama is used for local embeddings so developers do not need cloud AI credentials just to populate the vector database.
 
@@ -137,7 +137,17 @@ Do not commit credential values to `.ddev/config.yaml`. Keep secrets in local en
 
 ## Populate the vector database
 
-The local proof of concept indexes the Department of Unemployment Assistance slice used by the editorial admin search. The default organization ID is `5376`, and the default limit is `99`.
+For a full local rebuild, run the all-organization command. It finds every published `org_page`, queues published content for each organization, renders and chunks the queued pages with the `ai_index` view mode, then generates Ollama embeddings and upserts the chunks into pgvector:
+
+```bash
+ddev drush mass-ai-editorial:index-all-orgs --reset --reset-pgvector --process-batch=100 --embed-batch=100
+```
+
+Use `--reset` to clear the Drupal-side prototype tables. Use `--reset-pgvector` when you also want to clear stale rows from the external pgvector tables before embedding. Omitting these flags makes the command additive/incremental: existing rows are upserted, and chunks that already have embeddings for the selected model are skipped.
+
+Re-indexing a page replaces its pgvector representation rather than creating duplicate page rows. The pgvector document table is unique by Drupal entity type, entity ID, and language. Chunk rows are unique by pgvector document ID and chunk delta. When a newly rendered page has fewer chunks than a previous render, stale pgvector chunks for that page are deleted during embedding.
+
+For a smaller local POC, you can still index only the Department of Unemployment Assistance slice used by the editorial admin search. The default organization ID is `5376`, and the default limit is `99`.
 
 ### Content type scope
 
@@ -147,18 +157,19 @@ The POC Drush queue command indexes published nodes for the selected organizatio
 docroot/modules/custom/mass_ai_editorial/src/AiEditorialIndexer.php
 ```
 
-That exclusion list is used in two places:
+That exclusion list is used in three places:
 
 - `mass-ai-editorial:queue-poc` excludes those bundles when selecting the initial organization slice.
+- `mass-ai-editorial:index-all-orgs` excludes those bundles when selecting content for each published organization.
 - Incremental indexing skips those bundles when a published node is saved.
 
 Update `EXCLUDED_BUNDLES` when the POC should include or exclude additional content types. After changing the list, rebuild the local index so Drupal and pgvector reflect the new scope:
 
 ```bash
-ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
-ddev drush mass-ai-editorial:process-queue --limit=200
-ddev drush mass-ai-editorial:embed-ollama --limit=250
+ddev drush mass-ai-editorial:index-all-orgs --reset --reset-pgvector
 ```
+
+For a DUA-only rebuild after changing that list, use the smaller step-by-step commands below.
 
 Queue the POC content and reset previous prototype rows:
 
@@ -193,6 +204,36 @@ ddev drush mass-ai-editorial:pgvector-stats
 For the DUA POC, a fully populated local run should show matching document, chunk, and embedded chunk counts between the Drupal-side stats and pgvector stats. The exact document and chunk counts depend on the `--limit` value, the current `EXCLUDED_BUNDLES` list, and rendered page content.
 
 If `embed-ollama` reports that no chunks need embeddings, the vector database is already current for the rendered chunks.
+
+### All-organization command options
+
+The all-organization command is intended for local rebuilds that should include every published organization:
+
+```bash
+ddev drush mass-ai-editorial:index-all-orgs
+```
+
+Useful options:
+
+| Option | Default | Meaning |
+| --- | ---: | --- |
+| `--org-limit` | `0` | Maximum number of published organization pages to scan. `0` means all. |
+| `--content-limit` | `0` | Maximum number of content nodes to queue per organization. `0` means all. |
+| `--reset` | `false` | Clear Drupal-side prototype tables before queueing. |
+| `--reset-pgvector` | `false` | Clear pgvector `ai_document` and `ai_document_chunk` rows before embedding. |
+| `--track` | `true` | Store the organization IDs in Drupal state so later node saves are queued incrementally. |
+| `--process-batch` | `100` | Number of queued documents to render and chunk per batch. |
+| `--embed-batch` | `100` | Number of chunks to embed per batch. |
+| `--model` | `nomic-embed-text` | Ollama embedding model. The local pgvector schema expects 768-dimensional vectors for this model. |
+| `--ollama-url` | `http://host.docker.internal:11434` | Ollama URL from inside the DDEV web container. |
+
+For a quick smoke test against a small number of organizations:
+
+```bash
+ddev drush mass-ai-editorial:index-all-orgs --org-limit=3 --content-limit=25 --reset --reset-pgvector
+```
+
+The command de-duplicates node IDs across organizations before queueing. If one page appears under more than one organization, it is only queued once for that run.
 
 ## Test vector search directly
 
@@ -235,6 +276,8 @@ The report should use:
 - The current page's rendered `ai_index` text.
 - Related pages from pgvector.
 - Breadcrumb text.
+- Indexed context for the immediate breadcrumb parent, when that parent page is in the local index.
+- Indexed context for a small set of internal pages linked from the current page's main body area.
 - Link targets preserved as `[href: ...]`.
 - "Offered by" links from the rendered view mode.
 - Incoming links from Entity Usage.
@@ -259,7 +302,13 @@ All become:
 
 This avoids confusing the chat model with a mix of production hostnames, local hostnames, and root-relative links that all point to the same site path. External URLs are left unchanged.
 
-If link normalization logic changes, re-render and re-embed the indexed content:
+If link normalization logic changes, re-render and re-embed the indexed content. For a full local rebuild:
+
+```bash
+ddev drush mass-ai-editorial:index-all-orgs --reset --reset-pgvector
+```
+
+For a DUA-only rebuild:
 
 ```bash
 ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
@@ -269,7 +318,11 @@ ddev drush mass-ai-editorial:embed-ollama --limit=250
 
 ## Related-page context limits
 
-The Content Advisor report does not send every indexed page to the chat model. It first asks pgvector for pages that are semantically close to the current page, then appends a bounded amount of that related-page context to the prompt.
+The Content Advisor report does not send every indexed page to the chat model. It first appends dedicated context for the immediate breadcrumb parent when that page is present in the local index. It also appends context for a small set of internal pages linked from the current page's main body area. It then asks pgvector for pages that are semantically close to the current page and appends a bounded amount of that related-page context to the prompt.
+
+The breadcrumb parent is handled separately from vector-related pages because the parent is structurally important even when it is not one of the closest semantic matches. Its indexed text is included as `Breadcrumb parent page context`, with an 8,000-character safety cap for unusually long parent pages, and is omitted from the later related-page list to avoid duplicate context.
+
+Body-linked pages are also handled separately because an author chose to link them from the main body of the page. If the current page has six or fewer internal page links in the main body, the indexed context for those linked pages is included as `Body-linked page context`, with a 3,000-character safety cap per linked page. Breadcrumb links, incoming-link summaries, table-of-contents anchors, contact links, downloads, and related-links sections are excluded from this body-link context. Body-linked pages are omitted from the later vector-related list to avoid duplicate context.
 
 The current limits are adaptive. They are calculated in `mass_ai_editorial_contextual_page_check_context_limits()` in `docroot/modules/custom/mass_ai_editorial/mass_ai_editorial.module`.
 
@@ -314,7 +367,7 @@ When a published node changes, `mass_ai_editorial` queues it if it belongs to an
 mass_ai_editorial.tracked_org_ids
 ```
 
-The `queue-poc` command tracks the selected organization by default. For this POC, that means DUA content is queued again after edits.
+The `index-all-orgs` command tracks all indexed organizations by default. The `queue-poc` command tracks the selected organization by default, which is useful for DUA-only testing.
 
 After changing a page, run:
 
@@ -359,6 +412,7 @@ ddev drush mass-ai-editorial:pgvector-stats
 ## Useful command reference
 
 ```bash
+ddev drush mass-ai-editorial:index-all-orgs --reset --reset-pgvector
 ddev drush mass-ai-editorial:queue-poc --org-id=5376 --limit=99 --reset
 ddev drush mass-ai-editorial:process-queue --limit=200
 ddev drush mass-ai-editorial:embed-ollama --limit=250

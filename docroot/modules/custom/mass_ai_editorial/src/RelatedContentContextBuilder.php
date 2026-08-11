@@ -14,6 +14,9 @@ class RelatedContentContextBuilder {
   private const PG_PASS = 'ai_editorial';
   private const SECOND_CHUNK_SIMILARITY_DELTA = 0.04;
   private const THIRD_CHUNK_SIMILARITY_DELTA = 0.06;
+  private const PARENT_CONTEXT_MAX_CHARS = 8000;
+  private const BODY_LINK_CONTEXT_MAX_LINKS = 6;
+  private const BODY_LINK_CONTEXT_MAX_CHARS = 3000;
 
   public function __construct(
     private readonly Connection $database,
@@ -23,14 +26,24 @@ class RelatedContentContextBuilder {
    * Builds prompt context containing related indexed page excerpts.
    */
   public function buildForNode(int $node_id, int $page_limit = 5, int $max_chunks_per_page = 3): string {
-    $rows = $this->loadRelatedChunks($node_id, $page_limit, $max_chunks_per_page);
-    if (!$rows) {
+    $current_document = $this->loadIndexedDocumentByEntityId($node_id);
+    $parent_document = $this->loadBreadcrumbParentDocument($current_document);
+    $body_link_documents = $this->loadBodyLinkDocuments($current_document, $parent_document);
+    $rows = $this->loadRelatedChunks($node_id, $parent_document ? $page_limit + 1 : $page_limit, $max_chunks_per_page);
+    if (!$rows && !$parent_document && !$body_link_documents) {
       return '';
     }
 
     $grouped = [];
     foreach ($rows as $row) {
       $candidate_id = (int) $row['candidate_node_id'];
+      if ($parent_document && $candidate_id === (int) $parent_document->entity_id) {
+        continue;
+      }
+      if (isset($body_link_documents[$candidate_id])) {
+        continue;
+      }
+
       $grouped[$candidate_id]['title'] = $row['candidate_title'];
       $grouped[$candidate_id]['url'] = $row['candidate_url'];
       $grouped[$candidate_id]['similarity'] = max((float) ($grouped[$candidate_id]['similarity'] ?? 0), (float) $row['similarity']);
@@ -40,8 +53,38 @@ class RelatedContentContextBuilder {
         'text' => $this->trimExcerpt($this->removeBoilerplate((string) $row['candidate_text'])),
       ];
     }
+    $grouped = array_slice($grouped, 0, $page_limit, TRUE);
 
-    $context = "Related pages for the contextual page check:\n";
+    $context = '';
+    if ($parent_document) {
+      $context .= sprintf(
+        "Breadcrumb parent page context:\nTitle: %s\nNode ID: %d\nURL: %s\nFull indexed parent page text:\n%s\n\n",
+        $parent_document->title,
+        (int) $parent_document->entity_id,
+        $parent_document->url,
+        $this->trimParentContext($this->removeBoilerplate((string) $parent_document->rendered_text))
+      );
+    }
+
+    if ($body_link_documents) {
+      $context .= "Body-linked page context:\n";
+      $context .= "These indexed pages are linked from the current page's main body area. Treat them as intentional editorial context selected by the author, not as automatically discovered related pages.\n\n";
+      foreach ($body_link_documents as $document) {
+        $context .= sprintf(
+          "Body-linked page\nTitle: %s\nNode ID: %d\nURL: %s\nIndexed page excerpt:\n%s\n\n",
+          $document->title,
+          (int) $document->entity_id,
+          $document->url,
+          $this->trimBodyLinkContext($this->removeBoilerplate((string) $document->rendered_text))
+        );
+      }
+    }
+
+    if (!$grouped) {
+      return trim($context);
+    }
+
+    $context .= "Related pages for the contextual page check:\n";
     $context .= "These pages were retrieved from the local vector index because their indexed text is semantically similar to the current page. Treat them as pages to review, not as confirmed problems.\n\n";
 
     $candidate_number = 1;
@@ -70,6 +113,188 @@ class RelatedContentContextBuilder {
     }
 
     return $context;
+  }
+
+  /**
+   * Loads the indexed AI document for a node.
+   */
+  private function loadIndexedDocumentByEntityId(int $node_id): ?object {
+    if (!$this->database->schema()->tableExists('mass_ai_editorial_document')) {
+      return NULL;
+    }
+
+    $document = $this->database->select('mass_ai_editorial_document', 'd')
+      ->fields('d', ['entity_id', 'title', 'url', 'rendered_text'])
+      ->condition('entity_type', 'node')
+      ->condition('entity_id', $node_id)
+      ->condition('view_mode', 'ai_index')
+      ->condition('status', 'deleted', '<>')
+      ->execute()
+      ->fetchObject();
+
+    return $document ?: NULL;
+  }
+
+  /**
+   * Loads indexed pages linked from the current page's main body area.
+   */
+  private function loadBodyLinkDocuments(?object $current_document, ?object $parent_document): array {
+    if (!$current_document || empty($current_document->rendered_text)) {
+      return [];
+    }
+
+    $hrefs = $this->findBodyLinkHrefs((string) $current_document->rendered_text, (string) ($current_document->url ?? ''));
+    if (!$hrefs || count($hrefs) > self::BODY_LINK_CONTEXT_MAX_LINKS) {
+      return [];
+    }
+
+    $documents = [];
+    foreach ($hrefs as $href) {
+      if ($parent_document && $href === (string) $parent_document->url) {
+        continue;
+      }
+
+      $document = $this->loadIndexedDocumentByUrl($href);
+      if ($document) {
+        $documents[(int) $document->entity_id] = $document;
+      }
+    }
+
+    return $documents;
+  }
+
+  /**
+   * Finds a small set of internal links from the current page's main body.
+   */
+  private function findBodyLinkHrefs(string $text, string $current_url): array {
+    $body = $this->extractMainBodyText($text);
+    if ($body === '') {
+      return [];
+    }
+
+    preg_match_all('/\[href: (?<href>[^\]]+)\]/', $body, $matches);
+    $hrefs = [];
+    foreach ($matches['href'] ?? [] as $href) {
+      $href = strtok(trim($href), '#') ?: trim($href);
+      if (!$this->isIndexableInternalPageHref($href, $current_url)) {
+        continue;
+      }
+
+      $hrefs[] = $href;
+    }
+
+    return array_values(array_unique($hrefs));
+  }
+
+  /**
+   * Extracts a conservative approximation of the authored main body area.
+   */
+  private function extractMainBodyText(string $text): string {
+    $body = $text;
+    $details_position = strpos($body, "The Details\n");
+    if ($details_position !== FALSE) {
+      $body = substr($body, $details_position);
+    }
+
+    $body = preg_replace('/Table of Contents.*?(?:\n\n)(?=[^\n]+\n\n)/s', '', $body, 1) ?? $body;
+    $stop_patterns = [
+      '/\nDownloads\n/is',
+      '/\nContact\n/is',
+      '/\nContacts\n/is',
+      '/\nRelated(?: information| links| services)?\n/is',
+    ];
+    foreach ($stop_patterns as $pattern) {
+      if (preg_match($pattern, $body, $matches, PREG_OFFSET_CAPTURE)) {
+        $body = substr($body, 0, $matches[0][1]);
+      }
+    }
+
+    return trim($body);
+  }
+
+  /**
+   * Returns TRUE when an href can be resolved to an indexed Mass.gov page.
+   */
+  private function isIndexableInternalPageHref(string $href, string $current_url): bool {
+    if ($href === '' || $href === $current_url || str_starts_with($href, '#')) {
+      return FALSE;
+    }
+    if (preg_match('/^(?:https?:|mailto:|tel:)/i', $href)) {
+      return FALSE;
+    }
+    if (!str_starts_with($href, '/')) {
+      return FALSE;
+    }
+    if (preg_match('@^/(?:doc|media|files?)/@', $href)) {
+      return FALSE;
+    }
+
+    return TRUE;
+  }
+
+  /**
+   * Loads an indexed document by canonical URL.
+   */
+  private function loadIndexedDocumentByUrl(string $url): ?object {
+    if (!$this->database->schema()->tableExists('mass_ai_editorial_document')) {
+      return NULL;
+    }
+
+    $document = $this->database->select('mass_ai_editorial_document', 'd')
+      ->fields('d', ['entity_id', 'title', 'url', 'rendered_text'])
+      ->condition('entity_type', 'node')
+      ->condition('url', $url)
+      ->condition('view_mode', 'ai_index')
+      ->condition('status', 'deleted', '<>')
+      ->execute()
+      ->fetchObject();
+
+    return $document ?: NULL;
+  }
+
+  /**
+   * Loads the immediate breadcrumb parent page from the indexed document table.
+   */
+  private function loadBreadcrumbParentDocument(?object $current_document): ?object {
+    if (!$current_document || empty($current_document->rendered_text)) {
+      return NULL;
+    }
+
+    $parent_href = $this->findBreadcrumbParentHref((string) $current_document->rendered_text, (string) ($current_document->url ?? ''));
+    if ($parent_href === '') {
+      return NULL;
+    }
+
+    $document = $this->database->select('mass_ai_editorial_document', 'd')
+      ->fields('d', ['entity_id', 'title', 'url', 'rendered_text'])
+      ->condition('entity_type', 'node')
+      ->condition('url', $parent_href)
+      ->condition('view_mode', 'ai_index')
+      ->condition('status', 'deleted', '<>')
+      ->execute()
+      ->fetchObject();
+
+    return $document ?: NULL;
+  }
+
+  /**
+   * Finds the closest linked ancestor in the current page breadcrumb line.
+   */
+  private function findBreadcrumbParentHref(string $text, string $current_url): string {
+    if (!preg_match('/^Breadcrumb: (?<breadcrumb>.*)$/m', $text, $matches)) {
+      return '';
+    }
+
+    preg_match_all('/\[href: (?<href>[^\]]+)\]/', $matches['breadcrumb'], $href_matches);
+    $hrefs = array_reverse($href_matches['href'] ?? []);
+    foreach ($hrefs as $href) {
+      $href = trim($href);
+      if ($href !== '' && $href !== '/' && $href !== $current_url) {
+        return $href;
+      }
+    }
+
+    return '';
   }
 
   /**
@@ -176,6 +401,24 @@ class RelatedContentContextBuilder {
     }
 
     return mb_substr($text, 0, 1200) . '...';
+  }
+
+  private function trimParentContext(string $text): string {
+    $text = preg_replace('/\s+/', ' ', trim($text)) ?? trim($text);
+    if (mb_strlen($text) <= self::PARENT_CONTEXT_MAX_CHARS) {
+      return $text;
+    }
+
+    return mb_substr($text, 0, self::PARENT_CONTEXT_MAX_CHARS) . "\n\n[Parent page text truncated for synchronous analysis.]";
+  }
+
+  private function trimBodyLinkContext(string $text): string {
+    $text = preg_replace('/\s+/', ' ', trim($text)) ?? trim($text);
+    if (mb_strlen($text) <= self::BODY_LINK_CONTEXT_MAX_CHARS) {
+      return $text;
+    }
+
+    return mb_substr($text, 0, self::BODY_LINK_CONTEXT_MAX_CHARS) . "\n\n[Body-linked page text truncated for synchronous analysis.]";
   }
 
   private function removeBoilerplate(string $text): string {

@@ -3,6 +3,7 @@ status: true
 dependencies:
   module:
     - ai_content_advisor
+    - mass_ai_editorial
 id: contextual_page_check
 label: 'Contextual Page Check'
 description: 'Checks the current page against semantically related indexed pages for actionable editorial follow-ups.'
@@ -32,6 +33,7 @@ prompt: |
   10. If there are no actionable findings in a section, write "No editorial changes recommended."
   11. Do not explain why omitted related pages are acceptable. Omitted pages should leave no trace in the report.
   12. Do not default to "No editorial changes recommended" just because a finding is uncertain. A clear verification task is an actionable recommendation.
+  13. Treat "Body-linked page context" as especially important. These pages were linked from the current page's authored main body, so verify whether those links support the page's user task, reveal missing context, duplicate guidance, conflicting guidance, or better restructuring opportunities.
 
   Return markdown using these headings:
   ## Overall finding

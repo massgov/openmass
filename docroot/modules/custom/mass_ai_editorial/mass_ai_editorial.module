@@ -82,23 +82,51 @@ function mass_ai_editorial_map_legacy_report_type_default(array &$form): void {
  * Keeps the initial prompt default aligned with the selected report type.
  */
 function mass_ai_editorial_sync_initial_report_prompt(array &$form, FormStateInterface $form_state): void {
-  if ($form_state->getValue('report_type')) {
+  if (!isset($form['container']['new_report']['prompt']['prompt_to_use'])) {
     return;
   }
 
-  $report_type = $form['container']['new_report']['report_type']['#default_value'] ?? NULL;
-  if (!$report_type || !isset($form['container']['new_report']['prompt']['prompt_to_use'])) {
+  $report_type = $form_state->getValue('report_type')
+    ?: ($form['container']['new_report']['report_type']['#value'] ?? NULL)
+    ?: ($form['container']['new_report']['report_type']['#default_value'] ?? NULL);
+  if (!$report_type) {
+    return;
+  }
+  if ($report_type === 'duplicate_conflict_check') {
+    $report_type = mass_ai_editorial_contextual_page_check_report_type_id();
+  }
+
+  $prompt = mass_ai_editorial_report_type_prompt($report_type);
+  if ($prompt === '') {
     return;
   }
 
+  $prompt_element = &$form['container']['new_report']['prompt']['prompt_to_use'];
+  $current_prompt = (string) ($prompt_element['#value'] ?? $prompt_element['#default_value'] ?? '');
+  if (mass_ai_editorial_is_contextual_page_check($report_type) && !mass_ai_editorial_prompt_is_contextual_page_check($current_prompt)) {
+    $prompt_element['#default_value'] = $prompt;
+    $prompt_element['#value'] = $prompt;
+    return;
+  }
+
+  if ($current_prompt === '') {
+    $prompt_element['#default_value'] = $prompt;
+    $prompt_element['#value'] = $prompt;
+  }
+}
+
+/**
+ * Loads the configured prompt for a report type.
+ */
+function mass_ai_editorial_report_type_prompt(string $report_type): string {
   $report_type_entity = \Drupal::entityTypeManager()
     ->getStorage('ai_content_advisor_report_type')
     ->load($report_type);
   if (!$report_type_entity || !$report_type_entity->status()) {
-    return;
+    return '';
   }
 
-  $form['container']['new_report']['prompt']['prompt_to_use']['#default_value'] = $report_type_entity->getPrompt();
+  return (string) $report_type_entity->getPrompt();
 }
 
 /**
@@ -120,15 +148,33 @@ function mass_ai_editorial_ai_content_advisor_validate(array &$form, FormStateIn
   }
 
   $prompt = (string) ($form_state->getValue('prompt_to_use') ?? '');
+  if (!mass_ai_editorial_prompt_is_contextual_page_check($prompt)) {
+    $configured_prompt = mass_ai_editorial_report_type_prompt(mass_ai_editorial_contextual_page_check_report_type_id());
+    if ($configured_prompt !== '') {
+      $prompt = $configured_prompt;
+    }
+  }
+
   [$page_limit, $chunks_per_page] = mass_ai_editorial_contextual_page_check_context_limits($entity_id);
-  $context = \Drupal::service('mass_ai_editorial.related_content_context_builder')
-    ->buildForNode($entity_id, $page_limit, $chunks_per_page);
+  $context = '';
+  if (\Drupal::hasService('mass_ai_editorial.related_content_context_builder')) {
+    $context = \Drupal::service('mass_ai_editorial.related_content_context_builder')
+      ->buildForNode($entity_id, $page_limit, $chunks_per_page);
+  }
 
   if ($context === '') {
     $context = "No related indexed pages were found in pgvector for this node. State that the contextual page check could not compare against indexed pages.";
   }
 
   $form_state->setValue('prompt_to_use', $prompt . "\n\n" . $context);
+}
+
+/**
+ * Returns TRUE if a submitted prompt is the contextual page check prompt.
+ */
+function mass_ai_editorial_prompt_is_contextual_page_check(string $prompt): bool {
+  return str_contains($prompt, 'Review the current Mass.gov page against the related indexed page excerpts provided below.')
+    && str_contains($prompt, '## Contextual page findings');
 }
 
 /**
@@ -168,6 +214,9 @@ function mass_ai_editorial_load_or_extract_indexed_text(int $entity_id): string 
 
   $node = \Drupal::entityTypeManager()->getStorage('node')->load($entity_id);
   if (!$node instanceof NodeInterface) {
+    return '';
+  }
+  if (!\Drupal::hasService('mass_ai_editorial.text_extractor')) {
     return '';
   }
 
@@ -298,6 +347,10 @@ function mass_ai_editorial_run_contextual_page_check_report(FormStateInterface $
  * Loads previously rendered AI Index text for a node.
  */
 function mass_ai_editorial_load_indexed_text(int $entity_id): string {
+  if (!\Drupal::database()->schema()->tableExists('mass_ai_editorial_document')) {
+    return '';
+  }
+
   $text = \Drupal::database()->select('mass_ai_editorial_document', 'd')
     ->fields('d', ['rendered_text'])
     ->condition('entity_type', 'node')
