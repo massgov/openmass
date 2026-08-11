@@ -3,6 +3,7 @@
 namespace Drupal\mass_ai_editorial;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\Merge;
 
@@ -46,6 +47,7 @@ class AiEditorialIndexRepository {
    */
   public function storeRenderedDocument(int $document_id, string $text, array $chunks, string $status = 'ready_for_embeddings'): void {
     $now = $this->time->getRequestTime();
+    $text = $this->cleanUtf8($text);
     $hash = hash('sha256', $text);
 
     $previous_hash = $this->database->select('mass_ai_editorial_document', 'd')
@@ -75,13 +77,15 @@ class AiEditorialIndexRepository {
       ->execute();
 
     foreach ($chunks as $chunk) {
+      $chunk_text = $this->cleanUtf8((string) $chunk['text']);
+      $heading = isset($chunk['heading']) ? $this->cleanUtf8((string) $chunk['heading']) : NULL;
       $this->database->insert('mass_ai_editorial_chunk')
         ->fields([
           'document_id' => $document_id,
           'chunk_delta' => $chunk['delta'],
-          'chunk_hash' => $chunk['hash'],
-          'heading' => $chunk['heading'],
-          'text' => $chunk['text'],
+          'chunk_hash' => hash('sha256', $chunk_text),
+          'heading' => $heading,
+          'text' => $chunk_text,
           'token_estimate' => $chunk['token_estimate'],
           'created_at' => $now,
         ])
@@ -237,6 +241,22 @@ class AiEditorialIndexRepository {
 
   private function executeMerge(Merge $merge): void {
     $merge->execute();
+  }
+
+  /**
+   * Removes malformed UTF-8 byte sequences before database writes.
+   */
+  private function cleanUtf8(string $text): string {
+    if (Unicode::validateUtf8($text)) {
+      return $text;
+    }
+
+    $clean = @iconv('UTF-8', 'UTF-8//IGNORE', $text);
+    if ($clean !== FALSE && Unicode::validateUtf8($clean)) {
+      return $clean;
+    }
+
+    return mb_convert_encoding($text, 'UTF-8', 'UTF-8');
   }
 
 }

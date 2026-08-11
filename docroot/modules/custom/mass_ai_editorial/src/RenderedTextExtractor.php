@@ -3,6 +3,7 @@
 namespace Drupal\mass_ai_editorial;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\RendererInterface;
@@ -37,7 +38,7 @@ class RenderedTextExtractor {
     ]);
     $prefix = $prefixes ? implode("\n\n", $prefixes) . "\n\n" : '';
 
-    return trim($prefix . $this->normalizeHtml($html));
+    return trim($this->cleanUtf8($prefix . $this->normalizeHtml($html)));
   }
 
   /**
@@ -53,7 +54,7 @@ class RenderedTextExtractor {
     $text = preg_replace('/ *\n+ */', "\n", $text) ?? $text;
     $text = preg_replace('/\n{3,}/', "\n\n", $text) ?? $text;
 
-    return trim($text);
+    return trim($this->cleanUtf8($text));
   }
 
   /**
@@ -229,6 +230,22 @@ class RenderedTextExtractor {
     catch (\Throwable) {
       return '';
     }
+  }
+
+  /**
+   * Removes malformed UTF-8 byte sequences before text is stored or embedded.
+   */
+  private function cleanUtf8(string $text): string {
+    if (Unicode::validateUtf8($text)) {
+      return $text;
+    }
+
+    $clean = @iconv('UTF-8', 'UTF-8//IGNORE', $text);
+    if ($clean !== FALSE && Unicode::validateUtf8($clean)) {
+      return $clean;
+    }
+
+    return mb_convert_encoding($text, 'UTF-8', 'UTF-8');
   }
 
 }

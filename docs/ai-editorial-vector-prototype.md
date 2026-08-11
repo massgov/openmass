@@ -397,6 +397,8 @@ If pgvector tables do not exist, make sure DDEV was restarted after adding `.dde
 ddev restart
 ```
 
+If a full refresh fails with a MySQL `Incorrect string value` error while inserting `mass_ai_editorial_chunk.text`, the rendered page likely contains malformed UTF-8 bytes. Valid non-English characters should be preserved. The text extractor and repository defensively remove malformed byte sequences before storing flattened text, chunks, or embeddings.
+
 If the pgvector database was created before the init SQL existed, the init file will not run automatically against the existing Docker volume. In a disposable local environment, recreate the DDEV service volume, then restart DDEV.
 
 If embeddings fail, verify Ollama is running on the host:
