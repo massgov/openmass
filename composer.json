@@ -21,6 +21,7 @@
             "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true,
+            "symfony/runtime": true,
             "tbachert/spi": true
         }
     },
@@ -183,9 +184,9 @@
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_ignore": "^3.3",
         "drupal/content_language_no_outbound": "1.0.0-rc1",
-        "drupal/core-composer-scaffold": "~11.3.12",
-        "drupal/core-project-message": "~11.3.12",
-        "drupal/core-recommended": "~11.3.12",
+        "drupal/core-composer-scaffold": "~11.4.5",
+        "drupal/core-project-message": "~11.4.5",
+        "drupal/core-recommended": "~11.4.5",
         "drupal/csv_field": "^3.0",
         "drupal/csv_serialization": "^4.0",
         "drupal/datalayer": "^2",
@@ -198,7 +199,7 @@
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "^2",
         "drupal/entity_embed": "^1.7",
-        "drupal/entity_hierarchy": "^5",
+        "drupal/entity_hierarchy": "^5.0@RC",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "*",
         "drupal/entity_usage": "^2.0@beta",
@@ -308,7 +309,7 @@
         "typhonius/acquia-php-sdk-v2": "^3.8"
     },
     "require-dev": {
-        "drupal/core-dev": "~11.3.12",
+        "drupal/core-dev": "~11.4.5",
         "drupaltest/queue-runner-trait": "dev-master",
         "kint-php/kint": "^5",
         "palantirnet/drupal-rector": "^0.21.1",
@@ -471,7 +472,8 @@
             },
             "drupal/field_tokens": {
                 "Fatal errors in entities that does not declare getFieldDefinitions method (https://www.drupal.org/project/field_tokens/issues/2835032)": "https://www.drupal.org/files/issues/2835032-config-entity-support-9.patch",
-                "Avoid nested Fiber crash when rendering formatted field tokens": "patches/field_tokens/field_tokens-avoid-nested-fiber-on-formatted-render.patch"
+                "Avoid nested Fiber crash when rendering formatted field tokens": "patches/field_tokens/field_tokens-avoid-nested-fiber-on-formatted-render.patch",
+                "Drupal 11.4: EntityType constraint may return an array": "patches/field_tokens/field_tokens-d11.4-entitytype-constraint-array.patch"
             },
             "drupal/file_browser": {
                 "Drupal 11/jQuery 4: fix file browser AJAX context selection and null-safe counter rendering": "patches/file_browser/file_browser-d11-jquery4-ajax-context-fix.patch"
