@@ -22,6 +22,11 @@ class AiEditorialIndexer {
     'api_service_card',
     'external_data_resource',
     'fee',
+    'advisory',
+    'decision',
+    'executive_order',
+    'regulation',
+    'rules'
   ];
 
   public function __construct(
