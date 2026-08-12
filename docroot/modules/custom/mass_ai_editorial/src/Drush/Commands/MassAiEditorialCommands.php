@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_ai_editorial\Drush\Commands;
 
+use Drupal\Core\Cache\MemoryCache\MemoryCacheInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
@@ -26,6 +27,7 @@ class MassAiEditorialCommands extends DrushCommands {
     private readonly ClientInterface $httpClient,
     private readonly AiEditorialIndexer $indexer,
     private readonly AiEditorialIndexRepository $repository,
+    private readonly MemoryCacheInterface $entityMemoryCache,
   ) {
     parent::__construct();
   }
@@ -179,6 +181,7 @@ class MassAiEditorialCommands extends DrushCommands {
       }
 
       $this->output()->writeln(sprintf('org:%d queued=%d', $org_id, $org_queued));
+      $this->resetEntityMemory($node_ids);
     }
 
     $this->output()->writeln(sprintf('<info>Queued %d unique node(s) across %d organization(s).</info>', $queued, count($org_ids)));
@@ -187,6 +190,7 @@ class MassAiEditorialCommands extends DrushCommands {
     do {
       $processed = $this->processQueuedBatch($process_batch, FALSE);
       $processed_total += $processed;
+      $this->resetEntityMemory();
     } while ($processed > 0);
     $this->output()->writeln(sprintf('<info>Rendered and chunked %d document(s).</info>', $processed_total));
 
@@ -201,6 +205,7 @@ class MassAiEditorialCommands extends DrushCommands {
         'pg-pass' => $options['pg-pass'],
       ]);
       $embedded_total += $embedded;
+      gc_collect_cycles();
     } while ($embedded > 0);
     $this->output()->writeln(sprintf('<info>Embedded %d chunk(s) with %s.</info>', $embedded_total, (string) $options['model']));
   }
@@ -226,6 +231,7 @@ class MassAiEditorialCommands extends DrushCommands {
     $processed = 0;
 
     foreach ($documents as $document) {
+      $node = NULL;
       try {
         $node = $storage->load((int) $document->entity_id);
         if (!$node instanceof NodeInterface || !$node->isPublished()) {
@@ -247,6 +253,10 @@ class MassAiEditorialCommands extends DrushCommands {
       catch (\Throwable $exception) {
         $this->repository->markFailed((int) $document->id, $exception->getMessage());
         $this->logger()->error($exception->getMessage());
+      }
+      finally {
+        $this->resetEntityMemory([(int) $document->entity_id]);
+        unset($node);
       }
     }
 
@@ -318,6 +328,7 @@ class MassAiEditorialCommands extends DrushCommands {
     );
 
     $embedded = 0;
+    $cleaned_documents = [];
     foreach ($chunks as $chunk) {
       $embedding = $this->generateOllamaEmbedding((string) $options['ollama-url'], $model, $chunk->chunk_text);
       if (count($embedding) !== 768) {
@@ -325,7 +336,10 @@ class MassAiEditorialCommands extends DrushCommands {
       }
 
       $pg_document_id = $this->upsertPgDocument($pg, $chunk);
-      $this->deleteStalePgChunks($pg, $pg_document_id, $this->repository->loadChunkDeltas((int) $chunk->local_document_id));
+      if (!isset($cleaned_documents[$pg_document_id])) {
+        $this->deleteStalePgChunks($pg, $pg_document_id, $this->repository->loadChunkDeltas((int) $chunk->local_document_id));
+        $cleaned_documents[$pg_document_id] = TRUE;
+      }
       $pg_chunk_id = $this->upsertPgChunk($pg, $pg_document_id, $chunk, $model, $embedding);
       $this->repository->markChunkEmbedded((int) $chunk->chunk_id, $model, (string) $pg_chunk_id);
       $embedded++;
@@ -502,6 +516,24 @@ class MassAiEditorialCommands extends DrushCommands {
 
   private function resetPgvector(\PDO $pg): void {
     $pg->exec('TRUNCATE TABLE ai_document_chunk, ai_document RESTART IDENTITY');
+  }
+
+  /**
+   * Clears loaded entity objects during long-running rebuilds.
+   *
+   * Rendering can load deeply nested Paragraphs and related entities. Clearing
+   * the shared entity memory cache keeps long Drush processes from slowing as
+   * more rendered pages accumulate in memory.
+   *
+   * @param array<int> $node_ids
+   *   Optional top-level node IDs to clear from node storage.
+   */
+  private function resetEntityMemory(array $node_ids = []): void {
+    if ($node_ids) {
+      $this->entityTypeManager->getStorage('node')->resetCache($node_ids);
+    }
+    $this->entityMemoryCache->deleteAll();
+    gc_collect_cycles();
   }
 
   /**

@@ -65,7 +65,9 @@ class TextChunker {
       }
 
       $current = $current === '' ? $section['text'] : $current . "\n\n" . $section['text'];
-      $current_heading ??= $section['heading'];
+      if ($current_heading === NULL || $current_heading === '') {
+        $current_heading = $section['heading'];
+      }
       $current_words = $this->wordCount($current);
     }
 
@@ -148,6 +150,10 @@ class TextChunker {
    * Keeps chunk metadata concise while preserving level markers in text.
    */
   private function headingLabel(string $line): string {
+    if (preg_match('/^(Breadcrumb|Incoming links to this page):/i', $line)) {
+      return '';
+    }
+
     if (preg_match('/^Heading level [1-6]:\s+(.+)$/i', $line, $matches)) {
       return trim($matches[1]);
     }

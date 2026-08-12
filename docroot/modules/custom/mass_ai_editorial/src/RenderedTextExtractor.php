@@ -52,6 +52,8 @@ class RenderedTextExtractor {
     $text = Html::decodeEntities(strip_tags($html));
     $text = preg_replace('/[ \t]+/', ' ', $text) ?? $text;
     $text = preg_replace('/ *\n+ */', "\n", $text) ?? $text;
+    $text = preg_replace('/^(?:Show more|Show less)$/mi', '', $text) ?? $text;
+    $text = $this->removeFeedbackFormText($text);
     $text = preg_replace('/\n{3,}/', "\n\n", $text) ?? $text;
 
     return trim($this->cleanUtf8($text));
@@ -128,6 +130,24 @@ class RenderedTextExtractor {
     $text = preg_replace('/\s+/', ' ', $text) ?? $text;
 
     return trim($text);
+  }
+
+  /**
+   * Removes Mass.gov page feedback form boilerplate from indexed text.
+   */
+  private function removeFeedbackFormText(string $text): string {
+    $patterns = [
+      '/\nHeading level [1-6]: Help Us Improve Mass\.gov\b.*$/is',
+      '/\nHelp Us Improve Mass\.gov\b.*$/is',
+      '/\nDid you find what you were looking for on this webpage\?.*$/is',
+      '/\nPlease let us know how we can improve this page\..*$/is',
+    ];
+
+    foreach ($patterns as $pattern) {
+      $text = preg_replace($pattern, '', $text, 1) ?? $text;
+    }
+
+    return $text;
   }
 
   /**

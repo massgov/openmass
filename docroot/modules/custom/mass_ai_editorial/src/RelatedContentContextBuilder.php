@@ -191,17 +191,16 @@ class RelatedContentContextBuilder {
    */
   private function extractMainBodyText(string $text): string {
     $body = $text;
-    $details_position = strpos($body, "The Details\n");
-    if ($details_position !== FALSE) {
-      $body = substr($body, $details_position);
+    if (preg_match('/^(?:Heading level [1-6]:\s*)?The Details$/m', $body, $matches, PREG_OFFSET_CAPTURE)) {
+      $body = substr($body, $matches[0][1]);
     }
 
-    $body = preg_replace('/Table of Contents.*?(?:\n\n)(?=[^\n]+\n\n)/s', '', $body, 1) ?? $body;
+    $body = preg_replace('/Table of Contents.*?(?:\n\n)(?=Heading level [1-6]:|[^\n]+\n\n)/s', '', $body, 1) ?? $body;
     $stop_patterns = [
-      '/\nDownloads\n/is',
-      '/\nContact\n/is',
-      '/\nContacts\n/is',
-      '/\nRelated(?: information| links| services)?\n/is',
+      '/\n(?:Heading level [1-6]:\s*)?Downloads\n/is',
+      '/\n(?:Heading level [1-6]:\s*)?Contact\n/is',
+      '/\n(?:Heading level [1-6]:\s*)?Contacts\n/is',
+      '/\n(?:Heading level [1-6]:\s*)?Related(?: information| links| services)?\n/is',
     ];
     foreach ($stop_patterns as $pattern) {
       if (preg_match($pattern, $body, $matches, PREG_OFFSET_CAPTURE)) {

@@ -273,6 +273,7 @@ Analyze
 
 The report should use:
 
+- A compact current-page structure summary that is always included in the prompt.
 - The current page's rendered `ai_index` text.
 - Related pages from pgvector.
 - Breadcrumb text.
@@ -282,6 +283,8 @@ The report should use:
 - Link targets preserved as `[href: ...]`.
 - "Offered by" links from the rendered view mode.
 - Incoming links from Entity Usage.
+
+The current-page structure summary includes the page title, URL, breadcrumb, Offered by organizations, and H2/H3 headings. It also includes main body links only when the page has 10 or fewer internal main body links. Pages with more than 10 main body links omit that link list to keep the prompt focused.
 
 The prompt is tuned to show only actionable editorial suggestions. It should omit related pages that require no action and omit suggested links that are already linked.
 
