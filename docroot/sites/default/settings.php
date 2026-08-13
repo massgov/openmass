@@ -32,6 +32,23 @@ $settings['config_sync_directory'] = '../conf/drupal/config';
 $settings['state_cache'] = TRUE;
 
 /**
+ * Restrict accepted HTTP host headers to trusted site domains.
+ *
+ * The public domains live here, everything else is appended by the
+ * environment specific settings files: settings.acquia.php for the Acquia
+ * hostnames, settings.vm.php for local development and CI, and
+ * settings.tugboat.php for previews.
+ */
+$settings['trusted_host_patterns'] = [
+  '^localhost$',
+  '^127\.0\.0\.1$',
+  // Covers www, edit, stage, search.digital and every other mass.gov
+  // subdomain the site answers on.
+  '^mass\.gov$',
+  '^.+\.mass\.gov$',
+];
+
+/**
  * Page caching:
  *
  * By default, Drupal sends a "Vary: Cookie" HTTP header for anonymous page
