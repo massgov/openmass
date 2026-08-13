@@ -47,6 +47,7 @@ class RelatedContentContextBuilder {
       $grouped[$candidate_id]['title'] = $row['candidate_title'];
       $grouped[$candidate_id]['url'] = $row['candidate_url'];
       $grouped[$candidate_id]['similarity'] = max((float) ($grouped[$candidate_id]['similarity'] ?? 0), (float) $row['similarity']);
+      $grouped[$candidate_id]['structure_summary'] ??= $this->buildIndexedStructureSummary($candidate_id);
       $grouped[$candidate_id]['chunks'][] = [
         'delta' => (int) $row['candidate_chunk_delta'],
         'similarity' => (float) $row['similarity'],
@@ -58,10 +59,11 @@ class RelatedContentContextBuilder {
     $context = '';
     if ($parent_document) {
       $context .= sprintf(
-        "Breadcrumb parent page context:\nTitle: %s\nNode ID: %d\nURL: %s\nFull indexed parent page text:\n%s\n\n",
+        "Breadcrumb parent page context:\nTitle: %s\nNode ID: %d\nURL: %s\nIndexed structure summary:\n%s\nFull indexed parent page text:\n%s\n\n",
         $parent_document->title,
         (int) $parent_document->entity_id,
         $parent_document->url,
+        $this->buildStructureSummaryFromText((string) $parent_document->rendered_text),
         $this->trimParentContext($this->removeBoilerplate((string) $parent_document->rendered_text))
       );
     }
@@ -71,10 +73,11 @@ class RelatedContentContextBuilder {
       $context .= "These indexed pages are linked from the current page's main body area. Treat them as intentional editorial context selected by the author, not as automatically discovered related pages.\n\n";
       foreach ($body_link_documents as $document) {
         $context .= sprintf(
-          "Body-linked page\nTitle: %s\nNode ID: %d\nURL: %s\nIndexed page excerpt:\n%s\n\n",
+          "Body-linked page\nTitle: %s\nNode ID: %d\nURL: %s\nIndexed structure summary:\n%s\nIndexed page excerpt:\n%s\n\n",
           $document->title,
           (int) $document->entity_id,
           $document->url,
+          $this->buildStructureSummaryFromText((string) $document->rendered_text),
           $this->trimBodyLinkContext($this->removeBoilerplate((string) $document->rendered_text))
         );
       }
@@ -90,13 +93,14 @@ class RelatedContentContextBuilder {
     $candidate_number = 1;
     foreach ($grouped as $candidate_id => $candidate) {
       $context .= sprintf(
-        "Related page %d of %d\nTitle: %s\nNode ID: %d\nURL: %s\nSimilarity score: %.3f\n",
+        "Related page %d of %d\nTitle: %s\nNode ID: %d\nURL: %s\nSimilarity score: %.3f\nIndexed structure summary:\n%s\n",
         $candidate_number,
         count($grouped),
         $candidate['title'],
         $candidate_id,
         $candidate['url'] ?? '',
-        $candidate['similarity']
+        $candidate['similarity'],
+        $candidate['structure_summary'] ?: 'No indexed structure summary available.'
       );
 
       foreach ($this->selectAdaptiveChunks($candidate['chunks'], $max_chunks_per_page) as $chunk) {
@@ -133,6 +137,110 @@ class RelatedContentContextBuilder {
       ->fetchObject();
 
     return $document ?: NULL;
+  }
+
+  /**
+   * Builds a compact structure summary from one indexed document.
+   */
+  private function buildIndexedStructureSummary(int $node_id): string {
+    $document = $this->loadIndexedDocumentByEntityId($node_id);
+    if (!$document || empty($document->rendered_text)) {
+      return '';
+    }
+
+    return $this->buildStructureSummaryFromText((string) $document->rendered_text);
+  }
+
+  /**
+   * Extracts structural signals that should be visible for context pages.
+   */
+  private function buildStructureSummaryFromText(string $text): string {
+    $lines = [];
+    if (preg_match('/^Breadcrumb: (?<breadcrumb>.*)$/m', $text, $matches)) {
+      $lines[] = 'Breadcrumb: ' . trim($matches['breadcrumb']);
+    }
+
+    $offered_by = $this->extractOfferedByLines($text);
+    if ($offered_by) {
+      $lines[] = 'Offered by links from rendered view mode:';
+      foreach ($offered_by as $line) {
+        $lines[] = '- ' . $line;
+      }
+    }
+
+    $headings = $this->extractHeadingLines($text);
+    if ($headings) {
+      $lines[] = 'Semantic heading markers:';
+      foreach ($headings as $line) {
+        $lines[] = '- ' . $line;
+      }
+    }
+
+    $links = $this->extractLinkTargetExamples($text);
+    if ($links) {
+      $lines[] = 'Link targets preserved in indexed text:';
+      foreach ($links as $line) {
+        $lines[] = '- ' . $line;
+      }
+    }
+
+    return $lines ? implode("\n", $lines) : 'No breadcrumb, offered-by links, headings, or link targets found in indexed text.';
+  }
+
+  /**
+   * Extracts Offered by links from rendered indexed text.
+   *
+   * @return array<int, string>
+   *   Link-aware labels.
+   */
+  private function extractOfferedByLines(string $text): array {
+    if (!preg_match('/\noffered by\n(?<offered>.*?)(?:\n\n|Heading level 1:|Heading level 2:|$)/is', $text, $matches)) {
+      return [];
+    }
+
+    preg_match_all('/^(?<line>.+?\[href: [^\]]+\])$/m', trim($matches['offered']), $link_matches);
+    return array_slice(array_values(array_unique(array_map('trim', $link_matches['line'] ?? []))), 0, 8);
+  }
+
+  /**
+   * Extracts semantic H2/H3 heading markers from indexed text.
+   *
+   * @return array<int, string>
+   *   Heading marker lines.
+   */
+  private function extractHeadingLines(string $text): array {
+    preg_match_all('/^Heading level (?<level>[23]):\s*(?<heading>.+)$/m', $text, $matches, PREG_SET_ORDER);
+    $headings = [];
+    foreach ($matches as $match) {
+      $headings[] = 'Heading level ' . (int) $match['level'] . ': ' . trim($match['heading']);
+    }
+
+    return array_slice(array_values(array_unique($headings)), 0, 12);
+  }
+
+  /**
+   * Extracts example preserved link targets from indexed text.
+   *
+   * @return array<int, string>
+   *   Link-aware labels.
+   */
+  private function extractLinkTargetExamples(string $text): array {
+    $text = preg_replace('/^Breadcrumb: .*$/m', '', $text) ?? $text;
+    preg_match_all('/(?<label>[^\n\[]+?)\s*\[href: (?<href>[^\]]+)\]/', $text, $matches, PREG_SET_ORDER);
+    $links = [];
+    foreach ($matches as $match) {
+      $label = trim(preg_replace('/\s+/', ' ', $match['label']) ?? $match['label']);
+      $href = trim($match['href']);
+      if ($label === '' || $href === '' || str_starts_with($label, 'Breadcrumb:')) {
+        continue;
+      }
+      $links[$href] = $label . ' [href: ' . $href . ']';
+      if (count($links) >= 12) {
+        break;
+      }
+    }
+
+    return array_values($links);
   }
 
   /**

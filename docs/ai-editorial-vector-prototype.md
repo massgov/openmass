@@ -124,16 +124,18 @@ If the module was already enabled before the report type config was added, impor
 
 AI Content Advisor still needs a chat provider configured for report generation. This prototype only uses Ollama for embeddings. The author-facing report uses the provider configured in `ai_content_advisor.configuration`, such as Claude Sonnet through the site's existing AI provider setup.
 
-If the configured AI Content Advisor provider uses AWS Bedrock, local DDEV also needs the AWS environment variables available in the web container. Add the variable names to `.ddev/config.yaml` under `web_environment`, and use values from an approved existing environment:
+If the configured AI Content Advisor provider uses AWS Bedrock, local DDEV also needs the AWS environment variables available in the web container. Put local credential values in an ignored DDEV override file, for example `.ddev/config.ai-editorial.local.yaml`, using values from an approved existing environment:
 
 ```yaml
 web_environment:
-  - AWS_ACCESS_KEY_ID
-  - AWS_SECRET_ACCESS_KEY
+  - AWS_ACCESS_KEY_ID=...
+  - AWS_SECRET_ACCESS_KEY=...
   - AWS_REGION=us-east-1
 ```
 
-Do not commit credential values to `.ddev/config.yaml`. Keep secrets in local environment configuration or another approved local secret source.
+If temporary credentials are used, also include `AWS_SESSION_TOKEN`.
+
+Do not commit credential values to `.ddev/config.yaml`. This repo's DDEV gitignore excludes `.ddev/config.local.yaml` and `.ddev/config.*.local.yaml`, and DDEV merges those files into the project configuration.
 
 ## Populate the vector database
 
@@ -271,22 +273,127 @@ Then click:
 Analyze
 ```
 
-The report should use:
-
-- A compact current-page structure summary that is always included in the prompt.
-- The current page's rendered `ai_index` text.
-- Related pages from pgvector.
-- Breadcrumb text.
-- Indexed context for the immediate breadcrumb parent, when that parent page is in the local index.
-- Indexed context for a small set of internal pages linked from the current page's main body area.
-- Semantic heading markers such as `Heading level 2: Apply online`.
-- Link targets preserved as `[href: ...]`.
-- "Offered by" links from the rendered view mode.
-- Incoming links from Entity Usage.
-
-The current-page structure summary includes the page title, URL, breadcrumb, Offered by organizations, and H2/H3 headings. It also includes main body links only when the page has 10 or fewer internal main body links. Pages with more than 10 main body links omit that link list to keep the prompt focused.
-
 The prompt is tuned to show only actionable editorial suggestions. It should omit related pages that require no action and omit suggested links that are already linked.
+
+## Report context
+
+When a user runs the `Contextual Page Check`, the module does not send raw Drupal HTML to the model. It sends the configured report prompt plus a bounded set of indexed context that is meant to support editorial recommendations.
+
+The model receives three user messages:
+
+1. The configured `Contextual Page Check` prompt, followed by related-page context.
+2. A compact current-page structure summary.
+3. The current page's indexed text.
+
+### Configured report prompt
+
+The base instructions come from `ai_content_advisor.report_type.contextual_page_check`. Those instructions tell the model to look for actionable editorial changes only, including title fit, breadcrumb/parent fit, duplicates, conflicts, restructuring opportunities, and missing or inappropriate links.
+
+During form validation, the module appends related-page context to that prompt before the AI provider is called.
+
+### Current-page structure summary
+
+The structure summary is always included for the page being analyzed. It is intentionally compact and is built at report time from the Drupal node and the indexed text.
+
+It includes:
+
+- Page title.
+- Node ID.
+- Canonical URL.
+- Breadcrumb, including link targets.
+- Offered by organizations from `field_organizations`, including link targets.
+- H2 and H3 headings from semantic heading markers in the indexed text.
+- Main body links, but only when the page has 10 or fewer internal main body links.
+
+When a page has more than 10 internal main body links, the summary says the link list was omitted. This keeps the prompt from being dominated by link-heavy pages.
+
+Example shape:
+
+```text
+Current page structure summary:
+Title: File your weekly unemployment claim
+Node ID: 123
+URL: /how-to/file-your-weekly-unemployment-claim
+Breadcrumb: Home [href: /] > Unemployment [href: /unemployment]
+Offered by:
+- Department of Unemployment Assistance [href: /orgs/department-of-unemployment-assistance]
+H2/H3 headings:
+- H2: Before you begin
+- H2: How to file
+Main body links:
+- Log in to UI Online [href: /...]
+```
+
+### Current indexed page text
+
+The current page's rendered `ai_index` text is always included after the structure summary, with an 8,000-character cap for the synchronous Content Advisor UI.
+
+This text is the canonical flattened representation generated from Drupal rendering. It includes:
+
+- Breadcrumb text.
+- Incoming links from Entity Usage, when available.
+- Offered by links from the rendered view mode.
+- Page body text from the `ai_index` view mode.
+- Semantic heading markers such as `Heading level 2: Apply online`.
+- Link targets preserved as `Label [href: /path]`.
+
+The flattened text removes known UI noise such as standalone `Show more` / `Show less` controls and the Mass.gov feedback form before future storage/chunking.
+
+### Breadcrumb parent page context
+
+If the immediate breadcrumb parent page is present in the local index, the report includes that parent separately as `Breadcrumb parent page context`.
+
+This parent context includes:
+
+- Parent page title.
+- Parent node ID.
+- Parent URL.
+- Breadcrumb text.
+- Offered by links from the rendered view mode.
+- Semantic heading markers such as `Heading level 2: Apply online`.
+- Link targets preserved as `Label [href: /path]`.
+- Up to 8,000 characters of the parent page's indexed text.
+
+The breadcrumb parent is handled outside vector similarity search because the parent is structurally important even when it is not one of the closest semantic matches. It is excluded from the later vector-related page list to avoid duplicate context.
+
+### Body-linked page context
+
+The report separately includes indexed context for pages that are linked from the current page's authored main body area. This is different from the compact main-body link list in the structure summary.
+
+Body-linked page context is included only when the current page has six or fewer eligible internal main body links. Those linked pages are treated as intentional editorial context selected by the author.
+
+For each body-linked page, the report includes:
+
+- Linked page title.
+- Linked page node ID.
+- Linked page URL.
+- Breadcrumb text.
+- Offered by links from the rendered view mode.
+- Semantic heading markers such as `Heading level 2: Apply online`.
+- Link targets preserved as `Label [href: /path]`.
+- Up to 3,000 characters of the linked page's indexed text.
+
+The main-body detector excludes breadcrumb links, incoming-link summaries, table-of-contents anchors, contact links, downloads, related-links sections, external links, document/media/file links, and self-links. Body-linked pages are excluded from the later vector-related page list to avoid duplicate context.
+
+### Vector-related page context
+
+After the required structural context, the report asks pgvector for pages whose embedded chunks are semantically similar to the current page's embedded chunks.
+
+For each related page, the report includes:
+
+- Related page title.
+- Related page node ID.
+- Related page URL.
+- Similarity score.
+- Breadcrumb text.
+- Offered by links from the rendered view mode.
+- Semantic heading markers such as `Heading level 2: Apply online`.
+- Link targets preserved as `Label [href: /path]`.
+- One to three indexed chunk excerpts from that related page.
+
+Each related chunk excerpt is trimmed to 1,200 characters. The best-matching chunk is always included. A second or third chunk is included only when its similarity score is close to the best chunk for that page. This avoids sending extra chunks when only one section is clearly relevant.
+
+Related pages are not treated as confirmed problems. The prompt tells the model to review them as possible evidence for duplicates, conflicts, missing links, title issues, breadcrumb/parent issues, or restructuring opportunities.
 
 ## Link normalization
 
