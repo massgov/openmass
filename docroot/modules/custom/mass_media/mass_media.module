@@ -217,6 +217,12 @@ function mass_media_media_presave(MediaInterface $entity) {
   $bypass_presave = isset($_ENV['MASS_MEDIA_PRESAVE_BYPASS']) ? (bool) $_ENV['MASS_MEDIA_PRESAVE_BYPASS'] : FALSE;
 
   if ($entity->bundle() == 'document' && !$bypass_presave) {
+    // Keep media name in sync with the document title shown to authors.
+    // Some admin interfaces and reports still use media_field_data.name.
+    $document_title = trim((string) $entity->get('field_title')->value);
+    if ($document_title !== '' && $entity->label() !== $document_title) {
+      $entity->set('name', $document_title);
+    }
 
     // This helps the system to track documents in the automatic curated lists.
     if ($labels = $entity->field_document_label->getValue()) {
