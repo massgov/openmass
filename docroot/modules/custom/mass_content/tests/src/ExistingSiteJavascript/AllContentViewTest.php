@@ -257,11 +257,60 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    * Selects N numbers of row in the view results table.
    */
   private function selectRows($num) {
-    $checkboxes = $this->view->findAll('css', '.views-table > tbody > tr .views-field-node-bulk-form input');
+    $checkboxes = $this->getSession()->getPage()->findAll('css', '.vbo-view-form .js-vbo-checkbox');
     $checkboxes = \array_slice($checkboxes, 0, $num);
-    foreach ($checkboxes as $checkbox) {
-      $checkbox->click();
+    foreach ($checkboxes as $index => $checkbox) {
+      $this->getSession()->executeScript(sprintf(
+        'var el = document.querySelectorAll(".vbo-view-form .js-vbo-checkbox")[%d]; if (el) { el.scrollIntoView({block: "center"}); }',
+        $index
+      ));
+      $checkbox->check();
     }
+  }
+
+  /**
+   * Apply to selected items is enabled after choosing an action and rows.
+   */
+  public function testBulkApplyEnabledWhenMultipleItemsSelected() {
+    $prefix = 'DP-47588-' . $this->randomMachineName(8);
+    foreach (['one', 'two'] as $suffix) {
+      $this->createNode([
+        'type' => 'page',
+        'title' => $prefix . '-' . $suffix,
+        'status' => 1,
+        'moderation_state' => MassModeration::PUBLISHED,
+      ]);
+    }
+
+    $this->drupalGet('admin/content');
+    $page = $this->getCurrentPage();
+    $page->fillField('Title', $prefix);
+    $page->pressButton('Apply');
+    $this->waitForViewResults();
+    $this->assertTrue(
+      $this->getSession()->wait(
+        10000,
+        'document.querySelectorAll(".vbo-view-form .js-vbo-checkbox").length >= 2'
+      ),
+      'VBO row checkboxes should be present after filtering All Content.'
+    );
+    $this->view = $page->find('css', '.view.view-content');
+
+    $this->selectRows(2);
+    $checked = (int) $this->getSession()->evaluateScript(
+      'document.querySelectorAll(".vbo-view-form .js-vbo-checkbox:checked").length'
+    );
+    $this->assertSame(2, $checked, 'Two All Content rows should be selected.');
+    $page->selectFieldOption('Action', 'Edit content');
+
+    $enabled = $this->getSession()->wait(
+      5000,
+      'document.querySelector(\'[data-vbo="vbo-action"]:not(:disabled)\') !== null'
+    );
+    $this->assertTrue($enabled, 'Apply to selected items should be enabled after selecting multiple items and an action.');
+
+    $page->pressButton('Apply to selected items');
+    $this->assertSession()->addressMatches('/views-bulk-operations\/configure\/content\//');
   }
 
   /**
