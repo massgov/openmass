@@ -2,6 +2,7 @@ version: 2.1
 orbs:
   jira: circleci/jira@1.3.1
   node: circleci/node@4.9.0
+  aws-cli: circleci/aws-cli@5.4.1
 
 # YAML anchors/aliases. See;
 # - https://circleci.com/blog/circleci-hacks-reuse-yaml-in-your-circleci-config-with-yaml/
@@ -48,7 +49,7 @@ executors:
     parameters:
       instance:
         type: string
-        default: massgov/mysql-sanitized:latest
+        default: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
     working_directory: /var/www/code
     # https://circleci.com/docs/2.0/configuration-reference/#resource_class
     resource_class: xlarge
@@ -67,9 +68,8 @@ executors:
           DTT_API_URL: http://mass.local:9222
           BROWSERTEST_OUTPUT_DIRECTORY: /tmp
       - image: << parameters.instance >>
-        auth:
-          username: $DOCKER_USER
-          password: $DOCKER_API_KEY
+        aws_auth:
+          oidc_role_arn: $MYSQL_REBUILD_AWS_ROLE_TO_ASSUME
         environment:
           MYSQL_USER: circle
           MYSQL_PASSWORD: circle
@@ -279,7 +279,7 @@ jobs:
     parameters:
       instance:
         type: string
-        default: massgov/mysql-sanitized:latest
+        default: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
       command:
         type: enum
         enum: ['phpunit']
@@ -633,11 +633,11 @@ jobs:
       - store_artifacts:
           path: backstop
 
-  # If you make changes to this job, consider pushing to a tag that's not 'latest'
-  # at Docker Hub. That way, your in-progress work does not interfere with build
-  # happening in the build_test workflow.
+  # If you make changes to this job, consider pushing to a tag that's not 'latest'.
+  # That way, your in-progress work does not interfere with build happening in the
+  # build_test workflow.
   populate:
-    description: "Sanitize a mysql database and push to Docker Hub"
+    description: "Sanitize a mysql database and push to ECR"
     parameters:
       sanitizeOption:
         type: string
@@ -665,7 +665,14 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
-      - run: docker login -u $DOCKER_USER -p $DOCKER_API_KEY
+      - aws-cli/setup:
+          role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
+          region: "$MYSQL_REBUILD_AWS_REGION"
+          session_duration: "3600"
+      - run:
+          name: Log in to ECR
+          command: |
+            aws ecr get-login-password --region "$MYSQL_REBUILD_AWS_REGION" | docker login --username AWS --password-stdin "$MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com"
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
@@ -673,11 +680,11 @@ jobs:
       - run: docker-compose stop --timeout 60 mysql
       - run:
           name: Commit mysql image
-          command: docker commit $(docker-compose ps --all -q mysql) << parameters.instance >>
+          command: docker commit "$(docker-compose ps --all -q mysql)" "<< parameters.instance >>"
           no_output_timeout: 60m
       - run:
           name: Push mysql image
-          command: docker push << parameters.instance >>
+          command: docker push "<< parameters.instance >>"
           no_output_timeout: 60m
 
   pending_security:
@@ -1104,7 +1111,7 @@ workflows:
       - test:
           name: test-phpunit-super
           command: phpunit
-          instance: massgov/mysql-sanitized:super
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
           requires: [build]
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -1118,23 +1125,23 @@ workflows:
           name: massgov.populate --sanitize
           requires: [build]
           sanitizeOption: --sanitize
-          instance: massgov/mysql-sanitized:latest
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
       - populate:
           name: massgov.populate --super-sanitize
           requires: [build]
           sanitizeOption: --super-sanitize
-          instance: massgov/mysql-sanitized:super
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
       - populate:
           name: massgov.populate.arm --sanitize
           requires: [ build ]
           sanitizeOption: --sanitize
-          instance: massgov/mysql-sanitized:latest.arm
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest.arm
           resource_class: arm.large
       - populate:
           name: massgov.populate.arm --super-sanitize
           requires: [ build ]
           sanitizeOption: --super-sanitize
-          instance: massgov/mysql-sanitized:super.arm
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super.arm
           resource_class: arm.large
 
   # Usually triggered by drush ma:release.

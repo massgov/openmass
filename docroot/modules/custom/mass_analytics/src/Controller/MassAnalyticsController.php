@@ -4,6 +4,7 @@ namespace Drupal\mass_analytics\Controller;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\node\NodeInterface;
 
 class MassAnalyticsController extends ControllerBase {
@@ -31,27 +32,32 @@ class MassAnalyticsController extends ControllerBase {
   ];
 
   /**
-   * Build the iframe page.
+   * Build the Power BI report URL for a node and return the URL string.
    *
    * @param \Drupal\node\NodeInterface $node
    *   The upcasted node object.
    *
-   * @return array
-   *   The iframe render array or a no match message render array.
+   * @return string
+   *   Absolute Power BI reportEmbed URL, pre-filtered by node id.
    */
-  public function build(NodeInterface $node): array {
-    $config = $this->config('mass_analytics.settings');
-    if (!empty($config->get('looker_studio_url'))) {
-      $iframe_url = $config->get('looker_studio_url') . '?params=%7B"nodeId":' . $node->id() . ',"nodeId2":' . $node->id() . '%7D';
-      return [
-        '#theme' => 'mass_analytics_iframe',
-        '#config' => $iframe_url,
-        '#cache' => [
-          'max-age' => 0,
-        ],
-      ];
-    }
-    return [];
+  public static function reportUrl(NodeInterface $node): string {
+    return 'https://app.powerbigov.us/reportEmbed?reportId=5180080b-8681-424d-a679-c45fe3037bf6&autoAuth=true&ctid=3e861d16-48b7-4a0e-9806-8c04d81b7b2a&filter=aggregated_node_analytics%2FnodeId+eq+' . $node->id() . '&filterPaneEnabled=false&navContentPaneEnabled=false';
+  }
+
+  /**
+   * Redirect to the Power BI report for this node.
+   *
+   * Kept as a fallback for direct URL access; the Analytics local task now
+   * links to the Power BI URL directly (see mass_analytics_menu_local_tasks_alter).
+   *
+   * @param \Drupal\node\NodeInterface $node
+   *   The upcasted node object.
+   *
+   * @return \Drupal\Core\Routing\TrustedRedirectResponse
+   *   Redirect to the report.
+   */
+  public function build(NodeInterface $node): TrustedRedirectResponse {
+    return new TrustedRedirectResponse(self::reportUrl($node));
   }
 
   /**
