@@ -40,21 +40,44 @@ class OrgFilter extends FilterPluginBase {
     if ($value = $this->getValue()) {
       $nid_alias = $this->query->ensureTable('node_field_data', $this->relationship);
 
-      // Use EXISTS instead of JOINing node__field_organizations. That table has
-      // one row per org delta; a JOIN fans out rows and inflates SUM() fields
-      // (e.g. accessibility report issue counts).
-      $p_nid = $this->placeholder() . '[]';
-      $p_org = $this->placeholder() . '[]';
       if ($this->operator === '!=') {
-        $snippet = "$nid_alias.nid NOT IN ($p_nid) AND NOT EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.field_organizations_target_id IN ($p_org))";
+        $p_nid = $this->placeholder() . '[]';
+        $p_org = $this->placeholder() . '[]';
+        $snippet = "$nid_alias.nid NOT IN ($p_nid) AND NOT EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.deleted = 0 AND nfo.field_organizations_target_id IN ($p_org))";
+        $this->query->addWhereExpression($this->options['group'], $snippet, [
+          $p_nid => $value,
+          $p_org => $value,
+        ]);
+        return;
       }
-      else {
-        $snippet = "$nid_alias.nid IN ($p_nid) OR EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.field_organizations_target_id IN ($p_org))";
-      }
-      $this->query->addWhereExpression($this->options['group'], $snippet, [
-        $p_nid => $value,
-        $p_org => $value,
+
+      // Join a de-duplicated set of node ids instead of the raw field table.
+      // node__field_organizations has one row per org delta, so joining it
+      // directly fans out rows and inflates SUM() fields (e.g. accessibility
+      // report issue counts). SELECT DISTINCT removes the fan-out while the
+      // INNER JOIN keeps the selectivity that a correlated EXISTS loses.
+      $database = \Drupal::database();
+      $subquery = $database->select('node__field_organizations', 'nfo');
+      $subquery->addField('nfo', 'entity_id');
+      $subquery->condition('nfo.deleted', 0);
+      $subquery->condition('nfo.field_organizations_target_id', $value, 'IN');
+      $subquery->distinct();
+
+      // An org_page matches itself, even with no field_organizations value.
+      $self = $database->select('node_field_data', 'nfd');
+      $self->addField('nfd', 'nid');
+      $self->condition('nfd.nid', $value, 'IN');
+      $subquery->union($self);
+
+      $join = \Drupal::service('plugin.manager.views.join')->createInstance('standard', [
+        'table' => 'node__field_organizations',
+        'table formula' => $subquery,
+        'field' => 'entity_id',
+        'left_table' => 'node_field_data',
+        'left_field' => 'nid',
+        'type' => 'INNER',
       ]);
+      $this->query->addTable('node__field_organizations', $this->relationship, $join, 'org_set');
     }
   }
 

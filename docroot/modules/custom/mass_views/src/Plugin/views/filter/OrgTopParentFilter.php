@@ -68,7 +68,7 @@ class OrgTopParentFilter extends FilterPluginBase {
     $placeholder = $this->placeholder() . '[]';
     $this->query->addWhereExpression(
       $or_group,
-      "EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.field_organizations_target_id IN ($placeholder))",
+      "EXISTS (SELECT 1 FROM {node__field_organizations} nfo WHERE nfo.entity_id = $nid_alias.nid AND nfo.deleted = 0 AND nfo.field_organizations_target_id IN ($placeholder))",
       [$placeholder => $org_ids]
     );
   }

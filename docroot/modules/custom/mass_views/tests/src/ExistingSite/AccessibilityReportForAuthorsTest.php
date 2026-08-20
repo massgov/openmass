@@ -24,9 +24,27 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
   private array $seededPids = [];
 
   /**
+   * Original 'status' query parameter, restored in tearDown.
+   */
+  private ?string $originalStatusInput = NULL;
+
+  /**
+   * Whether the request carried a 'status' query parameter to begin with.
+   */
+  private bool $hadStatusInput = FALSE;
+
+  /**
    * {@inheritdoc}
    */
   protected function tearDown(): void {
+    $query = \Drupal::request()->query;
+    if ($this->hadStatusInput) {
+      $query->set('status', $this->originalStatusInput);
+    }
+    else {
+      $query->remove('status');
+    }
+
     if ($this->seededPids) {
       $database = \Drupal::database();
       $database->delete('ed11y_result')
@@ -113,7 +131,7 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
 
     // input_required_on_request only builds the query when the HTTP request
     // has query parameters (not just setExposedInput).
-    \Drupal::request()->query->set('status', '1');
+    $this->setStatusRequestQuery();
 
     $view = Views::getView('accessibility_report_for_authors');
     $this->assertNotNull($view);
@@ -133,6 +151,103 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
     $this->assertNotEmpty($view->result, 'View should return results when status filter is in the request.');
     $this->assertCount(1, $matching, 'Node should appear once (stale alias scan ignored). Current alias: ' . $current_alias);
     $this->assertSame(2, $matching[0], 'Issue count should come from the current-URL scan.');
+  }
+
+  /**
+   * Issue counts are not multiplied when a node has several organizations.
+   */
+  public function testIssueCountIsNotInflatedByMultipleOrganizations(): void {
+    $parent_org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'DP-48112 parent org ' . $this->randomMachineName(6),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+    $child_org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'DP-48112 child org ' . $this->randomMachineName(6),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+      'field_parent' => [['target_id' => $parent_org->id()]],
+    ]);
+
+    // A page tagged with two orgs from the same subtree: the pre-fix JOIN
+    // returned one row per org delta, so SUM(content_count) doubled.
+    $node = $this->createNode([
+      'type' => 'service_page',
+      'title' => 'DP-48112 multi-org ' . $this->randomMachineName(8),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+      'field_organizations' => [
+        ['target_id' => $parent_org->id()],
+        ['target_id' => $child_org->id()],
+      ],
+    ]);
+    $nid = (int) $node->id();
+    $now = \Drupal::time()->getRequestTime();
+    $pid = $this->insertEd11yPage([
+      'entity_id' => $nid,
+      'entity_type' => 'Service',
+      'route_name' => 'entity.node.canonical',
+      'page_path' => \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid),
+      'page_language' => 'en',
+      'page_title' => $node->getTitle(),
+      'content_results' => 5,
+      'dev_results' => 0,
+      'updated' => $now,
+    ]);
+    $this->insertEd11yResult($pid, 'LINK_URL', 5, $now);
+
+    $this->setStatusRequestQuery();
+
+    // Top-parent filter (EXISTS path — kept per review for perf).
+    $view = Views::getView('accessibility_report_for_authors');
+    $view->setDisplay('default');
+    $view->setItemsPerPage(0);
+    $view->initHandlers();
+    $view->filter['node_parent_org_top_filter']->options['exposed'] = FALSE;
+    $view->filter['node_parent_org_top_filter']->value = [$parent_org->id()];
+    $view->execute();
+
+    $matching = [];
+    foreach ($view->result as $row) {
+      if ($this->rowMatchesEntityId($row, $nid)) {
+        $matching[] = $this->rowContentCount($row);
+      }
+    }
+
+    $this->assertCount(1, $matching, 'A node tagged with two orgs in the subtree should appear once.');
+    $this->assertSame(5, $matching[0], 'Issue count must not be multiplied by the number of organizations.');
+
+    // Direct org filter (DISTINCT subquery JOIN path — the All Content perf fix).
+    $view = Views::getView('accessibility_report_for_authors');
+    $view->setDisplay('default');
+    $view->setItemsPerPage(0);
+    $view->initHandlers();
+    $view->filter['node_org_filter']->options['exposed'] = FALSE;
+    $view->filter['node_org_filter']->operator = '=';
+    $view->filter['node_org_filter']->value = [['target_id' => $parent_org->id()]];
+    $view->execute();
+
+    $matching = [];
+    foreach ($view->result as $row) {
+      if ($this->rowMatchesEntityId($row, $nid)) {
+        $matching[] = $this->rowContentCount($row);
+      }
+    }
+
+    $this->assertCount(1, $matching, 'Direct org filter should also return the multi-org node once.');
+    $this->assertSame(5, $matching[0], 'Direct org filter must not inflate issue counts via field-delta fan-out.');
+  }
+
+  /**
+   * Sets request status=1, remembering prior value for tearDown.
+   */
+  private function setStatusRequestQuery(): void {
+    $request_query = \Drupal::request()->query;
+    $this->hadStatusInput = $request_query->has('status');
+    $this->originalStatusInput = $this->hadStatusInput ? (string) $request_query->get('status') : NULL;
+    $request_query->set('status', '1');
   }
 
   /**
