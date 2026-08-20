@@ -3,12 +3,12 @@
 namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
 use Behat\Mink\Element\DocumentElement;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests the Entity IDs filter popup on advanced search views.
  */
-class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
+class EntityIdsFilterTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * The current page.

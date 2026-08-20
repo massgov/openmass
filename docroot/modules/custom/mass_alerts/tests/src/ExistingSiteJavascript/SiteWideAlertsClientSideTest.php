@@ -4,12 +4,12 @@ namespace Drupal\Tests\mass_alerts\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test the client side of alert display.
  */
-class SiteWideAlertsClientSideTest extends ExistingSiteSelenium2DriverTestBase {
+class SiteWideAlertsClientSideTest extends MassExistingSiteSelenium2DriverTestBase {
 
   const DURATION = 60000;
 

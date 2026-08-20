@@ -5,12 +5,12 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\node\Entity\Node;
 use Exception;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests "All Content" view at admin/content.
  */
-class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
+class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * The All Content view.

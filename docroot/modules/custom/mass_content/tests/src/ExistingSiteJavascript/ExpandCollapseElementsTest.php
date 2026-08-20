@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test Expandable/Collapsible elements.
  */
-class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
+class ExpandCollapseElementsTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Tests a single accordion for a given page, located at a CSS selector.
