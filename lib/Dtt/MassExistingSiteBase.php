@@ -6,6 +6,7 @@ use PNX\DrupalTestUtils\Traits\ExpectsCacheableResponseTrait;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 class MassExistingSiteBase extends ExistingSiteBase {
+  use AuthTrait;
   use ExpectsCacheableResponseTrait;
 
   protected static array $uncacheableDynamicPagePatterns = [
