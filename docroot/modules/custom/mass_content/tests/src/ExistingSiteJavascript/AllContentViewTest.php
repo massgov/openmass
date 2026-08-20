@@ -295,6 +295,7 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
       'VBO row checkboxes should be present after filtering All Content.'
     );
     $this->view = $page->find('css', '.view.view-content');
+    $this->assertSession()->elementNotExists('css', '.vbo-multipage-selector');
 
     $this->selectRows(2);
     $checked = (int) $this->getSession()->evaluateScript(
@@ -311,6 +312,8 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
 
     $page->pressButton('Apply to selected items');
     $this->assertSession()->addressMatches('/views-bulk-operations\/configure\/content\//');
+    $this->assertSession()->elementExists('css', 'form#views-bulk-operations-configure-action');
+    $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
   }
 
   /**
