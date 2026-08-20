@@ -10,6 +10,9 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  */
 class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
 
+  /**
+   * The current page.
+   */
   private DocumentElement $page;
 
   /**
@@ -67,8 +70,15 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
    * Tests Content IDs filter on /admin/advsearch/page.
    */
   public function testContentIdsFilterOnPageSearch() {
-    // Known node IDs that exist in the test database.
-    $nodeIds = [957926, 388576, 491241, 808276];
+    $created_node = $this->createNode([
+      'type' => 'info_details',
+      'title' => 'Entity IDs filter test page',
+      'status' => 1,
+      'moderation_state' => 'published',
+    ]);
+    // Combine stable QAG fixtures with a test-owned node so stale production
+    // fixture IDs cannot silently reduce the expected result count.
+    $nodeIds = [957926, 388576, 491241, $created_node->id()];
 
     $this->drupalGet('admin/advsearch/page');
     $session = $this->assertSession();
@@ -115,7 +125,7 @@ class EntityIdsFilterTest extends ExistingSiteSelenium2DriverTestBase {
       'QAG test form with Gravity input parameters',
       '_QAG Information Details_2',
       'QAG_Campaign landing with solid color key message header',
-      'QAG Info Details Table samples',
+      $created_node->label(),
     ];
     $resultsText = $this->page->find('css', '.view-content')->getText();
     foreach ($expectedTitles as $title) {
