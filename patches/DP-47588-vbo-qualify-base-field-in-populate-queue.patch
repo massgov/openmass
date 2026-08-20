@@ -1,0 +1,35 @@
+--- a/src/Service/ViewsBulkOperationsActionProcessor.php
++++ b/src/Service/ViewsBulkOperationsActionProcessor.php
+@@ -304,7 +304,13 @@
+       }
+     }
+     else {
+-      $base_field_alias = $base_field;
++      // The base field is missing from the query fields whenever the view
++      // query was not fully built, for instance when an "input required"
++      // exposed form stops the build before the query is compiled. Prefix the
++      // column with the base table so it cannot clash with a column of the
++      // same name on one of the joined tables, which would make the database
++      // reject the query as ambiguous.
++      $base_field_alias = $this->view->storage->get('base_table') . '.' . $base_field;
+     }
+ 
+     $this->view->query->addWhere(0, $base_field_alias, $base_field_values, 'IN');
+--- a/js/frontUi.js
++++ b/js/frontUi.js
+@@ -175,7 +175,14 @@
+ 
+       var ajaxDrupal = Drupal.ajax(ajax_options);
+       this.ajaxing = true;
+-      ajaxDrupal.execute();
++      var request = ajaxDrupal.execute();
++      if (request && typeof request.always === 'function') {
++        // Release the lock whatever the outcome, so that a request that never
++        // reaches the success callback does not freeze the selection for good.
++        request.always(function () {
++          selectionObject.ajaxing = false;
++        });
++      }
+     }
+   };
+ 

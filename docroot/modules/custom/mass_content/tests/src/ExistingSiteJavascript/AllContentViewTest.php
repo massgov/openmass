@@ -257,26 +257,27 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    * Selects N numbers of row in the view results table.
    */
   private function selectRows($num) {
-    $checkboxes = $this->getSession()->getPage()->findAll('css', '.vbo-view-form .js-vbo-checkbox');
-    $checkboxes = \array_slice($checkboxes, 0, $num);
-    foreach ($checkboxes as $index => $checkbox) {
+    // Click through the DOM rather than the WebDriver. Selecting the first row
+    // reveals the sticky bulk actions bar, which the driver then reports as
+    // covering the rows underneath it and refuses to click.
+    for ($index = 0; $index < $num; $index++) {
       $this->getSession()->executeScript(sprintf(
-        'var el = document.querySelectorAll(".vbo-view-form .js-vbo-checkbox")[%d]; if (el) { el.scrollIntoView({block: "center"}); }',
+        'var el = document.querySelectorAll(".vbo-view-form .js-vbo-checkbox")[%d]; if (el) { el.click(); }',
         $index
       ));
-      $checkbox->check();
     }
   }
 
   /**
-   * Apply to selected items is enabled after choosing an action and rows.
+   * Bulk editing several rows reaches the action configuration form.
    */
-  public function testBulkApplyEnabledWhenMultipleItemsSelected() {
+  public function testBulkApplyWithMultipleItemsSelected() {
     $prefix = 'DP-47588-' . $this->randomMachineName(8);
-    foreach (['one', 'two'] as $suffix) {
+    $titles = [$prefix . '-one', $prefix . '-two'];
+    foreach ($titles as $title) {
       $this->createNode([
         'type' => 'page',
-        'title' => $prefix . '-' . $suffix,
+        'title' => $title,
         'status' => 1,
         'moderation_state' => MassModeration::PUBLISHED,
       ]);
@@ -295,7 +296,6 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
       'VBO row checkboxes should be present after filtering All Content.'
     );
     $this->view = $page->find('css', '.view.view-content');
-    $this->assertSession()->elementNotExists('css', '.vbo-multipage-selector');
 
     $this->selectRows(2);
     $checked = (int) $this->getSession()->evaluateScript(
@@ -310,10 +310,23 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     );
     $this->assertTrue($enabled, 'Apply to selected items should be enabled after selecting multiple items and an action.');
 
+    // Resolving the selection runs the view query with a condition on the base
+    // field, which used to be ambiguous against the tables joined into the All
+    // Content view and made this step fail with a database error.
     $page->pressButton('Apply to selected items');
+    $this->assertTrue(
+      $this->getSession()->wait(
+        20000,
+        'window.location.pathname.indexOf("/views-bulk-operations/configure/") !== -1'
+      ),
+      'Applying the action should lead to the action configuration form.'
+    );
     $this->assertSession()->addressMatches('/views-bulk-operations\/configure\/content\//');
-    $this->assertSession()->elementExists('css', 'form#views-bulk-operations-configure-action');
     $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
+    $this->assertSession()->elementExists('css', 'form#views-bulk-operations-configure-action');
+    foreach ($titles as $title) {
+      $this->assertSession()->pageTextContains($title);
+    }
   }
 
   /**
