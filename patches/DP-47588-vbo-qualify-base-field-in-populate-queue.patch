@@ -1,17 +1,28 @@
 --- a/src/Service/ViewsBulkOperationsActionProcessor.php
 +++ b/src/Service/ViewsBulkOperationsActionProcessor.php
-@@ -304,7 +304,13 @@
+@@ -8,6 +8,7 @@
+ use Drupal\Core\Extension\ModuleHandlerInterface;
+ use Drupal\Core\Session\AccountProxyInterface;
+ use Drupal\Core\StringTranslation\StringTranslationTrait;
++use Drupal\views\Plugin\views\query\Sql;
+ use Drupal\views\ViewExecutable;
+ use Drupal\views\Views;
+ use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionInterface;
+@@ -304,7 +305,17 @@
        }
      }
      else {
--      $base_field_alias = $base_field;
 +      // The base field is missing from the query fields whenever the view
 +      // query was not fully built, for instance when an "input required"
-+      // exposed form stops the build before the query is compiled. Prefix the
-+      // column with the base table so it cannot clash with a column of the
-+      // same name on one of the joined tables, which would make the database
-+      // reject the query as ambiguous.
-+      $base_field_alias = $this->view->storage->get('base_table') . '.' . $base_field;
++      // exposed form stops the build before the query is compiled. On a SQL
++      // query, prefix the column with the base table so it cannot clash with a
++      // column of the same name on one of the joined tables, which would make
++      // the database reject the query as ambiguous. Other query plugins, Search
++      // API among them, have no base table to qualify the field with.
+       $base_field_alias = $base_field;
++      if ($this->view->query instanceof Sql) {
++        $base_field_alias = $this->view->storage->get('base_table') . '.' . $base_field;
++      }
      }
  
      $this->view->query->addWhere(0, $base_field_alias, $base_field_values, 'IN');
