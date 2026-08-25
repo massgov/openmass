@@ -24,6 +24,28 @@ $settings['hash_salt'] = 'temporary';
 $settings['file_public_path'] = 'sites/default/files';
 $settings['file_private_path'] = 'sites/default/files/private';
 
+/**
+ * Trusted host patterns for local development and CI.
+ *
+ * settings.php trusts the public mass.gov domains. Local and CI environments
+ * serve the site under hostnames that vary per developer, since the DDEV
+ * project name decides both the domain (mass.local, mass2.local, ...) and the
+ * web container hostname, so trust the whole family of local hostnames here
+ * rather than a single hard coded project name. This file never runs on Acquia.
+ */
+// Hostnames without a dot: the web container (web, mass-web), localhost, and
+// the other service containers used by PHPUnit, Selenium and Backstop.
+$settings['trusted_host_patterns'][] = '^[a-z0-9-]+$';
+// Local project domains, both DDEV (.local by default here, .ddev.site
+// elsewhere) and the host.docker.internal alias used by Backstop.
+$settings['trusted_host_patterns'][] = '^.+\.local$';
+$settings['trusted_host_patterns'][] = '^.+\.ddev\.site$';
+$settings['trusted_host_patterns'][] = '^host\.docker\.internal$';
+// Anything else DDEV is configured to serve, e.g. additional_fqdns.
+foreach (array_filter(explode(',', (string) getenv('DDEV_HOSTNAME'))) as $ddev_hostname) {
+  $settings['trusted_host_patterns'][] = '^' . preg_quote($ddev_hostname) . '$';
+}
+
 // Allow media entity download to work with files from production.
 $config['media_entity_download.settings']['external_file_storage'] = 1;
 

@@ -8,6 +8,12 @@ $is_mass_gov = preg_match("/\.mass\.gov$/", $_SERVER["HTTP_HOST"]);
 // Copied from https://github.com/acquia/memcache-settings/blob/4db80cd9bbf673d61e4ab572dbca4df333d665b3/memcache.settings.php#L26
 $is_acquia_cloud_next = (getenv("HOME") == "/home/clouduser");
 
+// Acquia environment hostnames.
+$settings['trusted_host_patterns'][] = '^.+\.acquia-sites\.com$';
+$settings['trusted_host_patterns'][] = '^.+\.prod\.hosting\.acquia\.com$';
+$settings['trusted_host_patterns'][] = '^.+\.stg\.hosting\.acquia\.com$';
+$settings['trusted_host_patterns'][] = '^.+\.dev\.hosting\.acquia\.com$';
+
 /**
  * Loads environment-specific secrets, if available.
  *
