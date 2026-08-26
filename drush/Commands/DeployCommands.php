@@ -70,7 +70,7 @@ class DeployCommands extends DrushCommands {
    */
   #[CLI\Command(name: self::CI_BACKSTOP_SNAPSHOT, aliases: ['ma-ci-backstop-snapshot'])]
   #[CLI\Option(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
-  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js')]
+  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: page, all, postrelease. See backstop/backstop.js')]
   #[CLI\Option(name: 'tugboat', description: 'A Tugboat URL which should be used as target. You must also pass \'tugboat\' as target. When omitted, the most recent Preview for the current branch is assumed.')]
   #[CLI\Option(name: 'viewport', description: 'The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.')]
   #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start, default value is "develop"')]
@@ -115,7 +115,7 @@ class DeployCommands extends DrushCommands {
    */
   #[CLI\Command(name: self::CI_BACKSTOP_COMPARE, aliases: ['ma-ci-backstop-compare'])]
   #[CLI\Option(name: 'target', description: self::TARGET_DESC, suggestedValues: self::TARGET_LIST)]
-  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: page, all, post-release. See backstop/backstop.js')]
+  #[CLI\Option(name: 'list', description: 'The list you want to run. Recognized values: page, all, postrelease. See backstop/backstop.js')]
   #[CLI\Option(name: 'tugboat', description: 'A Tugboat URL which should be used as target. You must also pass \'tugboat\' as target. When omitted, the most recent Preview for the current branch is assumed.')]
   #[CLI\Option(name: 'viewport', description: 'The viewport you want to run.  Recognized values: desktop, tablet, phone. See backstop/backstop.js.')]
   #[CLI\Option(name: 'ci-branch', description: 'The branch that CircleCI should check out at start, default value is "develop"')]
