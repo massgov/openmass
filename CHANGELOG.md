@@ -1,5 +1,19 @@
 
 
+## [0.490.0] - August 25, 2026
+
+### Changed
+  - DP-47839: Changed docker image repo from Docker Hub to AWS.
+  - DP-47935: Increased max for detecting and logging when edge cache tag limit is exceeded.
+  
+### Added
+  - DP-48212: Enhance Editoria11y Dismissal Report
+  
+### Fixed
+  - DP-48501: Fixes intermittent 500 errors on the All Content page by stopping the media view from claiming a local task that core already provides.
+  
+
+
 ## [0.489.0] - August 18, 2026
 
 ### Fixed
