@@ -25,9 +25,9 @@ they look the same.
 ```
 --target=local  # Choose an enviornment to target(feature#, test, or prod)
                 # `local` is default
---list=all	    # Choose a json page to run with backstop (all or post-release)
+--list=all	    # Choose a json page to run with backstop (all or postrelease)
                 # `all` is default
-                # `post-release` runs fewer scenarios, and is run automatically after a release
+                # `postrelease` runs fewer scenarios, and is run automatically after a release
 --viewport=all  # Options are desktop, tablet, phone, or all (default)
 
 --cachebuster   # Appends a cache busting query string to URLs of pages to be tested.
