@@ -1,0 +1,25 @@
+diff --git a/field_tokens.tokens.inc b/field_tokens.tokens.inc
+--- a/field_tokens.tokens.inc
++++ b/field_tokens.tokens.inc
+@@ -87,8 +87,19 @@
+ 
+           if ($data_definition instanceof DataReferenceDefinition) {
+             $tokens["field_property-{$field_type_name}"][$property_name]['dynamic'] = TRUE;
+-            if ($data_definition->getConstraint('EntityType')) {
+-              $token_type = $token_entity_mapper->getTokenTypeForEntityType($data_definition->getConstraint('EntityType'));
++            // Drupal 11.4+ may return EntityType constraints as arrays.
++            $entity_type_constraint = $data_definition->getConstraint('EntityType');
++            if (is_array($entity_type_constraint) && isset($entity_type_constraint['type'])) {
++              $entity_type_id = $entity_type_constraint['type'];
++            }
++            elseif (is_array($entity_type_constraint)) {
++              $entity_type_id = reset($entity_type_constraint);
++            }
++            else {
++              $entity_type_id = $entity_type_constraint;
++            }
++            if (!empty($entity_type_id) && is_string($entity_type_id)) {
++              $token_type = $token_entity_mapper->getTokenTypeForEntityType($entity_type_id);
+               $tokens["field_property-{$field_type_name}"][$property_name]['dynamic'] = FALSE;
+               $tokens["field_property-{$field_type_name}"][$property_name]['type'] = $token_type;
+             }
