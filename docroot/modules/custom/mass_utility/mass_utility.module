@@ -1110,7 +1110,9 @@ function mass_utility_module_implements_alter(&$implementations, $hook) {
     $implementations['mass_utility'] = $mass_utility;
   }
   // Implementations to be moved to the start of the list.
-  if (in_array($hook, ['cron'])) {
+  if ($hook === 'cron') {
+    // Replace Admin Audit Trail's cleanup so content deletions are retained.
+    unset($implementations['admin_audit_trail']);
     $mass_utility = $implementations['mass_utility'];
     $implementations = [
       'mass_utility' => $mass_utility,
@@ -1442,6 +1444,8 @@ function mass_utility_pathauto_alias_alter(&$alias, $context) {
  * Implements hook_cron().
  */
 function mass_utility_cron() {
+  mass_utility_admin_audit_trail_cron();
+
   // Check the config switch.
   $config = \Drupal::config('mass_utility.clean_file_managed_settings');
   if (!$config->get('clean_file_managed')) {
@@ -1449,6 +1453,40 @@ function mass_utility_cron() {
   }
 
   mass_utility_clean_file_managed();
+}
+
+/**
+ * Enforces the audit trail row limit while retaining content deletions.
+ */
+function mass_utility_admin_audit_trail_cron() {
+  $row_limit = \Drupal::config('admin_audit_trail.settings')
+    ->get('admin_audit_trail_row_limit');
+
+  if ($row_limit > 0) {
+    $connection = \Drupal::database();
+    $query = $connection->select('admin_audit_trail', 'aat');
+    $countable_logs = $query->orConditionGroup()
+      ->condition('operation', 'delete', '<>')
+      ->condition('type', ['node', 'media'], 'NOT IN');
+    $min_row = $query
+      ->fields('aat', ['lid'])
+      ->condition($countable_logs)
+      ->orderBy('lid', 'DESC')
+      ->range($row_limit - 1, 1)
+      ->execute()
+      ->fetchField();
+
+    if ($min_row) {
+      $query = $connection->delete('admin_audit_trail');
+      $deletable_logs = $query->orConditionGroup()
+        ->condition('operation', 'delete', '<>')
+        ->condition('type', ['node', 'media'], 'NOT IN');
+      $query
+        ->condition($deletable_logs)
+        ->condition('lid', $min_row, '<')
+        ->execute();
+    }
+  }
 }
 
 /**
