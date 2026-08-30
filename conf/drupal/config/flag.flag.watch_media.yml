@@ -1,0 +1,29 @@
+uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+id: watch_media
+label: 'Watch Media'
+bundles: {  }
+entity_type: media
+global: false
+flag_short: Watch
+flag_long: 'Watching media will give you email notifications when future revisions have been published.'
+flag_message: 'Successfully added to watchers.'
+unflag_short: Unwatch
+unflag_long: 'Unwatch will remove you from any email notification for future revisions.'
+unflag_message: 'Successfully removed from watchers.'
+unflag_denied_text: ''
+weight: 0
+flag_type: 'entity:media'
+link_type: ajax_link
+flagTypeConfig:
+  show_in_links: {  }
+  show_as_field: false
+  show_on_form: false
+  show_contextual_link: false
+  extra_permissions:
+    owner: '0'
+linkTypeConfig: {  }
