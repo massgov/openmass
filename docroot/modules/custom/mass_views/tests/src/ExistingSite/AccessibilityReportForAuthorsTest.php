@@ -80,24 +80,33 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
    * Ignores stale ed11y_page rows and uses the current-URL scan count.
    */
   public function testReportUsesCurrentUrlScanNotStaleAlias(): void {
+    $org = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'DP-48112 stale-alias org ' . $this->randomMachineName(6),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
     $title = 'DP-48112 accessibility report ' . $this->randomMachineName(8);
     $node = $this->createNode([
       'type' => 'service_page',
       'title' => $title,
       'status' => 1,
       'moderation_state' => MassModeration::PUBLISHED,
+      'field_organizations' => [['target_id' => $org->id()]],
     ]);
     $nid = (int) $node->id();
 
     $current_alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid);
     if ($current_alias === '/node/' . $nid) {
       $current_alias = '/dp-48112-current-' . $this->randomMachineName(8);
-      PathAlias::create([
+      $path_alias = PathAlias::create([
         'path' => '/node/' . $nid,
         'alias' => $current_alias,
         'langcode' => 'en',
         'status' => 1,
-      ])->save();
+      ]);
+      $path_alias->save();
+      $this->markEntityForCleanup($path_alias);
     }
 
     $stale_path = '/dp-48112-stale-' . $this->randomMachineName(8);
@@ -137,6 +146,10 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
     $this->assertNotNull($view);
     $view->setDisplay('default');
     $view->setItemsPerPage(0);
+    $view->initHandlers();
+    $view->filter['node_org_filter']->options['exposed'] = FALSE;
+    $view->filter['node_org_filter']->operator = '=';
+    $view->filter['node_org_filter']->value = [['target_id' => $org->id()]];
     $view->setExposedInput(['status' => '1']);
     $view->execute();
 
@@ -238,6 +251,38 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
 
     $this->assertCount(1, $matching, 'Direct org filter should also return the multi-org node once.');
     $this->assertSame(5, $matching[0], 'Direct org filter must not inflate issue counts via field-delta fan-out.');
+
+    // Multiple selected organizations (develop threw an SQL error on
+    // `nid = (:p[])`, and a raw delta JOIN would double the SUM).
+    $view = Views::getView('accessibility_report_for_authors');
+    $view->setDisplay('default');
+    $view->setItemsPerPage(0);
+    $view->initHandlers();
+    $view->filter['node_org_filter']->options['exposed'] = FALSE;
+    $view->filter['node_org_filter']->operator = '=';
+    $view->filter['node_org_filter']->value = [
+      ['target_id' => $parent_org->id()],
+      ['target_id' => $child_org->id()],
+    ];
+    $view->execute();
+
+    $matching = [];
+    foreach ($view->result as $row) {
+      if ($this->rowMatchesEntityId($row, $nid)) {
+        $matching[] = $this->rowContentCount($row);
+      }
+    }
+
+    $this->assertCount(
+      1,
+      $matching,
+      'Selecting two orgs must not error or duplicate the node.'
+    );
+    $this->assertSame(
+      5,
+      $matching[0],
+      'Two matching org deltas must not double the SUM.'
+    );
   }
 
   /**

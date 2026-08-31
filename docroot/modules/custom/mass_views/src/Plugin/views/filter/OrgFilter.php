@@ -69,23 +69,28 @@ class OrgFilter extends FilterPluginBase {
       $self->condition('nfd.nid', $value, 'IN');
       $subquery->union($self);
 
+      // INNER JOIN is always AND'd onto the query. It does not honor
+      // $this->options['group'], unlike the != branch. No Organization
+      // filter is currently in an OR group.
       $join = \Drupal::service('plugin.manager.views.join')->createInstance('standard', [
         'table' => 'node__field_organizations',
         'table formula' => $subquery,
         'field' => 'entity_id',
-        'left_table' => 'node_field_data',
+        'left_table' => $nid_alias,
         'left_field' => 'nid',
         'type' => 'INNER',
       ]);
-      $this->query->addTable('node__field_organizations', $this->relationship, $join, 'org_set');
+      // Handler IDs are unique per display. A hard-coded alias lets
+      // Sql::queueTable() silently discard the second instance's subquery.
+      $this->query->addTable('node__field_organizations', $this->relationship, $join, 'org_set_' . $this->options['id']);
     }
   }
 
   /**
-   * Retrieve a single usable int value from the input value.
+   * Retrieve usable organization IDs from the input value.
    *
-   * @return int|null
-   *   The organization ID, or NULL.
+   * @return int[]|null
+   *   The organization IDs, or NULL.
    */
   private function getValue() {
     if ($this->value) {
