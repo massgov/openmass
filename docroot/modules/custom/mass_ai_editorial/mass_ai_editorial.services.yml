@@ -1,0 +1,46 @@
+services:
+  mass_ai_editorial.text_extractor:
+    class: Drupal\mass_ai_editorial\RenderedTextExtractor
+    arguments:
+      - '@entity_type.manager'
+      - '@renderer'
+      - '@router.route_provider'
+      - '@?entity_hierarchy.breadcrumb'
+      - '@?mass_entity_usage.usage'
+
+  Drupal\mass_ai_editorial\RenderedTextExtractor:
+    alias: mass_ai_editorial.text_extractor
+
+  mass_ai_editorial.chunker:
+    class: Drupal\mass_ai_editorial\TextChunker
+
+  Drupal\mass_ai_editorial\TextChunker:
+    alias: mass_ai_editorial.chunker
+
+  mass_ai_editorial.index_repository:
+    class: Drupal\mass_ai_editorial\AiEditorialIndexRepository
+    arguments:
+      - '@database'
+      - '@datetime.time'
+
+  Drupal\mass_ai_editorial\AiEditorialIndexRepository:
+    alias: mass_ai_editorial.index_repository
+
+  mass_ai_editorial.indexer:
+    class: Drupal\mass_ai_editorial\AiEditorialIndexer
+    arguments:
+      - '@mass_ai_editorial.text_extractor'
+      - '@mass_ai_editorial.chunker'
+      - '@mass_ai_editorial.index_repository'
+      - '@datetime.time'
+
+  Drupal\mass_ai_editorial\AiEditorialIndexer:
+    alias: mass_ai_editorial.indexer
+
+  mass_ai_editorial.related_content_context_builder:
+    class: Drupal\mass_ai_editorial\RelatedContentContextBuilder
+    arguments:
+      - '@database'
+
+  Drupal\mass_ai_editorial\RelatedContentContextBuilder:
+    alias: mass_ai_editorial.related_content_context_builder
