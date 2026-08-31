@@ -19,8 +19,8 @@ class OrgFilterTest extends MassExistingSiteBase {
   /**
    * Two Organization filters in one display both constrain the result set.
    *
-   * parent_reports page_1 has Organization of Child and Organization of Parent.
-   * A hard-coded join alias dropped the second filter's subquery.
+   * The parent_reports page_1 display has Organization of Child and
+   * Organization of Parent. 
    */
   public function testTwoOrganizationFiltersApplyIntersection(): void {
     $prefix = 'DP-48112-twofilter-' . $this->randomMachineName(8);
