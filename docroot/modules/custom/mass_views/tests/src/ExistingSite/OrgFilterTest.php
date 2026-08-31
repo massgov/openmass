@@ -20,7 +20,7 @@ class OrgFilterTest extends MassExistingSiteBase {
    * Two Organization filters in one display both constrain the result set.
    *
    * The parent_reports page_1 display has Organization of Child and
-   * Organization of Parent. 
+   * Organization of Parent.
    */
   public function testTwoOrganizationFiltersApplyIntersection(): void {
     $prefix = 'DP-48112-twofilter-' . $this->randomMachineName(8);
