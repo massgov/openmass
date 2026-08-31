@@ -63,7 +63,7 @@ There are several things to consider when you are profiling:
 
 #### Installing and Running Blackfire
 
-Follow the steps on [DDEV Blackfire page](https://ddev.readthedocs.io/en/stable/users/blackfire-profiling/). Configure the variables globally as suggested there. See the Mass.gov Blackfire subscription for credentials.
+Follow the steps on [DDEV Blackfire page](https://ddev.readthedocs.io/en/stable/users/debugging-profiling/blackfire-profiling/). Configure the variables globally as suggested there. See the Mass.gov Blackfire subscription for credentials.
 
 #### Sequel Pro
 
