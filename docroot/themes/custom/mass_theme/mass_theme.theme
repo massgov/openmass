@@ -6244,7 +6244,15 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $variables['bg_color'] = $term->field_header_color->value ?: '#FFF';
   $variables['content'] = $build;
   $variables['collection']['title'] = $term->label();
-  $variables['collection']['description'] = $build['field_short_description'];
+  $variables['collection']['description'] = [
+    '#type' => 'container',
+    'short_description' => $build['field_short_description'],
+  ];
+  if (!$term->get('field_collection_overview')->isEmpty()) {
+    $variables['collection']['description']['overview'] = $term->get('field_collection_overview')->view([
+      'label' => 'hidden',
+    ]);
+  }
   $variables['collection']['bg_color'] = $variables['bg_color'];
   $variables['collection']['dark_font'] = $variables['bg_color'] === '#FFF';
   _mass_theme_populate_collection_image_from_collection($term, $variables['collection']);

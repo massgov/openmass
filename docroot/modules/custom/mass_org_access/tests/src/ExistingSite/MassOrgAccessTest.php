@@ -303,6 +303,8 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       $this->assertArrayHasKey($element, $form, sprintf('%s must be present before access is applied.', $element));
       $this->assertFalse($form[$element]['#access'] ?? TRUE, sprintf('%s must be hidden from collection editors.', $element));
     }
+    $this->assertArrayHasKey('field_collection_overview', $form);
+    $this->assertTrue($form['field_collection_overview']['#access'] ?? TRUE, 'Collection overview must remain editable for collection editors.');
   }
 
   /**

@@ -7,6 +7,7 @@ dependencies:
     - field.field.taxonomy_term.collections.field_additional_search_keywords
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
+    - field.field.taxonomy_term.collections.field_collection_overview
     - field.field.taxonomy_term.collections.field_content_organization
     - field.field.taxonomy_term.collections.field_default_sort
     - field.field.taxonomy_term.collections.field_header_color
@@ -21,13 +22,11 @@ dependencies:
     - image.style.thumbnail
     - taxonomy.vocabulary.collections
   module:
-    - allowed_formats
     - entity_hierarchy
     - entity_reference_tree
     - field_group
     - image
     - link
-    - maxlength
     - text
 third_party_settings:
   field_group:
@@ -160,6 +159,14 @@ content:
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
+    third_party_settings: {  }
+  field_collection_overview:
+    type: text_textarea
+    weight: 26
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
     third_party_settings: {  }
   field_content_organization:
     type: entity_reference_tree
