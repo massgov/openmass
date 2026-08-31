@@ -26,7 +26,6 @@ dependencies:
     - entity_reference_tree
     - field_group
     - image
-    - link
     - text
 third_party_settings:
   field_group:
@@ -39,7 +38,7 @@ third_party_settings:
       label: 'Collection Settings'
       region: content
       parent_name: ''
-      weight: 6
+      weight: 5
       format_type: tab
       format_settings:
         classes: ''
@@ -55,7 +54,7 @@ third_party_settings:
       label: Sorting
       region: content
       parent_name: group_collection_settings
-      weight: 13
+      weight: 12
       format_type: details
       format_settings:
         classes: ''
@@ -69,6 +68,7 @@ third_party_settings:
         - field_collection_logo
         - field_header_color
         - field_short_description
+        - field_collection_overview
       label: 'Top banner'
       region: content
       parent_name: group_collection_settings
@@ -106,7 +106,7 @@ third_party_settings:
       label: Results
       region: content
       parent_name: group_collection_settings
-      weight: 14
+      weight: 13
       format_type: details
       format_settings:
         classes: ''
@@ -162,7 +162,7 @@ content:
     third_party_settings: {  }
   field_collection_overview:
     type: text_textarea
-    weight: 26
+    weight: 25
     region: content
     settings:
       rows: 5
@@ -200,17 +200,9 @@ content:
     third_party_settings: {  }
   field_header_color:
     type: options_select
-    weight: 24
+    weight: 22
     region: content
     settings: {  }
-    third_party_settings: {  }
-  field_landing_page:
-    type: link_default
-    weight: 5
-    region: content
-    settings:
-      placeholder_url: ''
-      placeholder_title: ''
     third_party_settings: {  }
   field_organizations:
     type: entity_reference_autocomplete
@@ -245,7 +237,7 @@ content:
     third_party_settings: {  }
   field_short_description:
     type: string_textfield
-    weight: 25
+    weight: 23
     region: content
     settings:
       size: 60
@@ -293,11 +285,12 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 7
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
 hidden:
   description: true
+  field_landing_page: true
   path: true

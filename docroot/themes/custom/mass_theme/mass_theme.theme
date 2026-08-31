@@ -6252,6 +6252,8 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
     $variables['collection']['description']['overview'] = $term->get('field_collection_overview')->view([
       'label' => 'hidden',
     ]);
+    $variables['collection']['description']['overview']['#prefix'] = '<div class="collection-header__overview">';
+    $variables['collection']['description']['overview']['#suffix'] = '</div>';
   }
   $variables['collection']['bg_color'] = $variables['bg_color'];
   $variables['collection']['dark_font'] = $variables['bg_color'] === '#FFF';

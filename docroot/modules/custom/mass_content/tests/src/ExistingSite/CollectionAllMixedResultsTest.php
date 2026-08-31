@@ -33,7 +33,7 @@ class CollectionAllMixedResultsTest extends MassExistingSiteBase {
       'field_url_name' => $url,
       'field_short_description' => $short_description,
       'field_collection_overview' => [
-        'value' => '<p>' . $overview . '</p>',
+        'value' => '<p><a href="https://www.mass.gov/">' . $overview . '</a></p>',
         'format' => 'basic_html',
       ],
     ]);
@@ -58,6 +58,7 @@ class CollectionAllMixedResultsTest extends MassExistingSiteBase {
       strpos($response, $short_description),
       'The Collection overview must render below the short description.'
     );
+    $this->assertSession()->elementExists('css', '.collection-header__overview a');
   }
 
   /**
