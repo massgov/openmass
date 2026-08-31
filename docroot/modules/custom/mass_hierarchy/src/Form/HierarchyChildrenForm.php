@@ -2,10 +2,14 @@
 
 namespace Drupal\mass_hierarchy\Form;
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\RedirectCommand;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\entity_hierarchy\Form\HierarchyChildrenForm as EntityHierachyHierarchyChildrenForm;
 use Drupal\entity_hierarchy\Storage\RecordCollectionCallable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -48,6 +52,27 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     $cache = (new CacheableMetadata())->addCacheableDependency($this->entity);
 
     $form['#attached']['library'][] = 'entity_hierarchy/entity_hierarchy.nodetypeform';
+
+    // Retrieve the current query string parameter value, defaulting to FALSE.
+    $current_hide = \Drupal::request()->query->get('hide-types', FALSE);
+
+    // Add the "Hide specific types" checkbox with AJAX functionality.
+    $form['hide_specific_types'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Hide people, contacts, events, news'),
+      '#description' => $this->t('Check this box to hide specific types from the hierarchy view.'),
+      '#default_value' => $current_hide,
+      '#ajax' => [
+        'callback' => '::redirectWithQuery',
+        'wrapper' => 'hierarchy-children-form-wrapper',
+        'effect' => 'fade',
+      ],
+    ];
+
+    // Add a wrapper to the entire form to enable AJAX updates.
+    $form['#prefix'] = '<div id="hierarchy-children-form-wrapper">';
+    $form['#suffix'] = '</div>';
+
 
     /** @var \Drupal\Core\Field\FieldDefinitionInterface[] $fields */
     $fields = $this->parentCandidate->getCandidateFields($this->entity);
@@ -154,9 +179,9 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       $ids[] = $pageview_record->getId();
     }
 
-    if (!empty($ids)) {
-      $pageviews = \Drupal::service('bigquery.storage')->getRecords($ids);
-    }
+//    if (!empty($ids)) {
+//      $pageviews = \Drupal::service('bigquery.storage')->getRecords($ids);
+//    }
 
     foreach ($children as $weight => $record) {
       /** @var \Drupal\node\Entity\Node $childEntity */
@@ -165,6 +190,14 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
       if (!$childEntity || !$childEntity->isDefaultRevision()) {
         // Doesn't exist, is access hidden, or is not default revision.
         continue;
+      }
+
+      dump(\Drupal::request()->query);
+      dump($current_hide);
+      if ($current_hide) {
+        if (in_array($childEntity->bundle(), ['person', 'contact_information', 'event', 'news'])) {
+          continue;
+        }
       }
 
       if (!$childEntity->isPublished()) {
@@ -270,6 +303,27 @@ class HierarchyChildrenForm extends EntityHierachyHierarchyChildrenForm {
     }
 
     return $form;
+  }
+
+  /**
+   * AJAX callback to handle the query string and redirect.
+   */
+  public function redirectWithQuery(array &$form, FormStateInterface $form_state) {
+    // Get the checkbox value.
+    $hide_specific_types = $form_state->getValue('hide_specific_types', FALSE);
+
+    if ($hide_specific_types) {
+      $url = Url::fromRoute('<current>', [], [
+        'query' => ['hide-types' => $hide_specific_types ? 1 : 0],
+      ]);
+    }
+    else {
+      $url = Url::fromRoute('<current>');
+    }
+
+    $response = new AjaxResponse();
+    $response->addCommand(new RedirectCommand($url->toString()));
+    return $response;
   }
 
   /**
