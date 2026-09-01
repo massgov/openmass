@@ -150,7 +150,6 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
     $view->filter['node_org_filter']->options['exposed'] = FALSE;
     $view->filter['node_org_filter']->operator = '=';
     $view->filter['node_org_filter']->value = [['target_id' => $org->id()]];
-    $view->setExposedInput(['status' => '1']);
     $view->execute();
 
     $matching = [];

@@ -80,7 +80,7 @@ class OrgFilter extends FilterPluginBase {
         'left_field' => 'nid',
         'type' => 'INNER',
       ]);
-      // Handler IDs are unique per display. A hard-coded alias lets
+      // Handler IDs are unique per display. A hard-coded alias would let
       // Sql::queueTable() silently discard the second instance's subquery.
       $this->query->addTable('node__field_organizations', $this->relationship, $join, 'org_set_' . $this->options['id']);
     }
