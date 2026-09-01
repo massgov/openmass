@@ -1,5 +1,17 @@
 
 
+## [0.491.0] - September 1, 2026
+
+### Changed
+  - DP-45698: Serve media download links as binary instead of redirect.
+  
+### Fixed
+  - DP-47588: Fix the error that stopped bulk actions from being applied to the rows selected in All Content.
+  - DP-47588: Apply a label typed during a bulk edit to every selected page instead of only the first ten.
+  - DP-48597: Fixed post-release Backstop jobs.
+  
+
+
 ## [0.490.0] - August 25, 2026
 
 ### Changed
