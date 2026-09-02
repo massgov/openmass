@@ -124,7 +124,7 @@ class ReportViewTest extends MassExistingSiteBase {
   }
 
   /**
-   * Tests report permissions are scoped to content admins and admin role.
+   * Tests report permissions are not granted to editorial roles.
    */
   public function testReportPermissionsRoleScope(): void {
     $contentTeam = Role::load('content_team');
@@ -135,9 +135,9 @@ class ReportViewTest extends MassExistingSiteBase {
     $this->assertNotNull($author);
 
     $contentTeamPermissions = $contentTeam->getPermissions();
-    $this->assertContains('view mass redirect normalizer report', $contentTeamPermissions);
-    $this->assertContains('export mass redirect normalizer report', $contentTeamPermissions);
-    $this->assertContains('clear mass redirect normalizer report', $contentTeamPermissions);
+    $this->assertNotContains('view mass redirect normalizer report', $contentTeamPermissions);
+    $this->assertNotContains('export mass redirect normalizer report', $contentTeamPermissions);
+    $this->assertNotContains('clear mass redirect normalizer report', $contentTeamPermissions);
     $this->assertNotContains('view mass redirect normalizer report', $editor->getPermissions());
     $this->assertNotContains('view mass redirect normalizer report', $author->getPermissions());
   }
