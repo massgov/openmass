@@ -246,6 +246,119 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Editors may update only top-level collections in their Permission Group.
+   */
+  public function testCollectionTermAccessUsesDerivedPermissionGroups(): void {
+    $vocabulary = Vocabulary::load('collections');
+    $top_level = $this->createTerm($vocabulary, [
+      'name' => 'Organization collection ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+
+    // entity_presave derives these from field_organizations, just as it does
+    // for info_details and other content entities.
+    $this->assertSame(
+      [(int) $this->termA->id()],
+      array_map(
+        'intval',
+        array_column($top_level->get('field_content_organization')->getValue(), 'target_id')
+      )
+    );
+    $this->assertTrue(
+      $top_level->access('update', $this->userA),
+      'An editor may update a top-level collection in their Permission Group.'
+    );
+    $this->assertFalse(
+      $top_level->access('update', $this->userB),
+      'An editor may not update a top-level collection in another Permission Group.'
+    );
+
+    $child = $this->createTerm($vocabulary, [
+      'name' => 'Collection topic ' . $this->randomMachineName(),
+      'parent' => [['target_id' => $top_level->id()]],
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+    $this->assertFalse(
+      $child->access('update', $this->userA),
+      'Collection topics are outside the organization-owned editing workflow.'
+    );
+  }
+
+  /**
+   * Collection editors see only the collection metadata they may change.
+   */
+  public function testCollectionTermEditorFormHidesAdministrativeFields(): void {
+    \Drupal::currentUser()->setAccount($this->userA);
+    $term = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Collection editor form ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('taxonomy_term', 'default')
+      ->setEntity($term);
+    $form_state = (new FormState())->setFormObject($form_object);
+    $form = \Drupal::formBuilder()->buildForm($form_object, $form_state);
+
+    foreach (['name', 'field_url_name', 'field_content_organization', 'relations', 'revision_information', 'status'] as $element) {
+      $this->assertArrayHasKey($element, $form, sprintf('%s must be present before access is applied.', $element));
+      $this->assertFalse($form[$element]['#access'] ?? TRUE, sprintf('%s must be hidden from collection editors.', $element));
+    }
+    $this->assertArrayHasKey('field_collection_overview', $form);
+    $this->assertTrue($form['field_collection_overview']['#access'] ?? TRUE, 'Collection overview must remain editable for collection editors.');
+  }
+
+  /**
+   * The dedicated Collections page renders the top-level-term View for editors.
+   */
+  public function testCollectionsOverviewPageShowsOnlyTopLevelTerms(): void {
+    $vocabulary = Vocabulary::load('collections');
+    $top_level_name = 'Overview collection ' . $this->randomMachineName();
+    $collection_url_name = 'overview-collection-' . $this->randomMachineName();
+    $child_name = 'Overview topic ' . $this->randomMachineName();
+    $top_level = $this->createTerm($vocabulary, [
+      'name' => $top_level_name,
+      'field_url_name' => $collection_url_name,
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+    $this->createTerm($vocabulary, [
+      'name' => $child_name,
+      'parent' => [['target_id' => $top_level->id()]],
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+
+    $this->drupalLogin($this->userA);
+    $this->drupalGet('/admin/ma-dash/collections');
+
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains($top_level_name);
+    $this->assertSession()->elementExists('css', sprintf('a[href="/collections/%s"]', $collection_url_name));
+    $this->assertSession()->pageTextNotContains($child_name);
+    foreach ([
+      'Name',
+      'Organization(s)',
+      'Default sort',
+      'Collection Link',
+      'Parent page',
+      'Show only future events',
+      'Sort order options for visitors',
+      'Operations',
+    ] as $heading) {
+      $this->assertSession()->pageTextContains($heading);
+    }
+
+    $administrator = $this->createUser();
+    $administrator->addRole('content_team');
+    $administrator->activate();
+    $administrator->save();
+    $this->drupalLogin($administrator);
+    $this->drupalGet('/admin/structure/taxonomy/manage/collections/overview');
+
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains('Add term');
+    $this->assertSession()->pageTextContains($child_name);
+  }
+
+  /**
    * Test 5: VIEW must never be blocked by mass_org_access.
    *
    * Verified across anonymous, authenticated and every editorial role. The
