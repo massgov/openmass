@@ -5,6 +5,7 @@
  * Implementations of hook_deploy_NAME() for Mass Content.
  */
 
+use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Url;
 use Drupal\mayflower\Helper;
 use Drupal\node\Entity\Node;
@@ -400,5 +401,92 @@ function mass_content_deploy_tableau_embed_type_update(&$sandbox) {
     // Re-enable entity hierarchy writes after all paragraphs are processed.
     \Drupal::state()->set('entity_hierarchy_disable_writes', FALSE);
     return t('All tableau_embed paragraphs have been updated with the "default" value in field_tableau_embed_type and reflected in the referencing nodes.');
+  }
+}
+
+/**
+ * Copy the legacy Rabbit Hole action into the Rabbit Hole settings field.
+ */
+function mass_content_deploy_rabbit_hole_settings(&$sandbox) {
+  // Saving content here must not notify the people watching these pages.
+  $_ENV['MASS_FLAGGING_BYPASS'] = TRUE;
+
+  $entity_type_manager = \Drupal::entityTypeManager();
+
+  if (!isset($sandbox['queue'])) {
+    $sandbox['queue'] = [];
+    foreach (['node', 'taxonomy_term'] as $entity_type_id) {
+      $storage = $entity_type_manager->getStorage($entity_type_id);
+      $ids = $storage->getQuery()
+        ->accessCheck(FALSE)
+        ->exists('rh_action')
+        ->condition('rh_action', ['', 'bundle_default'], 'NOT IN')
+        ->sort($storage->getEntityType()->getKey('id'))
+        ->execute();
+      foreach ($ids as $id) {
+        $sandbox['queue'][] = [$entity_type_id, $id];
+      }
+    }
+    $sandbox['max'] = count($sandbox['queue']);
+    $sandbox['progress'] = 0;
+    $sandbox['migrated'] = 0;
+  }
+
+  if (empty($sandbox['max'])) {
+    $sandbox['#finished'] = 1;
+    return t('No legacy Rabbit Hole actions to copy.');
+  }
+
+  // The redirect action is the only one that carries extra settings.
+  $redirect_settings = [
+    'rh_redirect' => 'redirect',
+    'rh_redirect_response' => 'redirect_code',
+    'rh_redirect_fallback_action' => 'redirect_fallback_action',
+  ];
+
+  foreach (array_splice($sandbox['queue'], 0, 25) as [$entity_type_id, $id]) {
+    $sandbox['progress']++;
+    $entity = $entity_type_manager->getStorage($entity_type_id)->load($id);
+    // The field only exists on bundles that allowed an override, and an entity
+    // that already carries a value has nothing to copy.
+    if (!$entity || !$entity->hasField('rabbit_hole__settings') || !$entity->hasField('rh_action')) {
+      continue;
+    }
+
+    $changed = FALSE;
+    foreach (array_keys($entity->getTranslationLanguages()) as $langcode) {
+      $translation = $entity->getTranslation($langcode);
+      $action = $translation->get('rh_action')->value;
+      if (empty($action) || $action === 'bundle_default' || $translation->get('rabbit_hole__settings')->action !== NULL) {
+        continue;
+      }
+
+      $value = ['action' => $action];
+      if ($action === 'page_redirect') {
+        foreach ($redirect_settings as $legacy_field => $property) {
+          if ($translation->hasField($legacy_field)) {
+            $value['settings'][$property] = $translation->get($legacy_field)->value;
+          }
+        }
+      }
+      $translation->set('rabbit_hole__settings', $value);
+      $changed = TRUE;
+    }
+
+    if ($changed) {
+      // Keep this off the revision history and out of the "changed" ordering
+      // that the content listings rely on.
+      if ($entity instanceof RevisionableInterface) {
+        $entity->setNewRevision(FALSE);
+      }
+      $entity->setSyncing(TRUE);
+      $entity->save();
+      $sandbox['migrated']++;
+    }
+  }
+
+  $sandbox['#finished'] = $sandbox['progress'] / $sandbox['max'];
+  if ($sandbox['#finished'] >= 1) {
+    return t('Copied the Rabbit Hole action onto @count entities.', ['@count' => $sandbox['migrated']]);
   }
 }
