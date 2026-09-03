@@ -124,7 +124,9 @@ class RetentionPolicyTest extends KernelTestBase {
     $this->hooks()->viewsPreRender($view);
 
     $policy = $view->attachment_before['mass_admin_audit_trail_retention_policy'];
-    $this->assertSame('Audit trail retention periods', (string) $policy['#title']);
+    $this->assertSame('status_messages', $policy['#theme']);
+    $this->assertSame('Audit trail retention periods', (string) $policy['#status_headings']['info']);
+    $items = $policy['#message_list']['info'][0]['#items'];
     $this->assertSame([
       'Delete operations: forever',
       'User roles, block content, configuration, menu, and user types: forever',
@@ -133,7 +135,7 @@ class RetentionPolicyTest extends KernelTestBase {
       'Paragraph events: 2 months',
       'Term insert operations: 2 months',
       'All other events: 2 months',
-    ], array_map('strval', $policy['#items']));
+    ], array_map('strval', $items));
   }
 
   /**

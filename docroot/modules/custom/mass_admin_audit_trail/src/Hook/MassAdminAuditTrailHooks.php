@@ -103,19 +103,25 @@ class MassAdminAuditTrailHooks {
     }
 
     $view->attachment_before['mass_admin_audit_trail_retention_policy'] = [
-      '#theme' => 'item_list',
-      '#title' => $this->t('Audit trail retention periods'),
-      '#items' => [
-        $this->t('Delete operations: forever'),
-        $this->t('User roles, block content, configuration, menu, and user types: forever'),
-        $this->t('Login operations: 3 years'),
-        $this->t('Insert and update operations, except paragraphs: 12 months'),
-        $this->t('Paragraph events: 2 months'),
-        $this->t('Term insert operations: 2 months'),
-        $this->t('All other events: 2 months'),
+      '#theme' => 'status_messages',
+      '#message_list' => [
+        'info' => [
+          [
+            '#theme' => 'item_list',
+            '#items' => [
+              $this->t('Delete operations: forever'),
+              $this->t('User roles, block content, configuration, menu, and user types: forever'),
+              $this->t('Login operations: 3 years'),
+              $this->t('Insert and update operations, except paragraphs: 12 months'),
+              $this->t('Paragraph events: 2 months'),
+              $this->t('Term insert operations: 2 months'),
+              $this->t('All other events: 2 months'),
+            ],
+          ],
+        ],
       ],
-      '#attributes' => [
-        'class' => ['messages', 'messages--info'],
+      '#status_headings' => [
+        'info' => $this->t('Audit trail retention periods'),
       ],
     ];
   }
