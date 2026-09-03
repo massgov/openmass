@@ -29,6 +29,7 @@ dependencies:
     - field.field.node.person.field_reusable_label
     - field.field.node.person.field_short_bio
     - field.field.node.person.field_social_links
+    - field.field.node.person.rabbit_hole__settings
     - image.style.thumbnail
     - node.type.person
     - workflows.workflow.editorial
@@ -42,6 +43,7 @@ dependencies:
     - link
     - metatag
     - paragraphs
+    - rabbit_hole
     - text
 third_party_settings:
   field_group:
@@ -521,6 +523,13 @@ content:
     weight: 58
     region: content
     settings: {  }
+    third_party_settings: {  }
+  rabbit_hole__settings:
+    type: rabbit_hole_default
+    weight: 100
+    region: content
+    settings:
+      advanced: true
     third_party_settings: {  }
   scheduler_settings:
     weight: 1

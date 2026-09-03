@@ -4,7 +4,10 @@ status: true
 dependencies:
   config:
     - field.field.taxonomy_term.location_icon_park.field_sprite_name
+    - field.field.taxonomy_term.location_icon_park.rabbit_hole__settings
     - taxonomy.vocabulary.location_icon_park
+  module:
+    - rabbit_hole
 id: taxonomy_term.location_icon_park.default
 targetEntityType: taxonomy_term
 bundle: location_icon_park
@@ -32,6 +35,13 @@ content:
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  rabbit_hole__settings:
+    type: rabbit_hole_default
+    weight: 100
+    region: content
+    settings:
+      advanced: true
     third_party_settings: {  }
   status:
     type: boolean_checkbox

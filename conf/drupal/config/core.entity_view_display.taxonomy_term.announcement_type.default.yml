@@ -1,0 +1,24 @@
+uuid: 83f55718-7bc2-4503-a3ea-e2fd86ba9c32
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.announcement_type.rabbit_hole__settings
+    - taxonomy.vocabulary.announcement_type
+  module:
+    - text
+id: taxonomy_term.announcement_type.default
+targetEntityType: taxonomy_term
+bundle: announcement_type
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  langcode: true
+  rabbit_hole__settings: true

@@ -5,7 +5,10 @@ dependencies:
   config:
     - field.field.taxonomy_term.icons.field_sprite_name
     - field.field.taxonomy_term.icons.field_sprite_type
+    - field.field.taxonomy_term.icons.rabbit_hole__settings
     - taxonomy.vocabulary.icons
+  module:
+    - rabbit_hole
 id: taxonomy_term.icons.default
 targetEntityType: taxonomy_term
 bundle: icons
@@ -39,6 +42,13 @@ content:
     settings:
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  rabbit_hole__settings:
+    type: rabbit_hole_default
+    weight: 100
+    region: content
+    settings:
+      advanced: true
     third_party_settings: {  }
   status:
     type: boolean_checkbox

@@ -6,12 +6,14 @@ dependencies:
     - field.field.node.page.body
     - field.field.node.page.field_metatags
     - field.field.node.page.field_reusable_label
+    - field.field.node.page.rabbit_hole__settings
     - node.type.page
     - workflows.workflow.editorial
   module:
     - content_moderation
     - metatag
     - path
+    - rabbit_hole
     - text
 _core:
   default_config_hash: KSvzyFhdLuxniTsunUnUfpfMmod2l57GibtVjL8ymHM
@@ -83,6 +85,13 @@ content:
     weight: 102
     region: content
     settings: {  }
+    third_party_settings: {  }
+  rabbit_hole__settings:
+    type: rabbit_hole_default
+    weight: 100
+    region: content
+    settings:
+      advanced: true
     third_party_settings: {  }
   scheduler_settings:
     weight: 5

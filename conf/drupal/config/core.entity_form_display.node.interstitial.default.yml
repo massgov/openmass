@@ -5,10 +5,12 @@ dependencies:
   config:
     - field.field.node.interstitial.field_interstitial_checkbox_msg
     - field.field.node.interstitial.field_message
+    - field.field.node.interstitial.rabbit_hole__settings
     - node.type.interstitial
   module:
     - content_moderation
     - path
+    - rabbit_hole
     - text
 id: node.interstitial.default
 targetEntityType: node
@@ -61,6 +63,13 @@ content:
     weight: 101
     region: content
     settings: {  }
+    third_party_settings: {  }
+  rabbit_hole__settings:
+    type: rabbit_hole_default
+    weight: 100
+    region: content
+    settings:
+      advanced: true
     third_party_settings: {  }
   scheduler_settings:
     weight: 20

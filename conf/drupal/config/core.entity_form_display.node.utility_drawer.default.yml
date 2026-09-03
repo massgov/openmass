@@ -7,11 +7,13 @@ dependencies:
     - field.field.node.utility_drawer.field_aria_label
     - field.field.node.utility_drawer.field_icon_term
     - field.field.node.utility_drawer.field_links
+    - field.field.node.utility_drawer.rabbit_hole__settings
     - node.type.utility_drawer
   module:
     - content_moderation
     - link
     - path
+    - rabbit_hole
     - text
 id: node.utility_drawer.default
 targetEntityType: node
@@ -86,6 +88,13 @@ content:
     weight: 26
     region: content
     settings: {  }
+    third_party_settings: {  }
+  rabbit_hole__settings:
+    type: rabbit_hole_default
+    weight: 100
+    region: content
+    settings:
+      advanced: true
     third_party_settings: {  }
   scheduler_settings:
     weight: 10

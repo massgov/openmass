@@ -1,0 +1,24 @@
+uuid: b731b0da-7304-452d-ae8a-87dcab0fa6a2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.organization_type.rabbit_hole__settings
+    - taxonomy.vocabulary.organization_type
+  module:
+    - text
+id: taxonomy_term.organization_type.default
+targetEntityType: taxonomy_term
+bundle: organization_type
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  langcode: true
+  rabbit_hole__settings: true
