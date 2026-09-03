@@ -191,12 +191,6 @@ function mass_views_views_data() {
  * Adds a better content bundle filter.
  */
 function mass_views_views_data_alter(array &$data) {
-  // The Entity Delete Log module exposes this column as a field, but does not
-  // provide a filter handler for it.
-  $data['entity_delete_log']['entity_id']['filter'] = [
-    'id' => 'numeric',
-  ];
-
   // Adds a better content type filter.
   $data['node_field_data']['node_user_permitted_type_filter'] = [
     'title' => t('Mass.gov user permitted content type filter'),
