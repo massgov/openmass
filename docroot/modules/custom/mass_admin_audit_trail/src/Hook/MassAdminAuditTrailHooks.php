@@ -12,6 +12,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Hook\Attribute\RemoveHook;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -38,7 +39,10 @@ class MassAdminAuditTrailHooks {
   public function __construct(
     private readonly Connection $database,
     private readonly TimeInterface $time,
-  ) {}
+    TranslationInterface $string_translation,
+  ) {
+    $this->stringTranslation = $string_translation;
+  }
 
   /**
    * Applies the audit trail retention policy during cron.
