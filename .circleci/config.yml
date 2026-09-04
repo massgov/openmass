@@ -155,7 +155,7 @@ jobs:
   build:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - checkout
       - *restore_composer_cache
@@ -170,7 +170,7 @@ jobs:
 #  build_with_latest_mayflower:
 #    working_directory: ~/project/code
 #    docker:
-#      - image: cimg/php:8.3-node
+#      - image: cimg/php:8.4-node
 #    steps:
 #      - checkout
 #      - *restore_composer_cache
@@ -188,7 +188,7 @@ jobs:
   push_acquia:
     working_directory: ~/project/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - *no_host_check
       - *no_ssh_timeout
@@ -210,7 +210,7 @@ jobs:
   danger:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - run:
@@ -221,7 +221,7 @@ jobs:
   tagging_github:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -232,7 +232,7 @@ jobs:
   # Automate the tagging process by using the GitHub then pushing to Acquia repository.
   tagging_acquia:
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - *no_host_check
       - checkout
@@ -245,7 +245,7 @@ jobs:
   acquia_db_backup:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: { at: /tmp }
       - fetch_drush_aliases
@@ -256,7 +256,7 @@ jobs:
   validate:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
@@ -342,7 +342,7 @@ jobs:
   cut_release_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -358,7 +358,7 @@ jobs:
   mayflower_develop_branch:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -373,7 +373,7 @@ jobs:
   # Log a new release in New Relic
   new_relic_change_tracking:
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     parameters:
       version:
         type: string
@@ -389,7 +389,7 @@ jobs:
   master_to_develop:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: { at: /tmp }
       - *vendor_bin_add_path
@@ -421,7 +421,7 @@ jobs:
         default: ""
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - *no_host_check
@@ -445,7 +445,7 @@ jobs:
         type: string
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
@@ -690,7 +690,7 @@ jobs:
   pending_security:
     working_directory: /tmp/code
     docker:
-      - image: cimg/php:8.3-node
+      - image: cimg/php:8.4-node
     steps:
       - attach_workspace: {at: /tmp}
       - run: "composer audit --no-interaction --no-dev"

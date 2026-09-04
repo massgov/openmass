@@ -10,8 +10,10 @@ plugin: windows_aad
 settings:
   client_id: 3874ac99-e084-455d-8842-6a9896c0bc6d
   client_secret: azure_ad_client_secret
+  iss_allowed_domains: "mass.local\r\nedit.stage.mass.gov\r\nstage.mass.gov"
   authorization_endpoint_wa: 'https://login.microsoftonline.com/3e861d16-48b7-4a0e-9806-8c04d81b7b2a/oauth2/v2.0/authorize'
   token_endpoint_wa: 'https://login.microsoftonline.com/3e861d16-48b7-4a0e-9806-8c04d81b7b2a/oauth2/v2.0/token'
+  end_session_endpoint: ''
   userinfo_endpoint_wa: ''
   map_ad_groups_to_roles: false
   group_mapping:
@@ -24,6 +26,4 @@ settings:
   hide_email_address_warning: false
   subject_key: sub
   enable_single_sign_out: false
-  iss_allowed_domains: "mass.local\r\nedit.stage.mass.gov\r\nstage.mass.gov"
-  end_session_endpoint: ''
   front_channel_logout_url: ''

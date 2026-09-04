@@ -1,0 +1,24 @@
+diff --git a/modules/mailchimp_transactional_activity/src/Form/ActivityForm.php b/modules/mailchimp_transactional_activity/src/Form/ActivityForm.php
+--- a/modules/mailchimp_transactional_activity/src/Form/ActivityForm.php
++++ b/modules/mailchimp_transactional_activity/src/Form/ActivityForm.php
+@@ -274,7 +274,7 @@ class ActivityForm extends ConfigFormBase {
+    * @return array
+    *   List of entities that can be used as an #options list.
+    */
+-  public function fieldmapOptions(string $entity_type, string $entity_bundle = NULL): array {
++  public function fieldmapOptions(string $entity_type, ?string $entity_bundle = NULL): array {
+     $options = ['' => $this->t('-- Select --')];
+ 
+     $fields = $this->entityFieldManager->getFieldMap();
+diff --git a/modules/mailchimp_transactional_template/mailchimp_transactional_template.module b/modules/mailchimp_transactional_template/mailchimp_transactional_template.module
+--- a/modules/mailchimp_transactional_template/mailchimp_transactional_template.module
++++ b/modules/mailchimp_transactional_template/mailchimp_transactional_template.module
+@@ -18,7 +18,7 @@ use Drupal\mailchimp_transactional_template\Entity\TemplateMap;
+  * @return array
+  *   Array of Template Maps.
+  */
+-function mailchimp_transactional_template_load_entities(string $id = NULL) {
++function mailchimp_transactional_template_load_entities(?string $id = NULL) {
+   $query = \Drupal::entityQuery('mailchimp_transactional_template');
+ 
+   if (!empty($id)) {

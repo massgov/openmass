@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_search\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests "Search" scoping.
  */
-class MassSearchScopingTest extends ExistingSiteSelenium2DriverTestBase {
+class MassSearchScopingTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Tests the default search experience with no additional scoping.

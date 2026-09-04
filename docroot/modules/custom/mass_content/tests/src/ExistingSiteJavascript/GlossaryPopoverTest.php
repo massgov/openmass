@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Topic Page Description visibility tests.
  */
-class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
+class GlossaryPopoverTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Test paths for content types that support glossaries.
