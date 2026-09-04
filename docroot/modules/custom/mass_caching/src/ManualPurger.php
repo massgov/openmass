@@ -12,8 +12,7 @@ use Drupal\purge\Plugin\Purge\Queuer\QueuersServiceInterface;
 /**
  * Helper service to do manual path and URL invalidation.
  *
- * Can be used from custom code by calling:
- *     \Drupal::service('manual_purger')->purgePath('/foo/bar')
+ * Can be injected into services and commands to purge paths or URLs.
  */
 class ManualPurger {
 

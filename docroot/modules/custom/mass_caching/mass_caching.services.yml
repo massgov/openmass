@@ -1,18 +1,14 @@
 parameters:
-  # Domains to be cleared for path invalidations.
-  mass_caching.domains: []
-  # Schemes to be cleared for path invalidations.
-  # Default to https only, since prod only runs SSL.
-  mass_caching.schemes: ['https']
+  mass_caching.skip_procedural_hook_scan: true
+
 services:
-  manual_purger:
+  Drupal\mass_caching\ManualPurger:
     class: Drupal\mass_caching\ManualPurger
     arguments: ['@purge.queuers', '@purge.invalidation.factory', '@purge.queue', '@settings']
-  Drupal\mass_caching\ManualPurger: '@manual_purger'
-  stale_response_subscriber:
+  mass_caching.stale_response_subscriber:
     class: Drupal\mass_caching\EventSubscriber\StaleResponseSubscriber
     tags:
-      - {name: event_subscriber}
+      - { name: event_subscriber }
   logger.channel.mass_caching:
     parent: logger.channel_base
     arguments: ['mass_caching']
