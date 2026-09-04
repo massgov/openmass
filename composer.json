@@ -387,6 +387,9 @@
         },
         "installer-types": ["bower-asset", "npm-asset"],
         "patches": {
+            "composer/installers": {
+                "PHP 8.4: Explicitly declare nullable parameter types (https://github.com/composer/installers/issues/544)": "patches/composer_installers/php84-explicit-nullable-types.patch"
+            },
             "drupal/access_unpublished": {
                 "Invalid argument supplied for foreach AddHttpHeaders->onResponse (https://www.drupal.org/project/access_unpublished/issues/3215907)": "https://www.drupal.org/files/issues/2021-05-26/3215907-warning-invalid-argument.patch",
                 "Invalid argument supplied for foreach SettingsForm->prepareHeadersDisplay (https://www.drupal.org/project/access_unpublished/issues/3252499)": "https://www.drupal.org/files/issues/2021-12-03/3252499-warning-invalid-argument-2.patch",
