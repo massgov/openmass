@@ -9,9 +9,6 @@ switch (file) {
   case 'all':
     pages = require('./all');
     break;
-  case 'postrelease':
-    pages = require('./postrelease');
-    break;
   default:
     throw new Error('has occurred with' + file + '.');
 }

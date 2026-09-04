@@ -257,32 +257,195 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
    * Selects N numbers of row in the view results table.
    */
   private function selectRows($num) {
-    $checkboxes = $this->view->findAll('css', '.views-table > tbody > tr .views-field-node-bulk-form input');
-    $checkboxes = \array_slice($checkboxes, 0, $num);
-    foreach ($checkboxes as $checkbox) {
-      $checkbox->click();
+    // Click through the DOM rather than the WebDriver. Selecting the first row
+    // reveals the sticky bulk actions bar, which the driver then reports as
+    // covering the rows underneath it and refuses to click.
+    for ($index = 0; $index < $num; $index++) {
+      $this->getSession()->executeScript(sprintf(
+        'var el = document.querySelectorAll(".vbo-view-form .js-vbo-checkbox")[%d]; if (el) { el.click(); }',
+        $index
+      ));
     }
   }
 
   /**
-   * Checks status messages when actions are applied.
+   * Creates published pages sharing a title prefix, and returns them.
    */
-  private function checkActions() {
-    $actions = [
-      'flag_action.watch_content_flag' => 'Watch',
-      'flag_action.unwatch_content_flag' => 'Unwatch',
-      'node_save_action' => 'Edit content',
-    ];
+  private function createPagesWithPrefix($prefix, $count) {
+    $nodes = [];
+    for ($index = 1; $index <= $count; $index++) {
+      $nodes[] = $this->createNode([
+        'type' => 'page',
+        'title' => $prefix . '-' . $index,
+        'status' => 1,
+        'moderation_state' => MassModeration::PUBLISHED,
+      ]);
+    }
+    return $nodes;
+  }
 
-    foreach ($actions as $action_label) {
-      $this->reset();
-      $num = \random_int(5, 10);
-      $this->selectRows($num);
+  /**
+   * Narrows the view down to the rows with the given title prefix.
+   */
+  private function filterByTitle($prefix, $expected_rows) {
+    $this->drupalGet('admin/content');
+    $page = $this->getCurrentPage();
+    $page->fillField('Title', $prefix);
+    $page->pressButton('Apply');
+    $this->waitForViewResults();
+    $this->assertTrue(
+      $this->getSession()->wait(
+        10000,
+        \sprintf(
+          'document.querySelectorAll(".vbo-view-form .js-vbo-checkbox").length === %d',
+          $expected_rows
+        )
+      ),
+      \sprintf('All Content should list the %d created rows.', $expected_rows)
+    );
+    $this->view = $page->find('css', '.view.view-content');
+    return $page;
+  }
 
-      $this->view->findField('Action')->selectOption($action_label);
-      $this->view->pressButton('Apply to selected items');
-      $message = $this->getCurrentPage()->find('css', '.messages--status')->getText();
-      $this->assertStringContainsString($action_label . ' was applied to ' . $num, $message);
+  /**
+   * Picks rows and an action, then applies it.
+   */
+  private function applyActionToRows($page, $num, $action_label) {
+    $this->selectRows($num);
+    $checked = (int) $this->getSession()->evaluateScript(
+      'document.querySelectorAll(".vbo-view-form .js-vbo-checkbox:checked").length'
+    );
+    $this->assertSame($num, $checked, 'The expected number of rows should be selected.');
+    $page->selectFieldOption('Action', $action_label);
+
+    $enabled = $this->getSession()->wait(
+      5000,
+      'document.querySelector(\'[data-vbo="vbo-action"]:not(:disabled)\') !== null'
+    );
+    $this->assertTrue($enabled, 'Apply to selected items should be enabled after selecting rows and an action.');
+    $page->pressButton('Apply to selected items');
+  }
+
+  /**
+   * Waits for a bulk operation batch to hand the editor back to the view.
+   */
+  private function waitForBatchToFinish() {
+    $this->assertTrue(
+      $this->getSession()->wait(
+        120000,
+        'window.location.pathname.indexOf("/admin/content") !== -1'
+      ),
+      'The batch should finish and return to All Content.'
+    );
+    $this->assertSession()->pageTextNotContains('An error has occurred');
+    $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
+  }
+
+  /**
+   * Bulk editing several rows reaches the action configuration form.
+   */
+  public function testBulkApplyWithMultipleItemsSelected() {
+    $prefix = 'DP-47588-' . $this->randomMachineName(8);
+    $nodes = $this->createPagesWithPrefix($prefix, 2);
+
+    $page = $this->filterByTitle($prefix, 2);
+
+    $this->selectRows(2);
+    $checked = (int) $this->getSession()->evaluateScript(
+      'document.querySelectorAll(".vbo-view-form .js-vbo-checkbox:checked").length'
+    );
+    $this->assertSame(2, $checked, 'Two All Content rows should be selected.');
+    $page->selectFieldOption('Action', 'Edit content');
+
+    $enabled = $this->getSession()->wait(
+      5000,
+      'document.querySelector(\'[data-vbo="vbo-action"]:not(:disabled)\') !== null'
+    );
+    $this->assertTrue($enabled, 'Apply to selected items should be enabled after selecting multiple items and an action.');
+
+    // Resolving the selection runs the view query with a condition on the base
+    // field, which used to be ambiguous against the tables joined into the All
+    // Content view and made this step fail with a database error.
+    $page->pressButton('Apply to selected items');
+    $this->assertTrue(
+      $this->getSession()->wait(
+        20000,
+        'window.location.pathname.indexOf("/views-bulk-operations/configure/") !== -1'
+      ),
+      'Applying the action should lead to the action configuration form.'
+    );
+    $this->assertSession()->addressMatches('/views-bulk-operations\/configure\/content\//');
+    $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
+    $this->assertSession()->elementExists('css', 'form#views-bulk-operations-configure-action');
+    foreach ($nodes as $node) {
+      $this->assertSession()->pageTextContains($node->getTitle());
+    }
+  }
+
+  /**
+   * An action without a configuration form reaches every selected row.
+   */
+  public function testActionAppliesToSelectedRows() {
+    $prefix = 'DP-47588-' . $this->randomMachineName(8);
+    $nodes = $this->createPagesWithPrefix($prefix, 3);
+
+    $page = $this->filterByTitle($prefix, 3);
+    $this->applyActionToRows($page, 3, 'Watch');
+    $this->waitForBatchToFinish();
+
+    $flag = \Drupal::service('flag')->getFlagById('watch_content');
+    foreach ($nodes as $node) {
+      $this->assertNotNull(
+        \Drupal::service('flag')->getFlagging($flag, $node, $this->loggedInUser),
+        \sprintf('"%s" should be flagged after the bulk action.', $node->getTitle())
+      );
+    }
+  }
+
+  /**
+   * A label typed during bulk edit is created once and shared by every row.
+   */
+  public function testBulkEditCreatesOneLabelForTheWholeBatch() {
+    // Bulk operations hand the rows to the batch API in pages of ten, and the
+    // batch restores the stored action configuration from scratch for each of
+    // those pages. Take more than one page, so a label the editor types is
+    // restored - and used to be created - more than once.
+    $prefix = 'DP-47588-' . $this->randomMachineName(8);
+    $nodes = $this->createPagesWithPrefix($prefix, 12);
+    $label = 'DP-47588 label ' . $this->randomMachineName(8);
+
+    $page = $this->filterByTitle($prefix, 12);
+    $this->applyActionToRows($page, 12, 'Edit content');
+    $this->assertTrue(
+      $this->getSession()->wait(
+        20000,
+        'window.location.pathname.indexOf("/views-bulk-operations/configure/") !== -1'
+      ),
+      'Applying the action should lead to the action configuration form.'
+    );
+
+    $configure = $this->getCurrentPage();
+    $configure->checkField('node[page][_field_selector][field_reusable_label]');
+    $configure->fillField('node[page][field_reusable_label][0][target_id]', $label);
+    $configure->pressButton('Apply');
+    $this->waitForBatchToFinish();
+
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties(['vid' => 'label', 'name' => $label]);
+    $this->assertCount(1, $terms, 'The typed label should be created exactly once.');
+    $term = \reset($terms);
+    $this->markEntityForCleanup($term);
+
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $storage->resetCache();
+    foreach ($nodes as $node) {
+      $saved = $storage->load($node->id());
+      $tids = \array_column($saved->get('field_reusable_label')->getValue(), 'target_id');
+      $this->assertContains(
+        $term->id(),
+        $tids,
+        \sprintf('"%s" should carry the label applied to the whole batch.', $node->getTitle())
+      );
     }
   }
 
@@ -349,10 +512,6 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
 
     // Check randomly the content type filter 10 times.
     for ($i = 0; $i++ < 10; $this->checkSelectFilterWorks('Content type'));
-
-    // @todo Test without without checking messages
-    // Check actions.
-    // $this->checkActions();
   }
 
 }

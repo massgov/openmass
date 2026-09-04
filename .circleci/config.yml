@@ -1046,18 +1046,6 @@ workflows:
               ignore: /.*/
             tags:
               only: /.*/
-      - backstop_test:
-          name: backstop-prod-maint
-          requires: [deploy-tag-prod-acquia-maint]
-          target: prod
-          list: postrelease
-          viewport: desktop
-          reference: test
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /.*/
       - new_relic_change_tracking:
           name: new-relic-change-tracking-prod-maint
           requires: [deploy-tag-prod-acquia-maint]

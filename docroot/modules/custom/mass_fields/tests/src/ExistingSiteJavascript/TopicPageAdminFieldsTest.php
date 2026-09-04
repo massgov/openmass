@@ -46,12 +46,13 @@ class TopicPageAdminFieldsTest extends MassExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Creates an admin, saves it and returns it.
+   * Creates a Content Administrator, saves it and returns it.
    */
   private function createAdmin(): AccountInterface {
-    // An admin is needed.
     $admin = $this->createUser();
     $admin->addRole('content_team');
+    // Content Administrator is additive to Editor in production.
+    $admin->addRole('editor');
     $admin->activate();
     $admin->save();
     return $admin;
