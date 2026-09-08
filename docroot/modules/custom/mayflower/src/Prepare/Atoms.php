@@ -349,6 +349,10 @@ class Atoms {
    * Extract embed URL + dimensions from field render or raw value.
    */
   private static function extractVideoEmbedData($entity, array $video_render_array): array {
+    if ($entity->hasField('field_media_oembed_video')) {
+      return self::extractOembedData((string) ($entity->get('field_media_oembed_video')->value ?? ''));
+    }
+
     if (isset($video_render_array['children']['#url'])) {
       return [
         'src' => $video_render_array['children']['#url'],
@@ -370,6 +374,48 @@ class Atoms {
     }
 
     return [];
+  }
+
+  /**
+   * Resolve the provider embed URL for a core oEmbed video media item.
+   *
+   * The Mayflower video atom builds its own iframe and only needs the provider
+   * embed URL, so the core oEmbed iframe formatter output is not usable here.
+   *
+   * @param string $url
+   *   The oEmbed source URL, e.g. https://youtu.be/abc123.
+   *
+   * @return array
+   *   Array with src/width/height keys, or an empty array when the resource
+   *   cannot be resolved.
+   */
+  public static function extractOembedData(string $url): array {
+    $url = trim($url);
+    if ($url === '') {
+      return [];
+    }
+
+    try {
+      $resource_url = \Drupal::service('media.oembed.url_resolver')->getResourceUrl($url, 854, 480);
+      $resource = \Drupal::service('media.oembed.resource_fetcher')->fetchResource($resource_url);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('mayflower')->warning('Could not resolve oEmbed resource for @url: @message', [
+        '@url' => $url,
+        '@message' => $e->getMessage(),
+      ]);
+      return [];
+    }
+
+    if (!preg_match('/<iframe[^>]+src="([^"]+)"/i', (string) $resource->getHtml(), $matches)) {
+      return [];
+    }
+
+    return [
+      'src' => html_entity_decode($matches[1]),
+      'width' => $resource->getWidth() ?: '',
+      'height' => $resource->getHeight() ?: '',
+    ];
   }
 
 }
