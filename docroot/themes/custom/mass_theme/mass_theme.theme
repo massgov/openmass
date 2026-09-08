@@ -1638,6 +1638,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
  */
 function mass_theme_preprocess_node_error_page(&$variables) {
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealWhiteImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-white.png');
 }
 
 /**
@@ -4603,6 +4604,7 @@ function mass_theme_preprocess_page(&$variables) {
   }
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
   $variables['sealBlackImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-black.png');
+  $variables['sealWhiteImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-white.png');
 
   if ($route_name === 'view.collection_all.page_all') {
     $cache_tags = [];
