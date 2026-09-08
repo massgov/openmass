@@ -23,9 +23,14 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 class MassMediaDownloadController extends ControllerBase {
 
   /**
-   * Browser and CDN cache lifetime for public document downloads (60 seconds).
+   * Browser cache lifetime for public document downloads (60 seconds).
    */
   private const PUBLIC_FILE_MAX_AGE = 60;
+
+  /**
+   * Varnish and edge cache lifetime for public document downloads (1 day).
+   */
+  private const PUBLIC_FILE_S_MAXAGE = 86400;
 
   /**
    * Request stack.
@@ -245,6 +250,7 @@ class MassMediaDownloadController extends ControllerBase {
     }
 
     $response->setMaxAge(self::PUBLIC_FILE_MAX_AGE);
+    $response->setSharedMaxAge(self::PUBLIC_FILE_S_MAXAGE);
   }
 
   /**
