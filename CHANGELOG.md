@@ -1,5 +1,16 @@
 
 
+## [0.492.0] - September 8, 2026
+
+### Changed
+  - DP-47485: Reduced permissions for Content Administrator role.
+  
+### Fixed
+  - DP-48112: Accessibility report for authors now shows current Editoria11y issue counts, ignores stale scans from old page URLs, and no longer double-counts issues when filtering by organization. The content Organization filter also accepts multiple organizations without SQL errors. The “doesn’t equal” operator is now the exact complement of “equals.”
+  - DP-48428: Stop redirect normalization from rewriting published media download aliases like /doc/{slug}/download when a stale redirect points elsewhere.
+  
+
+
 ## [0.491.0] - September 1, 2026
 
 ### Changed
