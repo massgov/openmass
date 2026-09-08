@@ -405,7 +405,8 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $cache_control = $this->getSession()->getResponseHeader('Cache-Control');
     $this->assertNotEmpty($cache_control);
     $this->assertMatchesRegularExpression('/(?:^|,\s*)private(?:,|$)/', $cache_control);
-    $this->assertMatchesRegularExpression('/(?:^|,\s*)no-store(?:,|$)/', $cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)no-cache(?:,|$)/', $cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)must-revalidate(?:,|$)/', $cache_control);
     $this->assertStringNotContainsString('s-maxage', $cache_control);
 
     $this->drupalLogout();
