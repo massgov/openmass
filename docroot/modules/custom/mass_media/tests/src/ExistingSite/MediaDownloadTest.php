@@ -62,8 +62,9 @@ class MediaDownloadTest extends MassExistingSiteBase {
 
     $cache_control = $this->getSession()->getResponseHeader('Cache-Control');
     $this->assertNotEmpty($cache_control);
-    $this->assertStringContainsString('max-age=60', $cache_control);
-    $this->assertStringContainsString('public', $cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)max-age=60(?:,|$)/', $cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)s-maxage=604800(?:,|$)/', $cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)public(?:,|$)/', $cache_control);
 
     $last_modified = $this->getSession()->getResponseHeader('Last-Modified');
     $this->assertNotEmpty($last_modified);
@@ -397,6 +398,15 @@ class MediaDownloadTest extends MassExistingSiteBase {
       'moderation_state' => 'restricted',
     ]);
     $this->markEntityForCleanup($file);
+
+    // Authorized private downloads must not be stored by shared caches.
+    $this->visit($media->toUrl()->toString() . '/download');
+    $this->assertSame(200, $this->getSession()->getStatusCode());
+    $cache_control = $this->getSession()->getResponseHeader('Cache-Control');
+    $this->assertNotEmpty($cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)private(?:,|$)/', $cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)no-store(?:,|$)/', $cache_control);
+    $this->assertStringNotContainsString('s-maxage', $cache_control);
 
     $this->drupalLogout();
 
