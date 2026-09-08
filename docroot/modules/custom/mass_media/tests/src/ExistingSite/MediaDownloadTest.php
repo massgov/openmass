@@ -63,7 +63,7 @@ class MediaDownloadTest extends MassExistingSiteBase {
     $cache_control = $this->getSession()->getResponseHeader('Cache-Control');
     $this->assertNotEmpty($cache_control);
     $this->assertMatchesRegularExpression('/(?:^|,\s*)max-age=60(?:,|$)/', $cache_control);
-    $this->assertMatchesRegularExpression('/(?:^|,\s*)s-maxage=604800(?:,|$)/', $cache_control);
+    $this->assertMatchesRegularExpression('/(?:^|,\s*)s-maxage=86400(?:,|$)/', $cache_control);
     $this->assertMatchesRegularExpression('/(?:^|,\s*)public(?:,|$)/', $cache_control);
 
     $last_modified = $this->getSession()->getResponseHeader('Last-Modified');

@@ -28,9 +28,9 @@ class MassMediaDownloadController extends ControllerBase {
   private const PUBLIC_FILE_MAX_AGE = 60;
 
   /**
-   * Varnish and edge cache lifetime for public document downloads (1 week).
+   * Varnish and edge cache lifetime for public document downloads (1 day).
    */
-  private const PUBLIC_FILE_S_MAXAGE = 604800;
+  private const PUBLIC_FILE_S_MAXAGE = 86400;
 
   /**
    * Request stack.
