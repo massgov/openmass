@@ -3,6 +3,7 @@ See also: [Documentation for Mass Digital team](https://github.com/massgov/massg
 
 ## Developer basics
 - [Getting Started](https://github.com/massgov/openmass#getting-started)
+- [AI editorial vector prototype](ai-editorial-vector-prototype.md)
 - [Changelog Instructions](changelog_instructions.md)
 - [Composer](composer.md)
 - [Peer Review checklist](peer_review_checklist.md)
