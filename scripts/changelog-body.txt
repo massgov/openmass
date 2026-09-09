@@ -1,14 +1,11 @@
 
 
-## [0.490.0] - August 25, 2026
+## [0.492.0] - September 8, 2026
 
 ### Changed
-  - DP-47839: Changed docker image repo from Docker Hub to AWS.
-  - DP-47935: Increased max for detecting and logging when edge cache tag limit is exceeded.
-  
-### Added
-  - DP-48212: Enhance Editoria11y Dismissal Report
+  - DP-47485: Reduced permissions for Content Administrator role.
   
 ### Fixed
-  - DP-48501: Fixes intermittent 500 errors on the All Content page by stopping the media view from claiming a local task that core already provides.
+  - DP-48112: Accessibility report for authors now shows current Editoria11y issue counts, ignores stale scans from old page URLs, and no longer double-counts issues when filtering by organization. The content Organization filter also accepts multiple organizations without SQL errors. The “doesn’t equal” operator is now the exact complement of “equals.”
+  - DP-48428: Stop redirect normalization from rewriting published media download aliases like /doc/{slug}/download when a stale redirect points elsewhere.
   
