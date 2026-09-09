@@ -217,6 +217,9 @@ class ResolverTest extends MassExistingSiteBase {
 
   /**
    * Tests aliased document download redirects are ignored for unpublished media.
+   *
+   * Production media aliases are stored as /doc/{slug} -> /media/N; public
+   * links append /download. Target resolution must recognize that pattern.
    */
   public function testRedirectToUnpublishedAliasedDocumentIsIgnored(): void {
     $media = $this->createDocumentMedia('unpublished-' . $this->randomMachineName(), [
@@ -224,9 +227,9 @@ class ResolverTest extends MassExistingSiteBase {
       'moderation_state' => 'draft',
     ]);
 
-    $aliasPath = '/doc/' . $this->randomMachineName() . '/download';
+    $aliasPath = '/doc/' . $this->randomMachineName();
     $alias = PathAlias::create([
-      'path' => '/media/' . $media->id() . '/download',
+      'path' => '/media/' . $media->id(),
       'alias' => $aliasPath,
       'langcode' => 'en',
       'status' => 1,
@@ -234,8 +237,9 @@ class ResolverTest extends MassExistingSiteBase {
     $alias->save();
     $this->cleanupEntities[] = $alias;
 
+    $downloadPath = $aliasPath . '/download';
     $source = 'to-unpublished-doc-' . $this->randomMachineName();
-    $this->createRedirect($source, $aliasPath);
+    $this->createRedirect($source, $downloadPath);
 
     /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
     $service = \Drupal::service('mass_redirect_normalizer.resolver');
@@ -243,6 +247,7 @@ class ResolverTest extends MassExistingSiteBase {
 
     $resolved = $service->resolveRedirectTarget($href);
     $this->assertFalse($resolved['changed']);
+    $this->assertSame('unpublished_target', $resolved['skip_reason'] ?? NULL);
 
     $text = '<p><a href="' . $href . '">Unpublished doc</a></p>';
     $normalizedText = $service->normalizeRedirectLinksInText($text);
@@ -250,6 +255,48 @@ class ResolverTest extends MassExistingSiteBase {
     $this->assertStringContainsString($href, $normalizedText['text']);
 
     $originalUri = 'internal:' . $href;
+    $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
+    $this->assertFalse($normalizedUri['changed']);
+    $this->assertSame($originalUri, $normalizedUri['uri']);
+  }
+
+  /**
+   * Tests stale redirects over live media download aliases are ignored.
+   *
+   * When /doc/{slug}/download still serves a published media file but a stale
+   * redirect row points elsewhere, rewriting would swap the document the
+   * public still downloads. Matches the MIH application form regression.
+   */
+  public function testShadowRedirectOverLiveMediaDownloadAliasIsIgnored(): void {
+    $liveMedia = $this->createDocumentMedia('live-doc-' . $this->randomMachineName());
+    $otherMedia = $this->createDocumentMedia('other-doc-' . $this->randomMachineName());
+
+    $aliasPath = '/doc/' . strtolower($this->randomMachineName());
+    $alias = PathAlias::create([
+      'path' => '/media/' . $liveMedia->id(),
+      'alias' => $aliasPath,
+      'langcode' => 'en',
+      'status' => 1,
+    ]);
+    $alias->save();
+    $this->cleanupEntities[] = $alias;
+
+    $downloadPath = $aliasPath . '/download';
+    $this->createRedirect($downloadPath, '/media/' . $otherMedia->id() . '/download');
+
+    /** @var \Drupal\mass_redirect_normalizer\RedirectLinkResolver $service */
+    $service = \Drupal::service('mass_redirect_normalizer.resolver');
+
+    $resolved = $service->resolveRedirectTarget($downloadPath);
+    $this->assertFalse($resolved['changed']);
+    $this->assertSame('live_source_page', $resolved['skip_reason'] ?? NULL);
+
+    $text = '<p><a href="' . $downloadPath . '">Application form</a></p>';
+    $normalizedText = $service->normalizeRedirectLinksInText($text);
+    $this->assertFalse($normalizedText['changed']);
+    $this->assertStringContainsString($downloadPath, $normalizedText['text']);
+
+    $originalUri = 'internal:' . $downloadPath;
     $normalizedUri = $service->normalizeRedirectLinkUri($originalUri);
     $this->assertFalse($normalizedUri['changed']);
     $this->assertSame($originalUri, $normalizedUri['uri']);

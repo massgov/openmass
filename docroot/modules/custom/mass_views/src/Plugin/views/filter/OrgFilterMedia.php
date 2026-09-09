@@ -98,10 +98,10 @@ class OrgFilterMedia extends FilterPluginBase implements ContainerFactoryPluginI
   }
 
   /**
-   * Retrieve a single usable int value from the input value.
+   * Retrieve usable organization IDs from the input value.
    *
-   * @return int|null
-   *   The organization ID, or NULL.
+   * @return int[]|null
+   *   The organization IDs, or NULL.
    */
   private function getValue() {
     if ($this->value) {
