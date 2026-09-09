@@ -3,13 +3,13 @@
 namespace Drupal\Tests\mass_hierarchy\ExistingSiteJavascript;
 
 use Drupal\user\Entity\User;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 use weitzman\DrupalTestTraits\ScreenShotTrait;
 
 /**
  * Tests move children action in the change_parents views.
  */
-class ChangeParentViewTest extends ExistingSiteSelenium2DriverTestBase {
+class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
 
   use ScreenShotTrait;
 

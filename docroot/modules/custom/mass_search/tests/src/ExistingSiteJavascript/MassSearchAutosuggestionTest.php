@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_search\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests "Search" autosuggestions.
  */
-class MassSearchAutosuggestionTest extends ExistingSiteSelenium2DriverTestBase {
+class MassSearchAutosuggestionTest extends MassExistingSiteSelenium2DriverTestBase {
 
   const SEARCH = 'health';
 

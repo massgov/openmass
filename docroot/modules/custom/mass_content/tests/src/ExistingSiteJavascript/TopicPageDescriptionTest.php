@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Topic Page Description visibility tests.
  */
-class TopicPageDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
+class TopicPageDescriptionTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Test that short description rendering.

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\mass_org_access\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Verifies Permission Groups widget visibility per role and bundle.
@@ -18,7 +18,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  * its value still derives from Organization(s) and saves. So "hidden" means
  * present-but-not-visible, never removed.
  */
-class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBase {
+class OwnerGroupsWidgetVisibilityTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * CSS selector for the input the widget submits (stays in the DOM).

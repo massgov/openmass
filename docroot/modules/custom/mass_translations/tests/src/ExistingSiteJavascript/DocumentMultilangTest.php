@@ -4,12 +4,12 @@ namespace Drupal\Tests\mass_translations\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Multilanguage documents tests.
  */
-class DocumentMultilangTest extends ExistingSiteSelenium2DriverTestBase {
+class DocumentMultilangTest extends MassExistingSiteSelenium2DriverTestBase {
 
   use MediaCreationTrait;
 

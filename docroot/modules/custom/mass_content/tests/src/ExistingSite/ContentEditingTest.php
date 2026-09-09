@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\mass_content\ExistingSite;
 
+use Behat\Mink\Element\DocumentElement;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**
@@ -74,6 +75,7 @@ class ContentEditingTest extends MassExistingSiteBase {
       $session->visit($path . '/edit');
       $this->assertEquals(200, $session->getStatusCode(), 'Failed to retrieve ' . $path . '/edit');
       $page = $session->getPage();
+      $this->fillMissingRequiredLinkTargets($page, $path);
       $page->findButton('Save')->press();
       // Ensure the save was successful, redirected back to the view route, and does not encounter errors.
       $this->assertEquals($this->baseUrl . $path, $session->getCurrentUrl());
@@ -110,6 +112,26 @@ class ContentEditingTest extends MassExistingSiteBase {
     $node->setNewRevision(FALSE);
     $node->setSyncing(TRUE);
     $node->save();
+  }
+
+  /**
+   * Populates required link targets missing from legacy QAG fixture content.
+   */
+  private function fillMissingRequiredLinkTargets(DocumentElement $page, string $path): void {
+    $system_path = \Drupal::service('path_alias.manager')->getPathByAlias($path);
+    if (!preg_match('#^/node/(\d+)$#', $system_path, $matches)) {
+      return;
+    }
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load($matches[1]);
+    if (!$node || $node->bundle() !== 'org_page') {
+      return;
+    }
+    $selector = 'input[required][name*="[field_link_group_link]"][name$="[uri]"]';
+    foreach ($page->findAll('css', $selector) as $field) {
+      if ($field->getValue() === '') {
+        $field->setValue($node->label() . ' (' . $node->id() . ')');
+      }
+    }
   }
 
 }

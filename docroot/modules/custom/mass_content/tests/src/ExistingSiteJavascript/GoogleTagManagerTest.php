@@ -3,12 +3,12 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Ensures GTM is generated properly.
  */
-class GoogleTagManagerTest extends ExistingSiteSelenium2DriverTestBase {
+class GoogleTagManagerTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Tests GTM on Homepage.
