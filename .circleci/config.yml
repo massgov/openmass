@@ -499,7 +499,7 @@ jobs:
       - run:
           name: Archive Reference Screenshots
           command: |
-            apt-get update
+            apt-get -o Acquire::Check-Valid-Until=false update --allow-releaseinfo-change
             apt-get install zip -y
             zip -r references.zip backstop/reference
       - store_artifacts:
@@ -570,7 +570,7 @@ jobs:
                 name: Verify Artifacts
                 command: |
                   curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google-linux-signing-key.gpg
-                  apt-get update
+                  apt-get -o Acquire::Check-Valid-Until=false update --allow-releaseinfo-change
                   apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
 
