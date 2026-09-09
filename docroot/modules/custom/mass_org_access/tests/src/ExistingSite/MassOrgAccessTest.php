@@ -308,6 +308,22 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Collection editors do not see the taxonomy term canonical-page tab.
+   */
+  public function testCollectionEditorDoesNotSeeTermViewTab(): void {
+    $term = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Collection tab visibility ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+
+    $this->drupalLogin($this->userA);
+    $this->drupalGet($term->toUrl('edit-form'));
+
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->elementNotExists('css', sprintf('ul.tabs a[href="/taxonomy/term/%d"]', $term->id()));
+  }
+
+  /**
    * The dedicated Collections page renders the top-level-term View for editors.
    */
   public function testCollectionsOverviewPageShowsOnlyTopLevelTerms(): void {
