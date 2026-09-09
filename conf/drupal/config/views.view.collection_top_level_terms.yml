@@ -3,8 +3,17 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.storage.taxonomy_term.field_default_sort
+    - field.storage.taxonomy_term.field_organizations
+    - field.storage.taxonomy_term.field_primary_parent
+    - field.storage.taxonomy_term.field_show_only_future_events
+    - field.storage.taxonomy_term.field_sort_order
+    - field.storage.taxonomy_term.field_url_name
     - taxonomy.vocabulary.collections
   module:
+    - entity_hierarchy
+    - mass_content
+    - options
     - taxonomy
     - user
 id: collection_top_level_terms
@@ -200,49 +209,6 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_all_collection_breadcrumb:
-          id: field_all_collection_breadcrumb
-          table: taxonomy_term__field_all_collection_breadcrumb
-          field: field_all_collection_breadcrumb
-          relationship: none
-          group_type: group
-          admin_label: ''
-          plugin_id: field
-          label: 'Collection Link'
-          exclude: false
-          alter:
-            alter_text: false
-            text: ''
-            make_link: false
-            path: ''
-            absolute: false
-            external: false
-          element_type: ''
-          element_class: ''
-          element_label_type: ''
-          element_label_class: ''
-          element_label_colon: true
-          element_wrapper_type: ''
-          element_wrapper_class: ''
-          element_default_classes: true
-          empty: ''
-          hide_empty: false
-          empty_zero: false
-          hide_alter_empty: true
-          click_sort_column: value
-          type: string
-          settings:
-            link_to_entity: false
-          group_column: value
-          group_columns: {  }
-          group_rows: true
-          delta_limit: 0
-          delta_offset: 0
-          delta_reversed: false
-          delta_first_last: false
-          multi_type: separator
-          separator: ', '
-          field_api_classes: false
         field_primary_parent:
           id: field_primary_parent
           table: taxonomy_term__field_primary_parent
@@ -375,14 +341,14 @@ display:
           separator: ', '
           field_api_classes: false
         operations:
-          id: operations
+          id: collection_operations
           table: taxonomy_term_data
-          field: operations
+          field: collection_operations
           relationship: none
           group_type: group
           admin_label: ''
           entity_type: taxonomy_term
-          plugin_id: entity_operations
+          plugin_id: collection_operations
           label: Operations
           exclude: false
           alter:
@@ -559,7 +525,6 @@ display:
             name: name
             field_organizations: field_organizations
             field_default_sort: field_default_sort
-            field_all_collection_breadcrumb: field_all_collection_breadcrumb
             field_primary_parent: field_primary_parent
             field_show_only_future_events: field_show_only_future_events
             field_sort_order: field_sort_order
@@ -581,13 +546,6 @@ display:
               empty_column: false
               responsive: ''
             field_default_sort:
-              sortable: false
-              default_sort_order: asc
-              align: ''
-              separator: ''
-              empty_column: false
-              responsive: ''
-            field_all_collection_breadcrumb:
               sortable: false
               default_sort_order: asc
               align: ''
@@ -665,7 +623,13 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.taxonomy_term.field_default_sort'
+        - 'config:field.storage.taxonomy_term.field_organizations'
+        - 'config:field.storage.taxonomy_term.field_primary_parent'
+        - 'config:field.storage.taxonomy_term.field_show_only_future_events'
+        - 'config:field.storage.taxonomy_term.field_sort_order'
+        - 'config:field.storage.taxonomy_term.field_url_name'
   entity_reference:
     id: entity_reference
     display_title: 'Collection Reference'
@@ -696,7 +660,13 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - user.permissions
-      tags: {  }
+      tags:
+        - 'config:field.storage.taxonomy_term.field_default_sort'
+        - 'config:field.storage.taxonomy_term.field_organizations'
+        - 'config:field.storage.taxonomy_term.field_primary_parent'
+        - 'config:field.storage.taxonomy_term.field_show_only_future_events'
+        - 'config:field.storage.taxonomy_term.field_sort_order'
+        - 'config:field.storage.taxonomy_term.field_url_name'
   page_1:
     id: page_1
     display_title: Collections
@@ -739,9 +709,13 @@ display:
           plugin_id: boolean
           value: All
           group: 1
+      display_extenders:
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: admin/ma-dash/collections
       menu:
-        type: normal
+        type: none
         title: Collections
         description: ''
         weight: 0
@@ -754,8 +728,11 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
-        - url
-        - url.query_args
         - user.permissions
       tags:
-        - taxonomy_term_list
+        - 'config:field.storage.taxonomy_term.field_default_sort'
+        - 'config:field.storage.taxonomy_term.field_organizations'
+        - 'config:field.storage.taxonomy_term.field_primary_parent'
+        - 'config:field.storage.taxonomy_term.field_show_only_future_events'
+        - 'config:field.storage.taxonomy_term.field_sort_order'
+        - 'config:field.storage.taxonomy_term.field_url_name'

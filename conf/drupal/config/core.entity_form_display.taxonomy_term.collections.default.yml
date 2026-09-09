@@ -83,7 +83,6 @@ third_party_settings:
         required_fields: true
     group_hierarchy_and_breadcrumb:
       children:
-        - field_all_collection_breadcrumb
         - field_primary_parent
         - field_organizations
         - field_content_organization
@@ -144,14 +143,6 @@ content:
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: true
         maxlength_js_truncate_html: true
-  field_all_collection_breadcrumb:
-    type: string_textfield
-    weight: 6
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   field_collection_logo:
     type: image_image
     weight: 21
@@ -192,7 +183,7 @@ content:
     third_party_settings: {  }
   field_default_sort:
     type: string_textfield
-    weight: 9
+    weight: 8
     region: content
     settings:
       size: 60
@@ -292,5 +283,6 @@ content:
     third_party_settings: {  }
 hidden:
   description: true
+  field_all_collection_breadcrumb: true
   field_landing_page: true
   path: true

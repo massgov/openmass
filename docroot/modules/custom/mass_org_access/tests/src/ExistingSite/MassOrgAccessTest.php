@@ -332,6 +332,8 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains($top_level_name);
     $this->assertSession()->elementExists('css', sprintf('a[href="/collections/%s"]', $collection_url_name));
+    $this->assertSession()->elementNotExists('xpath', '//td[contains(@class, "views-field-operations")]//a[normalize-space() = "View"]');
+    $this->assertSession()->elementExists('xpath', '//td[contains(@class, "views-field-operations")]//a[normalize-space() = "Edit"]');
     $this->assertSession()->pageTextNotContains($child_name);
     foreach ([
       'Name',
