@@ -4,4 +4,4 @@ services:
     arguments: ['@current_user']
   mass_flagging.entity_comparison:
     class: Drupal\mass_flagging\Service\MassFlaggingEntityComparison
-    arguments: ['@config.factory', '@diff.diff.formatter', '@plugin.manager.field.field_type', '@diff.entity_parser', '@plugin.manager.diff.builder']
+    arguments: ['@config.factory', '@diff.diff.formatter', '@plugin.manager.field.field_type', '@diff.entity_parser', '@plugin.manager.diff.builder', '@?content_moderation.moderation_information']

@@ -330,12 +330,22 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    * Waits for a bulk operation batch to hand the editor back to the view.
    */
   private function waitForBatchToFinish() {
+    $session = $this->getSession();
+    $page = $session->getPage();
+    // VBO 4.4 can insert a confirmation step after the configure form.
+    if ($page->hasButton('Execute action')) {
+      $page->pressButton('Execute action');
+    }
+    $finished = $session->wait(
+      120000,
+      'window.location.pathname.indexOf("/admin/content") !== -1'
+    );
+    if (!$finished) {
+      $this->capturePageContent('batch-timeout');
+    }
     $this->assertTrue(
-      $this->getSession()->wait(
-        120000,
-        'window.location.pathname.indexOf("/admin/content") !== -1'
-      ),
-      'The batch should finish and return to All Content.'
+      $finished,
+      \sprintf('The batch should finish and return to All Content. Current URL: %s', $session->getCurrentUrl())
     );
     $this->assertSession()->pageTextNotContains('An error has occurred');
     $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');

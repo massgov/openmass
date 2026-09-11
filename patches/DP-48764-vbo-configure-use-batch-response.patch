@@ -1,0 +1,28 @@
+--- a/src/Form/ConfigureAction.php
++++ b/src/Form/ConfigureAction.php
+@@ -9,7 +9,6 @@
+ use Drupal\Core\Form\FormBase;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\TempStore\PrivateTempStoreFactory;
+-use Drupal\Core\Url;
+ use Drupal\views_bulk_operations\Service\ViewsBulkOperationsActionManager;
+ use Drupal\views_bulk_operations\Service\ViewsBulkOperationsActionProcessorInterface;
+ use Drupal\views_bulk_operations\Traits\ViewsBulkOperationsFormTrait;
+@@ -138,8 +137,15 @@
+     else {
+       $this->deleteTempstoreData($form_data['view_id'], $form_data['display_id']);
+       $response = $this->actionProcessor->executeProcessing($form_data);
+-      $url = Url::fromUri($response->getTargetUrl());
+-      $form_state->setRedirectUrl($url);
++      // batch_process() already returns the batch start redirect. Re-parsing
++      // that Location through Url::fromUri() can drop the batch id or throw,
++      // which leaves the editor on the configure form instead of All Content.
++      if ($response !== NULL) {
++        $form_state->setResponse($response);
++      }
++      else {
++        $form_state->setRedirectUrl($form_data['redirect_url']);
++      }
+     }
+   }
+ 

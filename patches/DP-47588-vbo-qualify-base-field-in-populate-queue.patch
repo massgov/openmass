@@ -1,14 +1,14 @@
 --- a/src/Service/ViewsBulkOperationsActionProcessor.php
 +++ b/src/Service/ViewsBulkOperationsActionProcessor.php
-@@ -8,6 +8,7 @@
- use Drupal\Core\Extension\ModuleHandlerInterface;
+@@ -13,6 +13,7 @@
  use Drupal\Core\Session\AccountProxyInterface;
  use Drupal\Core\StringTranslation\StringTranslationTrait;
+ use Drupal\views\Plugin\ViewsPluginManager;
 +use Drupal\views\Plugin\views\query\Sql;
  use Drupal\views\ViewExecutable;
  use Drupal\views\Views;
  use Drupal\views_bulk_operations\Action\ViewsBulkOperationsActionInterface;
-@@ -304,7 +305,17 @@
+@@ -347,6 +348,16 @@
        }
      }
      else {
@@ -25,19 +25,19 @@
 +      }
      }
  
-     $this->view->query->addWhere(0, $base_field_alias, $base_field_values, 'IN');
+     // Narrow the query to the selected base field values: add directly to a
 --- a/js/frontUi.js
 +++ b/js/frontUi.js
-@@ -175,7 +175,14 @@
+@@ -193,7 +193,14 @@
  
-       var ajaxDrupal = Drupal.ajax(ajax_options);
+       const ajaxDrupal = Drupal.ajax(ajaxOptions);
        this.ajaxing = true;
 -      ajaxDrupal.execute();
-+      var request = ajaxDrupal.execute();
++      const request = ajaxDrupal.execute();
 +      if (request && typeof request.always === 'function') {
 +        // Release the lock whatever the outcome, so that a request that never
 +        // reaches the success callback does not freeze the selection for good.
-+        request.always(function () {
++        request.always(() => {
 +          selectionObject.ajaxing = false;
 +        });
 +      }
