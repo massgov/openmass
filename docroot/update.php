@@ -9,8 +9,9 @@
  */
 
 use Drupal\Core\Update\UpdateKernel;
+use Symfony\Component\HttpFoundation\Request;
 
-require_once 'autoload_runtime.php';
+$autoloader = require_once 'autoload.php';
 
 // Disable garbage collection during test runs. Under certain circumstances the
 // update path will create so many objects that garbage collection causes
@@ -20,6 +21,10 @@ if (drupal_valid_test_ua()) {
   gc_disable();
 }
 
-return static function () {
-  return new UpdateKernel('prod', require 'autoload.php', FALSE);
-};
+$kernel = new UpdateKernel('prod', $autoloader, FALSE);
+$request = Request::createFromGlobals();
+
+$response = $kernel->handle($request);
+$response->send();
+
+$kernel->terminate($request, $response);
