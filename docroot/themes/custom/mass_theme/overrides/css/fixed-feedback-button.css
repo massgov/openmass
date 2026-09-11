@@ -1,3 +1,10 @@
 body.no-feedback .ma__fixed-feedback-button {
   display: none;
 }
+
+/* Matches Mayflower's $bp-medium-max breakpoint. */
+@media (max-width: 780px) {
+  body:has(.mds-state-banner details[open]) .ma__fixed-feedback-button {
+    display: none;
+  }
+}

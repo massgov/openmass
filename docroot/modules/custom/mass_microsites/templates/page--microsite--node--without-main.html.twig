@@ -48,11 +48,10 @@
  * @see html.html.twig
  */
 #}
-{{ include('@molecules/brand-banner.twig', {
-  brandBanner: {
-    bgTheme: 'dark',
-    bgColor: 'c-primary-alt',
+{{ include('@molecules/state-banner.twig', {
+  stateBanner: {
     hasSeal: true,
+    sealImage: sealImage|replace({'stateseal.png': 'stateseal-white.png'}),
   },
 }) }}
 {{ page.emergency_alert }}
