@@ -23,14 +23,20 @@ class CollectionAllMixedResultsTest extends MassExistingSiteBase {
   public function testMixedNodeAndMediaResultsOnCollectionAllView() {
     $term_name = $this->randomMachineName();
     $url = 'test-mixed-' . time();
+    $short_description = 'Collection short description ' . $this->randomMachineName();
+    $overview = 'Collection overview ' . $this->randomMachineName();
     $node_title = 'CollectionAllMixedNode ' . $this->randomMachineName();
     $media_title = 'CollectionAllMixedMedia ' . $this->randomMachineName();
 
     $collection_term = $this->createTerm(Vocabulary::load('collections'), [
       'name' => $term_name,
       'field_url_name' => $url,
+      'field_short_description' => $short_description,
+      'field_collection_overview' => [
+        'value' => '<p><a href="https://www.mass.gov/">' . $overview . '</a></p>',
+        'format' => 'basic_html',
+      ],
     ]);
-
     $this->createNode([
       'type' => 'service_page',
       'title' => $node_title,
@@ -44,6 +50,15 @@ class CollectionAllMixedResultsTest extends MassExistingSiteBase {
     $this->assertEquals(200, $this->getSession()->getStatusCode());
     $this->assertSession()->pageTextContains($node_title);
     $this->assertSession()->pageTextContains($media_title);
+    $this->assertSession()->pageTextContains($short_description);
+    $this->assertSession()->pageTextContains($overview);
+    $response = $this->getSession()->getPage()->getContent();
+    $this->assertLessThan(
+      strpos($response, $overview),
+      strpos($response, $short_description),
+      'The Collection overview must render below the short description.'
+    );
+    $this->assertSession()->elementExists('css', '.collection-header__overview a');
   }
 
   /**

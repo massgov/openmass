@@ -19,6 +19,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\mass_org_access\OrgAccessChecker;
 use Drupal\mass_org_access\OrgAccessSettings;
 use Drupal\node\NodeInterface;
+use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -51,6 +52,28 @@ class MassOrgAccessHooks {
   #[Hook('media_access')]
   public function mediaAccess(EntityInterface $media, string $operation, AccountInterface $account): AccessResultInterface {
     return $this->checkAccess($media, $operation, $account);
+  }
+
+  /**
+   * Restricts updates to top-level collection terms by Permission Group.
+   *
+   * Child collection terms are topics used within collections. Their metadata
+   * is not managed through this organization-owned editing workflow.
+   */
+  #[Hook('taxonomy_term_access')]
+  public function taxonomyTermAccess(TermInterface $term, string $operation, AccountInterface $account): AccessResultInterface {
+    if ($operation !== 'update' || $term->bundle() !== 'collections') {
+      return AccessResult::neutral();
+    }
+    if ($account->hasPermission('bypass org access')) {
+      return AccessResult::neutral();
+    }
+    if (!$this->isTopLevelTerm($term)) {
+      return AccessResult::forbidden()
+        ->addCacheableDependency($term)
+        ->cachePerUser();
+    }
+    return $this->checkAccess($term, $operation, $account);
   }
 
   /**
@@ -109,7 +132,13 @@ class MassOrgAccessHooks {
       return $forbidden;
     }
     if ($this->orgAccessChecker->userHasOrgAccess($account, $entity)) {
-      return AccessResult::neutral();
+      // The core taxonomy permission is shared by the editor role, but this
+      // organization match is user-specific. Without this context an allowed
+      // result for one editor can be reused for another editor.
+      return AccessResult::neutral()
+        ->cachePerUser()
+        ->addCacheableDependency($entity)
+        ->addCacheTags(['user:' . $account->id()]);
     }
     return $forbidden;
   }
@@ -234,6 +263,38 @@ class MassOrgAccessHooks {
   }
 
   /**
+   * Removes administrator-only identifiers from collection term edit forms.
+   */
+  #[Hook('form_taxonomy_term_collections_form_alter')]
+  public function formCollectionTermAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    $term = $form_state->getFormObject()->getEntity();
+    if (!$term instanceof TermInterface || $term->isNew()
+      || !$this->isTopLevelTerm($term)
+      || $this->currentUser->hasPermission('bypass org access')) {
+      return;
+    }
+
+    // Term title and URL name are stable identifiers. Permission Groups are
+    // derived on presave from Organization(s), so they are never editor
+    // editable. All other configured collection fields remain editable.
+    foreach (['name', 'field_url_name', 'field_content_organization'] as $element) {
+      if (isset($form[$element])) {
+        $form[$element]['#access'] = FALSE;
+      }
+    }
+
+    // These are core taxonomy form sections, not collection metadata.
+    // Editors must not change hierarchy, publication state, or revision
+    // behavior through this narrowly scoped collection editing workflow.
+    foreach (['relations', 'revision_information', 'status'] as $element) {
+      if (isset($form[$element])) {
+        $form[$element]['#access'] = FALSE;
+      }
+    }
+    $form['#validate'][] = [self::class, 'validateOrgAccess'];
+  }
+
+  /**
    * Form #validate callback enforcing cross-org save protection.
    *
    * Used as [self::class, 'validateOrgAccess'] (serializable) so paragraph
@@ -284,6 +345,18 @@ class MassOrgAccessHooks {
       'You do not have permission to save this content. It belongs to @org. Contact your administrator if you need access.',
       ['@org' => $org_list]
     ));
+  }
+
+  /**
+   * Determines whether a taxonomy term has no taxonomy parent.
+   */
+  private function isTopLevelTerm(TermInterface $term): bool {
+    foreach ($term->get('parent') as $parent) {
+      if ((int) $parent->target_id > 0) {
+        return FALSE;
+      }
+    }
+    return TRUE;
   }
 
   /**
