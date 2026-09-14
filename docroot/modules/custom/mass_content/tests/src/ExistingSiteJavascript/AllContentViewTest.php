@@ -330,28 +330,12 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
    * Waits for a bulk operation batch to hand the editor back to the view.
    */
   private function waitForBatchToFinish() {
-    $session = $this->getSession();
-    $page = $session->getPage();
-    // VBO 4.4 can insert a confirmation step after the configure form.
-    if ($page->hasButton('Execute action')) {
-      $page->pressButton('Execute action');
-    }
-    $on_content = 'window.location.pathname.indexOf("/admin/content") !== -1';
-    $on_batch_finished = 'window.location.pathname.indexOf("/batch") !== -1 && window.location.search.indexOf("op=finished") !== -1';
-    // Edit content over more than one batch page can sit on the progress
-    // screen for well over a minute before Drupal moves to op=finished.
-    $reached_end = $session->wait(180000, "$on_content || $on_batch_finished");
-    // The finished URL is a hop. Drupal then 302s to All Content; give that
-    // redirect time instead of treating the hop as a timeout.
-    if ($reached_end && !$session->evaluateScript($on_content)) {
-      $reached_end = $session->wait(30000, $on_content);
-    }
-    if (!$reached_end) {
-      $this->capturePageContent('batch-timeout');
-    }
     $this->assertTrue(
-      $reached_end,
-      \sprintf('The batch should finish and return to All Content. Current URL: %s', $session->getCurrentUrl())
+      $this->getSession()->wait(
+        120000,
+        'window.location.pathname.indexOf("/admin/content") !== -1'
+      ),
+      'The batch should finish and return to All Content.'
     );
     $this->assertSession()->pageTextNotContains('An error has occurred');
     $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
