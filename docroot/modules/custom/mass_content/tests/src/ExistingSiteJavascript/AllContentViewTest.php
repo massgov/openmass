@@ -336,15 +336,21 @@ class AllContentViewTest extends ExistingSiteSelenium2DriverTestBase {
     if ($page->hasButton('Execute action')) {
       $page->pressButton('Execute action');
     }
-    $finished = $session->wait(
-      120000,
-      'window.location.pathname.indexOf("/admin/content") !== -1'
-    );
-    if (!$finished) {
+    $on_content = 'window.location.pathname.indexOf("/admin/content") !== -1';
+    $on_batch_finished = 'window.location.pathname.indexOf("/batch") !== -1 && window.location.search.indexOf("op=finished") !== -1';
+    // Edit content over more than one batch page can sit on the progress
+    // screen for well over a minute before Drupal moves to op=finished.
+    $reached_end = $session->wait(180000, "$on_content || $on_batch_finished");
+    // The finished URL is a hop. Drupal then 302s to All Content; give that
+    // redirect time instead of treating the hop as a timeout.
+    if ($reached_end && !$session->evaluateScript($on_content)) {
+      $reached_end = $session->wait(30000, $on_content);
+    }
+    if (!$reached_end) {
       $this->capturePageContent('batch-timeout');
     }
     $this->assertTrue(
-      $finished,
+      $reached_end,
       \sprintf('The batch should finish and return to All Content. Current URL: %s', $session->getCurrentUrl())
     );
     $this->assertSession()->pageTextNotContains('An error has occurred');
