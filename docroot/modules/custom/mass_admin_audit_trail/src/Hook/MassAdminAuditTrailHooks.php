@@ -34,6 +34,19 @@ class MassAdminAuditTrailHooks {
   ];
 
   /**
+   * Audit trail operations that are retained permanently.
+   */
+  private const PERMANENT_OPS = [
+    'delete',
+    'translation delete',
+    'term delete',
+    'vocabulary delete',
+    'link delete',
+    'link translation delete',
+    'role_deleted',
+  ];
+
+  /**
    * Constructs the hook service.
    */
   public function __construct(
@@ -135,7 +148,7 @@ class MassAdminAuditTrailHooks {
    */
   private function excludePermanent(Delete $query): void {
     $query
-      ->condition('operation', 'delete', '<>')
+      ->condition('operation', self::PERMANENT_OPS, 'NOT IN')
       ->condition('type', self::PERMANENT_TYPES, 'NOT IN');
   }
 

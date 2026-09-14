@@ -57,7 +57,19 @@ final class MassAdminAuditTrailHooksTest extends UnitTestCase {
 
     // Every query must preserve deletes and the protected event types.
     $permanent_conditions = [
-      ['operation', 'delete', '<>'],
+      [
+        'operation',
+        [
+          'delete',
+          'translation delete',
+          'term delete',
+          'vocabulary delete',
+          'link delete',
+          'link translation delete',
+          'role_deleted',
+        ],
+        'NOT IN',
+      ],
       ['type', ['user_roles', 'block_content', 'config', 'menu', 'user'], 'NOT IN'],
     ];
 
