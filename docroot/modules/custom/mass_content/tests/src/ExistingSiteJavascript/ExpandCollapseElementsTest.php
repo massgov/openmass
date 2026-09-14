@@ -137,9 +137,12 @@ class ExpandCollapseElementsTest extends MassExistingSiteSelenium2DriverTestBase
         'how-to/qag-request-help-with-a-computer-problem',
         '.ma__contact-us.ma__contact-us--accordion.js-accordion',
       ],
-      // The sidebar contact uses the same component tested by "Contact in
-      // Body", but its accordion control is intentionally hidden at the
-      // desktop viewport used by this suite.
+      // The contact block is rendered in both the body and sidebar. Scope the
+      // selector to the sidebar so the test does not find the other copy.
+      '_QAG Request Help with a Sidebar Contact' => [
+        'how-to/qag-request-help-with-a-computer-problem',
+        '#main-content > div.main-content.main-content--two > aside > div.ma__details__sidebar-contact > section > section',
+      ],
     ];
   }
 
