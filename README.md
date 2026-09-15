@@ -38,7 +38,7 @@ See the [Table of Contents](/docs/README.md) for additional documentation relate
 - [You may override ddev config locally](https://ddev.readthedocs.io/en/stable/users/extend/config_yaml/). create a `.ddev/config.local.yml` file and add whatever you need.
 - Similarly, rename [.ddev/.env.example](https://github.com/massgov/openmass/blob/develop/.ddev/.env.example) to `.env` in order to use ARM containers suitable for the Apple M1 Macs. This is also how you specify the less sanitized variant of our database.
 - Since we use a custom `dbmass` service and not DDEV's usual `db`, some DDEV DB commands will not work here. @todo try to improve this.
-- The DDEV BackstopJS add-on is included but disabled by default. Use `ddev service enable backstop` before running `ddev backstop`. Use `ddev service enable selenium-chrome` to start Selenium with Chrome.
+- BackstopJS runs in DDEV's web container using the versions pinned in `package.json` and `yarn.lock`. Run `ddev yarn install --frozen-lockfile` before the first `ddev backstop` invocation. Use `ddev service enable selenium-chrome` to start Selenium with Chrome.
 - Mass Digital team members: see additional information at [Mass Digital Developers](https://github.com/massgov/massgov-internal-docs/blob/master/development-massgov-team.md).
 
 ## Pull Requests

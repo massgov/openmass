@@ -44,9 +44,10 @@ they look the same.
 
 - If testing an Acquia environment, make sure the `LOWER_ENVIR_AUTH_USER` and
   `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
-- The [DDEV BackstopJS add-on](https://addons.ddev.com/addons/ddev/ddev-backstopjs)
-  is included in this project but disabled by default. Enable it with
-  `ddev service enable backstop` and restart DDEV before running tests.
+- BackstopJS runs in DDEV's web container using the versions pinned in
+  `package.json` and `yarn.lock`. Run `ddev yarn install --frozen-lockfile`
+  before the first test. The `ddev backstop` command downloads the matching
+  Chromium build once and keeps it in DDEV's persistent global cache.
 - Before doing any testing, you will need to capture the "reference" screenshots,
   or the screenshots you want to use as the baseline for comparison. These
   reference screenshots will usually come from the production environment. Take
@@ -75,8 +76,9 @@ were created for testing purposes.
 
 CircleCI installs the versions of BackstopJS and Playwright pinned in
 `package.json` and `yarn.lock`, downloads the matching Chromium build, and runs
-Backstop directly in the pinned `cimg/node:24.21.0-browsers` executor. The DDEV
-Backstop service is only used for local runs.
+Backstop directly in the pinned `cimg/node:24.21.0-browsers` executor. Local
+runs use the same project dependencies and Chromium build inside DDEV's web
+container instead of maintaining a separate Backstop image.
 
 `drush ma:backstop-snapshot` will run Backstop and store the screenshots to be
 used later by `drush ma:backstop-compare` e.g.
