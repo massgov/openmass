@@ -1,5 +1,17 @@
 
 
+## [0.493.0] - September 15, 2026
+
+### Changed
+  - DP-48467: Replace the old Mayflower Brand Banner with the new MDS State Banner component.
+  
+### Added
+  - DP-48740: Add Portuguese language to Drupal site.
+  - DP-48740: Add Portuguese to content and document view language filters.
+  - DP-48740: Show Portuguese instead of Portuguese, International on public translation links.
+  
+
+
 ## [0.492.0] - September 8, 2026
 
 ### Changed
