@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\mass_ai_editorial\AiEditorialIndexer;
 use Drupal\mass_ai_editorial\AiEditorialIndexRepository;
+use Drupal\mass_ai_editorial\OrganizationScope;
 use Drupal\node\NodeInterface;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -28,17 +29,19 @@ class MassAiEditorialCommands extends DrushCommands {
     private readonly AiEditorialIndexer $indexer,
     private readonly AiEditorialIndexRepository $repository,
     private readonly MemoryCacheInterface $entityMemoryCache,
+    private readonly OrganizationScope $organizationScope,
   ) {
     parent::__construct();
   }
 
   /**
-   * Queue a bounded organization slice for the AI editorial POC.
+   * Queue a bounded organization subtree for the AI editorial POC.
    *
    * @command mass-ai-editorial:queue-poc
    * @aliases maie-queue
    * @option org-id
-   *   Organization node ID. Defaults to Department of Unemployment Assistance.
+   *   Organization node ID whose content and suborganizations are included.
+   *   Defaults to Department of Unemployment Assistance.
    * @option limit
    *   Maximum number of nodes to queue.
    * @option reset
@@ -455,10 +458,10 @@ class MassAiEditorialCommands extends DrushCommands {
   }
 
   /**
-   * Loads nodes matching the provided admin search organization slice.
+   * Loads nodes in the provided organization and its suborganization tree.
    */
   private function loadPocNodeIds(int $org_id, int $limit): array {
-    return $this->loadOrganizationNodeIds($org_id, $limit);
+    return $this->organizationScope->loadPublishedNodeIds($org_id, $limit, TRUE);
   }
 
   /**
@@ -488,23 +491,7 @@ class MassAiEditorialCommands extends DrushCommands {
    *   Node IDs.
    */
   private function loadOrganizationNodeIds(int $org_id, ?int $limit = NULL): array {
-    $query = $this->database->select('node_field_data', 'n');
-    $query->distinct();
-    $query->leftJoin('node__field_organizations', 'o', 'n.nid = o.entity_id');
-    $query->fields('n', ['nid', 'changed']);
-    $query->condition('n.status', 1);
-    $query->condition('n.type', AiEditorialIndexer::EXCLUDED_BUNDLES, 'NOT IN');
-    $query->condition('n.default_langcode', 1);
-    $or = $query->orConditionGroup()
-      ->condition('n.nid', $org_id)
-      ->condition('o.field_organizations_target_id', $org_id);
-    $query->condition($or);
-    $query->orderBy('n.changed', 'DESC');
-    if ($limit !== NULL) {
-      $query->range(0, $limit);
-    }
-
-    return array_map('intval', $query->execute()->fetchCol());
+    return $this->organizationScope->loadPublishedNodeIds($org_id, $limit);
   }
 
   private function connectPgvector(string $dsn, string $user, string $pass): \PDO {

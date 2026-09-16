@@ -149,7 +149,7 @@ Use `--reset` to clear the Drupal-side prototype tables. Use `--reset-pgvector` 
 
 Re-indexing a page replaces its pgvector representation rather than creating duplicate page rows. The pgvector document table is unique by Drupal entity type, entity ID, and language. Chunk rows are unique by pgvector document ID and chunk delta. When a newly rendered page has fewer chunks than a previous render, stale pgvector chunks for that page are deleted during embedding.
 
-For a smaller local POC, you can still index only the Department of Unemployment Assistance slice used by the editorial admin search. The default organization ID is `5376`, and the default limit is `99`.
+For a smaller local POC, you can still index only the Department of Unemployment Assistance slice used by the editorial admin search. The selected organization includes its full `field_parent` suborganization tree. The default organization ID is `5376`, and the default limit is `99` across the complete organization tree.
 
 ### Content type scope
 
@@ -488,7 +488,7 @@ When a published node changes, `mass_ai_editorial` queues it if it belongs to an
 mass_ai_editorial.tracked_org_ids
 ```
 
-The `index-all-orgs` command tracks all indexed organizations by default. The `queue-poc` command tracks the selected organization by default, which is useful for DUA-only testing.
+The `index-all-orgs` command tracks all indexed organizations by default. The `queue-poc` command tracks the selected organization by default, which is useful for DUA-only testing. Content assigned to a suborganization is treated as belonging to each ancestor organization for incremental tracking, so later edits remain in scope when only the top organization is tracked.
 
 After changing a page, run:
 

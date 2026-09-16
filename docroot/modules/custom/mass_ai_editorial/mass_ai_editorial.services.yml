@@ -37,6 +37,14 @@ services:
   Drupal\mass_ai_editorial\AiEditorialIndexer:
     alias: mass_ai_editorial.indexer
 
+  mass_ai_editorial.organization_scope:
+    class: Drupal\mass_ai_editorial\OrganizationScope
+    arguments:
+      - '@database'
+
+  Drupal\mass_ai_editorial\OrganizationScope:
+    alias: mass_ai_editorial.organization_scope
+
   mass_ai_editorial.related_content_context_builder:
     class: Drupal\mass_ai_editorial\RelatedContentContextBuilder
     arguments:

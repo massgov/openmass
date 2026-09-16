@@ -572,5 +572,5 @@ function mass_ai_editorial_entity_org_ids(NodeInterface $node): array {
     }
   }
 
-  return array_values(array_unique($org_ids));
+  return \Drupal::service('mass_ai_editorial.organization_scope')->ancestorIds($org_ids);
 }
