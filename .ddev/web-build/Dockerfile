@@ -1,6 +1,15 @@
 ARG BASE_IMAGE
 FROM $BASE_IMAGE
 
+# BackstopJS uses Playwright's Chromium browser. Install the Linux libraries in
+# the DDEV web image, but leave the browser download to `ddev backstop` so it is
+# cached in DDEV's persistent global cache. Keep this version aligned with the
+# Playwright version pinned in package.json.
+RUN PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD=1 npm install --global playwright@1.63.0 && \
+  playwright install-deps chromium && \
+  npm uninstall --global playwright && \
+  npm cache clean --force
+
 # Install Tugboat CLI.
 RUN curl -L https://assets.tugboatqa.com/cli/linux/tugboat.tar.gz > tugboat.tar.gz && \
   tar -zxf tugboat.tar.gz -C /usr/local/bin/ && rm -f tugboat.tar.gz
