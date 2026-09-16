@@ -111,11 +111,10 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
   }
 
   /**
-   * Builds a user with the requested role plus enough perms to reach add forms.
+   * Builds a user with the requested role plus enough access to reach add forms.
    *
-   * `bypass node access` + `administer media` + `create document media`
-   * unblock GET on /node/add/* and /media/add/document regardless of
-   * the test role's bundle-specific permissions.
+   * Users with the Content Administrator role will always have editor role as well,
+   * so add the editor role when testing. The Content Administrator role is additive.
    */
   private function createRoleUser(string $role) {
     $user = $this->createUser([
@@ -124,6 +123,9 @@ class OwnerGroupsWidgetVisibilityTest extends ExistingSiteSelenium2DriverTestBas
       'create document media',
     ], 'oog_vis_' . $role . '_' . $this->randomMachineName(6));
     $user->addRole($role);
+    if ($role === 'content_team') {
+      $user->addRole('editor');
+    }
     $user->activate();
     $user->save();
     return $user;
