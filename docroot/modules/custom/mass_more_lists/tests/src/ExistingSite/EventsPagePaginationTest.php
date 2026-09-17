@@ -54,8 +54,9 @@ class EventsPagePaginationTest extends MassExistingSiteBase {
 
     $this->drupalGet('/node/' . $org->id() . '/events/past', ['query' => ['_page' => 2]]);
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->addressMatches('/[?&]page=1/');
+    $this->assertSession()->pageTextContains('Showing 11–11 of 11 results');
     $this->assertSession()->pageTextContains($event_titles[10]);
+    $this->assertStringContainsString('page=1', $this->getSession()->getCurrentUrl());
   }
 
 }
