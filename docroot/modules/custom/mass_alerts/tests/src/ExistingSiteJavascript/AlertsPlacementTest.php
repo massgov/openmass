@@ -5,12 +5,12 @@ namespace Drupal\Tests\mass_alerts\ExistingSiteJavascript;
 use Behat\Mink\Exception\ExpectationException;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test Alerts Placement.
  */
-class AlertsPlacementTest extends ExistingSiteSelenium2DriverTestBase {
+class AlertsPlacementTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Unpublishes any alerts.
