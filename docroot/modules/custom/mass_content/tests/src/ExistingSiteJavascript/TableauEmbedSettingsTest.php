@@ -4,7 +4,7 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests the Tableau embed settings (DP-47145) on node edit forms.
@@ -18,7 +18,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  * Both builder forms are handled by the
  * form_layout_paragraphs_component_form_alter hook.
  */
-class TableauEmbedSettingsTest extends ExistingSiteSelenium2DriverTestBase {
+class TableauEmbedSettingsTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Creates an administrator user and logs in.

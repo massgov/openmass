@@ -4,12 +4,12 @@ namespace Drupal\Tests\mass_alerts\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test 'on specific page' Alerts.
  */
-class SpecificPageAlertsClientSideTest extends ExistingSiteSelenium2DriverTestBase {
+class SpecificPageAlertsClientSideTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Test pages have organization alert displaying.
