@@ -6388,19 +6388,6 @@ function mass_theme_preprocess_views_view__press_listing(&$variables) {
  */
 function mass_theme_preprocess_events_page(&$variables) {
   $variables['events'] = Helper::prepareEvents($variables['events']);
-
-  $total_pages = ceil(count($variables['events']) / 10);
-  $pages = [];
-  foreach (range(1, $total_pages) as $page) {
-    $pages[] = [
-      'active' => FALSE,
-      'text' => $page,
-    ];
-  }
-  if ($pages) {
-    $pages[0]['active'] = TRUE;
-  }
-  $variables['pages'] = $pages;
 }
 
 /**
