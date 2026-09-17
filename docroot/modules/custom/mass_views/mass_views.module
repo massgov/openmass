@@ -126,24 +126,11 @@ function mass_views_form_views_exposed_form_alter(&$form, FormStateInterface $fo
               $args[0],
               $view['view']->header['area']->options['content']['value']
             );
-            if ($term->hasField('field_all_collection_breadcrumb')
-              && !$term->field_all_collection_breadcrumb->isEmpty()) {
-              $field_all_collection_breadcrumb = $term
-                ->get('field_all_collection_breadcrumb')
-                ->getValue();
-              $breadcrumb_markup = str_replace(
-                '{{ collection.field_all_collection_breadcrumb }}',
-                $field_all_collection_breadcrumb[0]['value'],
-                $breadcrumb_markup
-              );
-            }
-            else {
-              $breadcrumb_markup = str_replace(
-                '{{ collection.field_all_collection_breadcrumb }}',
-                $term->label(),
-                $breadcrumb_markup
-              );
-            }
+            $breadcrumb_markup = str_replace(
+              '{{ collection.name }}',
+              $term->label(),
+              $breadcrumb_markup
+            );
             // Update the value in the view.
             $view['view']->header['area']->options['content']['value'] = $breadcrumb_markup;
           }
