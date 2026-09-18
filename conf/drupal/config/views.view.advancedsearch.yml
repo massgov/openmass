@@ -10,6 +10,7 @@ dependencies:
     - field.storage.node.field_reusable_label
     - taxonomy.vocabulary.collections
     - taxonomy.vocabulary.label
+    - taxonomy.vocabulary.sme_owner
     - taxonomy.vocabulary.user_organization
   module:
     - content_moderation
@@ -1821,6 +1822,51 @@ display:
             group_items: {  }
           reduce_duplicates: false
           vid: user_organization
+          type: textfield
+          hierarchy: false
+          limit: true
+          error_message: true
+        field_sme_content_owner_target_id:
+          id: field_sme_content_owner_target_id
+          table: node__field_sme_content_owner
+          field: field_sme_content_owner_target_id
+          relationship: nid
+          group_type: group
+          admin_label: ''
+          plugin_id: taxonomy_index_tid
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_sme_content_owner_target_id_op
+            label: 'Subject Matter Expert / Content Owner'
+            description: ''
+            use_operator: false
+            operator: field_sme_content_owner_target_id_op
+            operator_limit_selection: false
+            operator_list: {  }
+            identifier: field_sme_content_owner_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          vid: sme_owner
           type: textfield
           hierarchy: false
           limit: true

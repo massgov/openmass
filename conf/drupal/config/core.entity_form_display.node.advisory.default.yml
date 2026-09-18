@@ -25,6 +25,7 @@ dependencies:
     - field.field.node.advisory.field_primary_parent
     - field.field.node.advisory.field_reusable_label
     - field.field.node.advisory.field_short_title
+    - field.field.node.advisory.field_sme_content_owner
     - node.type.advisory
     - workflows.workflow.editorial
   module:
@@ -138,6 +139,7 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_advisory_page_edit_form
@@ -281,6 +283,9 @@ content:
     region: content
     settings:
       theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
       dots: 0
       size: 60
       placeholder: ''
@@ -292,6 +297,7 @@ content:
       auto_uncheck_ancestors: false
       auto_uncheck_descendants: true
       label: 'Browse collections and topics'
+      autocomplete_maxlength: 1024
     third_party_settings: {  }
   field_content_organization:
     type: entity_reference_tree
@@ -373,6 +379,16 @@ content:
     weight: 12
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

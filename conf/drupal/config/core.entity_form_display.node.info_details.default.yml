@@ -35,6 +35,7 @@ dependencies:
     - field.field.node.info_details.field_reusable_label
     - field.field.node.info_details.field_short_desc
     - field.field.node.info_details.field_short_title
+    - field.field.node.info_details.field_sme_content_owner
     - image.style.large
     - node.type.info_details
     - workflows.workflow.editorial
@@ -177,6 +178,7 @@ third_party_settings:
         - search
         - search_nosnippet
         - simple_sitemap
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_information_details_edit_f
@@ -624,6 +626,16 @@ content:
     weight: 6
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 26
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

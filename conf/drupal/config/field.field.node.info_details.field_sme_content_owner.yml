@@ -1,0 +1,29 @@
+uuid: 133ad13d-b9f3-4fef-8f1c-f5275bbb5329
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sme_content_owner
+    - node.type.info_details
+    - taxonomy.vocabulary.sme_owner
+id: node.info_details.field_sme_content_owner
+field_name: field_sme_content_owner
+entity_type: node
+bundle: info_details
+label: 'Subject Matter Expert / Content Owner'
+description: 'Optional. The business owner of content. This can be used by state organizations for internal tracking.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      sme_owner: sme_owner
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference
