@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.info_details.field_banner_image
     - field.field.node.info_details.field_collections
     - field.field.node.info_details.field_contact
+    - field.field.node.info_details.field_content_organization
     - field.field.node.info_details.field_data_flag
     - field.field.node.info_details.field_data_format
     - field.field.node.info_details.field_data_resource_type
@@ -34,6 +35,7 @@ dependencies:
     - field.field.node.info_details.field_reusable_label
     - field.field.node.info_details.field_short_desc
     - field.field.node.info_details.field_short_title
+    - field.field.node.info_details.field_sme_content_owner
     - node.type.info_details
   module:
     - datetime
@@ -254,6 +256,14 @@ content:
     third_party_settings: {  }
     weight: 13
     region: content
+  field_sme_content_owner:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 144
+    region: content
   links:
     settings: {  }
     third_party_settings: {  }
@@ -285,6 +295,7 @@ content:
 hidden:
   computed_log_in_links: true
   field_collections: true
+  field_content_organization: true
   field_data_search_content: true
   field_glossaries: true
   field_info_details_date_publishe: true

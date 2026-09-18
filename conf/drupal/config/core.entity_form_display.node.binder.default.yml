@@ -35,6 +35,7 @@ dependencies:
     - field.field.node.binder.field_primary_parent
     - field.field.node.binder.field_reusable_label
     - field.field.node.binder.field_short_title
+    - field.field.node.binder.field_sme_content_owner
     - image.style.thumbnail
     - node.type.binder
     - workflows.workflow.editorial
@@ -148,6 +149,7 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_binder_node_edit_form
@@ -629,6 +631,16 @@ content:
     weight: 11
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 26
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
