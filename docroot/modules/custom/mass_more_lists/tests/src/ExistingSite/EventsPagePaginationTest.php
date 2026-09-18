@@ -4,6 +4,7 @@ namespace Drupal\Tests\mass_more_lists\ExistingSite;
 
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Drupal\mass_more_lists\Controller\EventsController;
 use MassGov\Dtt\MassExistingSiteBase;
 
 /**
@@ -21,11 +22,13 @@ class EventsPagePaginationTest extends MassExistingSiteBase {
       'moderation_state' => 'published',
     ]);
     $tz = new \DateTimeZone(date_default_timezone_get());
+    $limit = EventsController::PAST_EVENTS_PER_PAGE;
+    $total = $limit + 1;
 
     $event_titles = [];
-    for ($i = 1; $i <= 11; $i++) {
+    for ($i = 1; $i <= $total; $i++) {
       $date = (new DrupalDateTime("now -{$i} day"))->setTimeZone($tz);
-      $title = sprintf('Past event %02d', $i);
+      $title = sprintf('Past event %03d', $i);
       $event_titles[] = $title;
       $this->createNode([
         'type' => 'event',
@@ -41,21 +44,21 @@ class EventsPagePaginationTest extends MassExistingSiteBase {
 
     $this->drupalGet('/node/' . $org->id() . '/events/past');
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('Showing 1–10 of 11 results');
-    $this->assertSession()->elementsCount('css', '.ma__event-listing__item', 10);
+    $this->assertSession()->pageTextContains('Showing 1–' . $limit . ' of ' . $total . ' results');
+    $this->assertSession()->elementsCount('css', '.ma__event-listing__item', $limit);
     $this->assertSession()->pageTextContains($event_titles[0]);
-    $this->assertSession()->pageTextNotContains($event_titles[10]);
+    $this->assertSession()->pageTextNotContains($event_titles[$limit]);
 
     $this->drupalGet('/node/' . $org->id() . '/events/past', ['query' => ['page' => 1]]);
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('Showing 11–11 of 11 results');
+    $this->assertSession()->pageTextContains('Showing ' . $total . '–' . $total . ' of ' . $total . ' results');
     $this->assertSession()->elementsCount('css', '.ma__event-listing__item', 1);
-    $this->assertSession()->pageTextContains($event_titles[10]);
+    $this->assertSession()->pageTextContains($event_titles[$limit]);
 
     $this->drupalGet('/node/' . $org->id() . '/events/past', ['query' => ['_page' => 2]]);
     $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('Showing 11–11 of 11 results');
-    $this->assertSession()->pageTextContains($event_titles[10]);
+    $this->assertSession()->pageTextContains('Showing ' . $total . '–' . $total . ' of ' . $total . ' results');
+    $this->assertSession()->pageTextContains($event_titles[$limit]);
     $this->assertStringContainsString('page=1', $this->getSession()->getCurrentUrl());
   }
 

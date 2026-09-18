@@ -21,9 +21,14 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class EventsController extends ControllerBase {
 
   /**
-   * Number of events to load and render per page.
+   * Number of upcoming events to load and render per page.
    */
   const EVENTS_PER_PAGE = 10;
+
+  /**
+   * Number of past events to load and render per page.
+   */
+  const PAST_EVENTS_PER_PAGE = 100;
 
   private $eventManager;
 
@@ -207,7 +212,7 @@ class EventsController extends ControllerBase {
    *   Events, results heading, and pager render array.
    */
   private function getPagedEvents(NodeInterface $node, string $type, int $total): array {
-    $limit = self::EVENTS_PER_PAGE;
+    $limit = $type === 'past' ? self::PAST_EVENTS_PER_PAGE : self::EVENTS_PER_PAGE;
     $page = $this->pagerManager->createPager($total, $limit)->getCurrentPage();
     $offset = $page * $limit;
     $events = $type === 'past'
