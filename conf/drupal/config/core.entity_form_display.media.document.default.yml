@@ -17,6 +17,7 @@ dependencies:
     - field.field.media.document.field_media_english_version
     - field.field.media.document.field_organizations
     - field.field.media.document.field_size
+    - field.field.media.document.field_sme_content_owner
     - field.field.media.document.field_start_date
     - field.field.media.document.field_title
     - field.field.media.document.field_upload_file
@@ -86,6 +87,7 @@ third_party_settings:
         - field_collections
         - field_internal_notes
         - group_timeframe
+        - field_sme_content_owner
         - field_content_organization
       label: Basic
       region: content
@@ -140,7 +142,7 @@ content:
     third_party_settings: {  }
   field_content_organization:
     type: entity_reference_tree
-    weight: 15
+    weight: 16
     region: content
     settings:
       theme: default
@@ -225,6 +227,16 @@ content:
   field_organizations:
     type: entity_reference_autocomplete
     weight: 8
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 15
     region: content
     settings:
       match_operator: CONTAINS
