@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test Expandable/Collapsible elements.
  */
-class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
+class ExpandCollapseElementsTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Tests a single accordion for a given page, located at a CSS selector.
@@ -137,14 +137,10 @@ class ExpandCollapseElementsTest extends ExistingSiteSelenium2DriverTestBase {
         'how-to/qag-request-help-with-a-computer-problem',
         '.ma__contact-us.ma__contact-us--accordion.js-accordion',
       ],
-      // Note this block is actually duplicated in the page-content div for
-      // narrow viewports. Since the code inside is the same, and we haven't
-      // seen regressions with it, we don't bother changing the viewport and
-      // testing it as well.
+      // The contact block is rendered in both the body and sidebar. Scope the
+      // selector to the sidebar so the test does not find the other copy.
       '_QAG Request Help with a Sidebar Contact' => [
         'how-to/qag-request-help-with-a-computer-problem',
-        // We need to use this long selector to avoid hitting the hidden contact
-        // block.
         '#main-content > div.main-content.main-content--two > aside > div.ma__details__sidebar-contact > section > section',
       ],
     ];
