@@ -4,12 +4,12 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
 use Drupal\Core\File\FileSystemInterface;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Verifies entity embed dialog flow works via the real UI.
  */
-class EntityEmbedDialogAjaxBridgeTest extends ExistingSiteSelenium2DriverTestBase {
+class EntityEmbedDialogAjaxBridgeTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Creates an admin, saves it and returns it.
