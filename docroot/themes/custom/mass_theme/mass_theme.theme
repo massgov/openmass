@@ -6846,8 +6846,15 @@ function mass_theme_preprocess_media(array &$variables) {
   // Do something special for document bundle.
   $media_bundle = $variables['elements']['#media']->bundle();
 
-  if (isset($variables['elements']['field_media_video_embed_field'][0]['children']['#url'])) {
+  if ($variables['elements']['#media']->hasField('field_media_oembed_video')) {
+    $embed = Atoms::extractOembedData((string) ($variables['elements']['#media']->get('field_media_oembed_video')->value ?? ''));
+    $src = $embed['src'] ?? '';
+  }
+  elseif (isset($variables['elements']['field_media_video_embed_field'][0]['children']['#url'])) {
     $src = $variables['elements']['field_media_video_embed_field'][0]['children']['#url'];
+  }
+
+  if ($src !== '') {
 
     // Set static pageHeader properties to pass to prepare function.
     $pageHeader_options = [
