@@ -42,20 +42,25 @@ class EventsPagePaginationTest extends MassExistingSiteBase {
       ]);
     }
 
-    $this->drupalGet('/node/' . $org->id() . '/events/past');
+    $path = '/node/' . $org->id() . '/events/past';
+
+    $this->drupalGet($path);
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Showing 1–' . $limit . ' of ' . $total . ' results');
     $this->assertSession()->elementsCount('css', '.ma__event-listing__item', $limit);
     $this->assertSession()->pageTextContains($event_titles[0]);
     $this->assertSession()->pageTextNotContains($event_titles[$limit]);
 
-    $this->drupalGet('/node/' . $org->id() . '/events/past', ['query' => ['page' => 1]]);
+    $this->drupalGet($path, ['query' => ['page' => 1]]);
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Showing ' . $total . '–' . $total . ' of ' . $total . ' results');
     $this->assertSession()->elementsCount('css', '.ma__event-listing__item', 1);
     $this->assertSession()->pageTextContains($event_titles[$limit]);
 
-    $this->drupalGet('/node/' . $org->id() . '/events/past', ['query' => ['_page' => 2]]);
+    $this->drupalGet($path, ['query' => ['page' => 2]]);
+    $this->assertSession()->statusCodeEquals(404);
+
+    $this->drupalGet($path, ['query' => ['_page' => 2]]);
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Showing ' . $total . '–' . $total . ' of ' . $total . ' results');
     $this->assertSession()->pageTextContains($event_titles[$limit]);

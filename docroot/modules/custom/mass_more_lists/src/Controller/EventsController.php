@@ -6,13 +6,13 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Http\Exception\CacheableNotFoundHttpException;
 use Drupal\Core\Pager\PagerManagerInterface;
+use Drupal\Core\Routing\LocalRedirectResponse;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\mass_content\EventManager;
 use Drupal\mass_hierarchy\MassHierarchyBasedBreadcrumbBuilder;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
@@ -82,6 +82,8 @@ class EventsController extends ControllerBase {
     // node is modified or added.
     // @see mass_fields_entity_clear_referenced().
     $metadata = CacheableMetadata::createFromObject($node);
+    $metadata->addCacheContexts(['url.query_args:page']);
+    $metadata->addCacheTags(['node_list:event']);
 
     $more_link = FALSE;
     if ($this->eventManager->getPastCount($node) > 0) {
@@ -102,7 +104,7 @@ class EventsController extends ControllerBase {
     $pager = [];
     if ($total) {
       $metadata->setCacheMaxAge($this->eventManager->getMaxAge($node));
-      $page_data = $this->getPagedEvents($node, 'upcoming', $total);
+      $page_data = $this->getPagedEvents($node, 'upcoming', $total, $metadata);
       $events = $page_data['events'];
       $results_heading = $page_data['results_heading'];
       $pager = $page_data['pager'];
@@ -133,9 +135,6 @@ class EventsController extends ControllerBase {
       '#results_heading' => $results_heading,
       '#pager' => $pager,
     ];
-    // Any time an event is added, updated, or deleted, recalculate this to see if it has changed.
-    $metadata->addCacheTags(['node_list:event']);
-    $metadata->addCacheContexts(['url.query_args:page']);
     $metadata->applyTo($build);
     return $build;
   }
@@ -154,6 +153,7 @@ class EventsController extends ControllerBase {
     // @see mass_fields_entity_clear_referenced().
     $metadata = CacheableMetadata::createFromObject($node);
     $metadata->addCacheContexts(['url.query_args:page']);
+    $metadata->addCacheTags(['node_list:event']);
 
     $total = $this->eventManager->getPastCount($node);
     if (!$total) {
@@ -174,7 +174,7 @@ class EventsController extends ControllerBase {
     if ($node->hasField('field_organizations')) {
       $organizations = $node->field_organizations->view();
     }
-    $page_data = $this->getPagedEvents($node, 'past', $total);
+    $page_data = $this->getPagedEvents($node, 'past', $total, $metadata);
     $build = [
       '#title' => $node->bundle() === 'event' ? t('Past events related to @name', ['@name' => $node->label()]) : t('Past events for @name', ['@name' => $node->label()]),
       '#related' => [
@@ -191,8 +191,6 @@ class EventsController extends ControllerBase {
       '#results_heading' => $page_data['results_heading'],
       '#pager' => $page_data['pager'],
     ];
-    // Any time an event is added, updated, or deleted, recalculate this to see if it has changed.
-    $metadata->addCacheTags(['node_list:event']);
     $metadata->applyTo($build);
 
     return $build;
@@ -207,13 +205,20 @@ class EventsController extends ControllerBase {
    *   Either 'past' or 'upcoming'.
    * @param int $total
    *   Total matching events.
+   * @param \Drupal\Core\Cache\CacheableMetadata $metadata
+   *   Cache metadata for the listing; used if the requested page is invalid.
    *
    * @return array
    *   Events, results heading, and pager render array.
    */
-  private function getPagedEvents(NodeInterface $node, string $type, int $total): array {
+  private function getPagedEvents(NodeInterface $node, string $type, int $total, CacheableMetadata $metadata): array {
     $limit = $type === 'past' ? self::PAST_EVENTS_PER_PAGE : self::EVENTS_PER_PAGE;
-    $page = $this->pagerManager->createPager($total, $limit)->getCurrentPage();
+    $pager_object = $this->pagerManager->createPager($total, $limit);
+    $requested_page = $this->pagerManager->findPage();
+    if ($requested_page < 0 || $requested_page >= $pager_object->getTotalPages()) {
+      throw new CacheableNotFoundHttpException($metadata);
+    }
+    $page = $pager_object->getCurrentPage();
     $offset = $page * $limit;
     $events = $type === 'past'
       ? $this->eventManager->getPast($node, $limit, $offset)
@@ -228,9 +233,9 @@ class EventsController extends ControllerBase {
         '#type' => 'pager',
         '#tags' => [
           '',
-          'Previous',
+          $this->t('Previous'),
           '',
-          'Next',
+          $this->t('Next'),
         ],
       ];
     }
@@ -249,17 +254,17 @@ class EventsController extends ControllerBase {
    * Convert legacy Mayflower `_page` query strings to Drupal pager `page`.
    *
    * `_page` is 1-indexed (from the client-side listing). Drupal pagers use
-   * 0-indexed `page`.
+   * 0-indexed `page`. Permanent 301 so crawlers stop requesting the old URL.
    *
    * @param string $route_name
    *   The events listing route.
    * @param \Drupal\node\NodeInterface $node
    *   The parent node.
    *
-   * @return \Symfony\Component\HttpFoundation\RedirectResponse|null
-   *   A redirect when `_page` is present.
+   * @return \Drupal\Core\Routing\LocalRedirectResponse|null
+   *   A cacheable redirect when `_page` is present.
    */
-  private function redirectLegacyPageQuery(string $route_name, NodeInterface $node): ?RedirectResponse {
+  private function redirectLegacyPageQuery(string $route_name, NodeInterface $node): ?LocalRedirectResponse {
     $request = $this->requestStack->getCurrentRequest();
     if (!$request->query->has('_page')) {
       return NULL;
@@ -272,7 +277,15 @@ class EventsController extends ControllerBase {
       $query['page'] = $mayflower_page - 1;
     }
 
-    return $this->redirect($route_name, ['node' => $node->id()], ['query' => $query]);
+    $url = Url::fromRoute($route_name, ['node' => $node->id()], [
+      'query' => $query,
+      'absolute' => TRUE,
+    ]);
+    $response = new LocalRedirectResponse($url->toString(), 301);
+    $cache = new CacheableMetadata();
+    $cache->addCacheContexts(['url.query_args:_page']);
+    $response->addCacheableDependency($cache);
+    return $response;
   }
 
 }
