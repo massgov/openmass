@@ -7,6 +7,8 @@ dependencies:
     - field.field.taxonomy_term.collections.field_additional_search_keywords
     - field.field.taxonomy_term.collections.field_all_collection_breadcrumb
     - field.field.taxonomy_term.collections.field_collection_logo
+    - field.field.taxonomy_term.collections.field_collection_overview
+    - field.field.taxonomy_term.collections.field_content_organization
     - field.field.taxonomy_term.collections.field_default_sort
     - field.field.taxonomy_term.collections.field_header_color
     - field.field.taxonomy_term.collections.field_landing_page
@@ -52,6 +54,13 @@ content:
         attribute: lazy
     third_party_settings: {  }
     weight: -2
+    region: content
+  field_collection_overview:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
     region: content
   field_default_sort:
     type: string
@@ -122,6 +131,7 @@ hidden:
   description: true
   field_additional_no_items_found: true
   field_all_collection_breadcrumb: true
+  field_content_organization: true
   field_landing_page: true
   field_url_name: true
   langcode: true
