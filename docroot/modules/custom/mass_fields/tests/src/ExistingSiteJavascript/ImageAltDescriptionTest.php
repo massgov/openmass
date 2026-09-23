@@ -5,7 +5,7 @@ namespace Drupal\Tests\mass_fields\ExistingSiteJavascript;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests image alt text behavior across multiple content types and fields.
@@ -35,7 +35,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  *      "Short description of the image used by screen readers and displayed when the image
  *      is not loaded. This is important for accessibility."
  */
-class ImageAltDescriptionTest extends ExistingSiteSelenium2DriverTestBase {
+class ImageAltDescriptionTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Creates an admin, saves it, and returns it.

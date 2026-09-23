@@ -1,0 +1,23 @@
+diff --git a/src/AcquiaPlatformCdn/BackendBase.php b/src/AcquiaPlatformCdn/BackendBase.php
+--- a/src/AcquiaPlatformCdn/BackendBase.php
++++ b/src/AcquiaPlatformCdn/BackendBase.php
+@@ -62,7 +62,7 @@ abstract class BackendBase implements BackendInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public static function platformInfo(PlatformInfoInterface $set = NULL) {
++  public static function platformInfo(?PlatformInfoInterface $set = NULL) {
+     static $platforminfo;
+     if (is_null($platforminfo) && (!is_null($set))) {
+       $platforminfo = $set;
+diff --git a/src/AcquiaPlatformCdn/BackendInterface.php b/src/AcquiaPlatformCdn/BackendInterface.php
+--- a/src/AcquiaPlatformCdn/BackendInterface.php
++++ b/src/AcquiaPlatformCdn/BackendInterface.php
+@@ -50,7 +50,7 @@ interface BackendInterface {
+    *   Information object interfacing with the Acquia platform.
+    */
+-  public static function platformInfo(PlatformInfoInterface $set = NULL);
++  public static function platformInfo(?PlatformInfoInterface $set = NULL);
+ 
+   /**
+    * Invalidate all 'tag' invalidations.
