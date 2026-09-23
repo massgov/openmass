@@ -534,6 +534,40 @@ JS
   }
 
   /**
+   * Ensures end users can choose 50 rows per page from the length dropdown.
+   */
+  public function testCsvFlowPublicPageLengthFiftyOption(): void {
+    $this->drupalLogin($this->createAdminUser());
+
+    $file = $this->createLargeCsvFile('csv-page-length-fifty.csv');
+    $csv_table = $this->createCsvTableParagraph($file, [
+      'searching' => 1,
+      'pageLength' => 5,
+      'lengthChange' => 1,
+      'responsive' => 'childRow',
+      'download' => 1,
+      'urls' => [
+        'autolink' => 0,
+      ],
+    ], 'CSV Page Length Fifty');
+    $section = $this->createSectionParagraph($csv_table);
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow Public Page Length Fifty');
+
+    $this->drupalGet('node/' . $node->id());
+
+    $assert = $this->assertSession();
+    $this->waitForCsvTableReady();
+    $this->assertSame(5, $this->countVisibleCsvTableBodyRows());
+
+    $length_select = $assert->elementExists('css', '.dataTables_length select, .dt-length select');
+    $length_select->selectOption('50');
+    $this->waitForCsvTableText('Unique Agency');
+
+    $this->assertSame(12, $this->countVisibleCsvTableBodyRows());
+    $assert->pageTextContains('Unique Agency');
+  }
+
+  /**
    * Ensures hide-until-search behavior works for end users.
    */
   public function testCsvFlowHideUntilSearchInteraction(): void {
@@ -1064,7 +1098,7 @@ JS
   }
 
   /**
-   * Page length is limited to 5, 10, or 15; legacy values normalize to 15.
+   * Page length dropdown includes 50 and 100; legacy values normalize to 15.
    */
   public function testCsvA11yPageLengthOptionsAndNormalization(): void {
     $this->drupalLogin($this->createAdminUser());
@@ -1081,7 +1115,7 @@ JS
 
     $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
     $this->assertStringContainsString('"pageLength":15', $settings);
-    $this->assertSame([5, 10, 15], $this->getPageLengthOptionValues());
+    $this->assertSame([5, 10, 15, 50, 100], $this->getPageLengthOptionValues());
   }
 
   /**
