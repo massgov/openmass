@@ -283,7 +283,7 @@ class EventsController extends ControllerBase {
     ]);
     $response = new LocalRedirectResponse($url->toString(), 301);
     $cache = new CacheableMetadata();
-    $cache->addCacheContexts(['url.query_args:_page']);
+    $cache->addCacheContexts(['url.query_args']);
     $response->addCacheableDependency($cache);
     return $response;
   }
