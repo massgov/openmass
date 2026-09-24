@@ -1,25 +1,5 @@
 
 
-## [0.494.0] - September 22, 2026
-
-### Changed
-  - DP-48482: Updated PHP version to 8.4, along with updates and patches to modules for compatibility.
-  - DP-48482: Upgraded Flag, Referenced Blocked Users, and OpenID Connect major versions
-  - DP-48482: OpenID Connect now handles /user/logout for SSO logout
-  - DP-48482: Changed Flag unwatch email URLs for Flag 5 compatibility. Unwatch links in emails sent before this release will return 404
-  - DP-48546: Override the audit trail row limit with time-based retention rules displayed on the report.
-  - DP-48764: Update the AI module to 1.4.9.
-  
-### Added
-  - DP-48520: Add IDV level to API service cards.
-  
-### Security
-  - DP-48764: Update Entity Browser to 2.16.0 and Key Auth to 2.2.4 to address Drupal security advisories.
-  - DP-48764: Update highlight.js Input Filter to 1.2.0 and Video Embed Field to 3.1.0.
-  - DP-48764: Update Drupal core to 11.3.17
-  
-
-
 ## [0.493.0] - September 15, 2026
 
 ### Changed
