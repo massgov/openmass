@@ -8,6 +8,11 @@ services:
     tags:
       - { name: event_subscriber }
     arguments: ['@current_user']
+  mass_utility.sendgrid_template_subscriber:
+    class: Drupal\mass_utility\EventSubscriber\SendgridTemplateSubscriber
+    arguments: ['@config.factory']
+    tags:
+      - { name: event_subscriber }
   mass_utility.lazy_builder:
     class: Drupal\mass_utility\LazyBuilder
     arguments: ['@current_route_match']
