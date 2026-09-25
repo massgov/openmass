@@ -1098,7 +1098,8 @@ JS
   }
 
   /**
-   * Page length dropdown includes 50 and 100; legacy values normalize to 15.
+   * Initial page length is limited to 5, 10, or 15. The dropdown also
+   * includes 50 and 100. Legacy values normalize to 15.
    */
   public function testCsvA11yPageLengthOptionsAndNormalization(): void {
     $this->drupalLogin($this->createAdminUser());
