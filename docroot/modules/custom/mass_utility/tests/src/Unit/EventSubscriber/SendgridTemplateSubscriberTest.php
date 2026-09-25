@@ -72,48 +72,6 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
   }
 
   /**
-   * Tests preserving optional data supplied by a mail-specific subscriber.
-   */
-  public function testOptionalTemplateDataIsPreserved(): void {
-    $subscriber = new SendgridTemplateSubscriber(
-      $this->createConfigFactory('d-1234567890'),
-    );
-    $email = $this->createEmail();
-    $email->addDynamicTemplateDatas([
-      'MC_PREVIEW_TEXT' => 'A short preview',
-      'archive_url' => 'https://www.mass.gov/email/archive/123',
-      'subject' => 'Stale subject',
-      'content' => 'Stale body',
-    ]);
-
-    $subscriber->applyTemplate($this->createEvent($email));
-
-    $this->assertSame([
-      'MC_PREVIEW_TEXT' => 'A short preview',
-      'archive_url' => 'https://www.mass.gov/email/archive/123',
-      'subject' => 'Test subject',
-      'content' => '<p>Test body</p>',
-    ], $email->getDynamicTemplateDatas());
-    $this->assertNull($email->getAsm());
-  }
-
-  /**
-   * Tests that optional values are omitted when the application has none.
-   */
-  public function testOptionalTemplateDataIsOmitted(): void {
-    $subscriber = new SendgridTemplateSubscriber(
-      $this->createConfigFactory('d-1234567890'),
-    );
-    $email = $this->createEmail();
-
-    $subscriber->applyTemplate($this->createEvent($email));
-
-    $template_data = $email->getDynamicTemplateDatas();
-    $this->assertArrayNotHasKey('MC_PREVIEW_TEXT', $template_data);
-    $this->assertArrayNotHasKey('archive_url', $template_data);
-  }
-
-  /**
    * Tests that an empty template ID cannot accidentally be used for a send.
    */
   public function testEmptyTemplateIdFails(): void {

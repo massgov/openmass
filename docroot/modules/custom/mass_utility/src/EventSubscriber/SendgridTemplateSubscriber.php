@@ -38,13 +38,12 @@ class SendgridTemplateSubscriber implements EventSubscriberInterface {
     }
 
     $email = $event->getEmail();
-    // Preserve optional values supplied by mail-specific subscribers while
-    // ensuring that the canonical subject and body come from Drupal's final
-    // formatted message. The HTML has already passed through the configured
-    // Drupal text format and must not be escaped before template expansion.
-    $template_data = $email->getDynamicTemplateDatas() ?? [];
-    $template_data['subject'] = $email->getGlobalSubject()?->getSubject() ?? '';
-    $template_data['content'] = '';
+    // The HTML has already passed through the configured Drupal text format
+    // and must not be escaped before template expansion.
+    $template_data = [
+      'subject' => $email->getGlobalSubject()?->getSubject() ?? '',
+      'content' => '',
+    ];
 
     foreach ($email->getContents() as $content) {
       if ($content->getType() === 'text/html') {
