@@ -57,6 +57,9 @@ class MassMailTest extends UnitTestCase {
     $this->assertSame('noreply@noreply.mass.gov', $message['from_email']);
     $this->assertSame('Mass.gov', $message['from_name']);
     $this->assertSame('DigitalSupport@mass.gov', $message['reply-to']);
+    $this->assertSame(['recipient@example.com'], $message['to']);
+    $this->assertSame('Test subject', $message['subject']);
+    $this->assertSame('<p>Test body</p>', $message['html']);
   }
 
 }

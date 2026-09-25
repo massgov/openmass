@@ -120,6 +120,9 @@ $config['mass_analytics.settings']['looker_studio_url'] = getenv('LOOKER_STUDIO_
 if (!empty(getenv('MASS_SENDGRID_TEMPLATE_ID'))) {
   $config['mass_utility.sendgrid']['template_id'] = getenv('MASS_SENDGRID_TEMPLATE_ID');
 }
+if (!empty(getenv('MASS_SENDGRID_ASM_GROUP_ID'))) {
+  $config['mass_utility.sendgrid']['asm_group_id'] = (int) getenv('MASS_SENDGRID_ASM_GROUP_ID');
+}
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
 $config['geocoder.geocoder_provider.opencage']['configuration']['apiKey'] = getenv('GEOCODER_OPENCAGE_API_KEY');
 

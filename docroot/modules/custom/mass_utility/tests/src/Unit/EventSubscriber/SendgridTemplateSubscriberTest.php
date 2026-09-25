@@ -32,7 +32,7 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
    */
   public function testApplyTemplate(): void {
     $subscriber = new SendgridTemplateSubscriber(
-      $this->createConfigFactory('d-1234567890'),
+      $this->createConfigFactory('d-1234567890', 42),
     );
     $email = $this->createEmail();
 
@@ -41,13 +41,76 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
     $this->assertSame('d-1234567890', $email->getTemplateId()->getTemplateId());
     $this->assertSame([
       'subject' => 'Test subject',
-      'section' => '<p>Test body</p>',
-      'section_text' => 'Test body',
+      'content' => '<p>Test body</p>',
     ], $email->getDynamicTemplateDatas());
+    $this->assertSame(42, $email->getAsm()->getGroupId()->getGroupId());
+
+    $payload = json_decode(json_encode($email, JSON_THROW_ON_ERROR), TRUE, 512, JSON_THROW_ON_ERROR);
+    $this->assertSame('d-1234567890', $payload['template_id']);
+    $this->assertSame([
+      'subject' => 'Test subject',
+      'content' => '<p>Test body</p>',
+    ], $payload['personalizations'][0]['dynamic_template_data']);
+    $this->assertArrayNotHasKey('substitutions', $payload['personalizations'][0]);
+    $this->assertSame([
+      ['email' => 'recipient@example.com'],
+      ['email' => 'second-recipient@example.com'],
+    ], $payload['personalizations'][0]['to']);
+    $this->assertSame([
+      'X-Test-Header' => 'preserved',
+    ], $payload['personalizations'][0]['headers']);
+    $this->assertSame([
+      'source' => 'drupal',
+    ], $payload['personalizations'][0]['custom_args']);
+    $this->assertSame('noreply@noreply.mass.gov', $payload['from']['email']);
+    $this->assertSame('Mass.gov', $payload['from']['name']);
+    $this->assertSame('reply@example.com', $payload['reply_to']['email']);
     $tracking = $email->getTrackingSettings();
     $this->assertFalse($tracking->getClickTracking()->getEnable());
     $this->assertFalse($tracking->getClickTracking()->getEnableText());
     $this->assertFalse($tracking->getOpenTracking()->getEnable());
+  }
+
+  /**
+   * Tests preserving optional data supplied by a mail-specific subscriber.
+   */
+  public function testOptionalTemplateDataIsPreserved(): void {
+    $subscriber = new SendgridTemplateSubscriber(
+      $this->createConfigFactory('d-1234567890'),
+    );
+    $email = $this->createEmail();
+    $email->addDynamicTemplateDatas([
+      'MC_PREVIEW_TEXT' => 'A short preview',
+      'archive_url' => 'https://www.mass.gov/email/archive/123',
+      'subject' => 'Stale subject',
+      'content' => 'Stale body',
+    ]);
+
+    $subscriber->applyTemplate($this->createEvent($email));
+
+    $this->assertSame([
+      'MC_PREVIEW_TEXT' => 'A short preview',
+      'archive_url' => 'https://www.mass.gov/email/archive/123',
+      'subject' => 'Test subject',
+      'content' => '<p>Test body</p>',
+    ], $email->getDynamicTemplateDatas());
+    $this->assertNull($email->getAsm());
+  }
+
+  /**
+   * Tests that optional values are omitted when the application has none.
+   */
+  public function testOptionalTemplateDataIsOmitted(): void {
+    $subscriber = new SendgridTemplateSubscriber(
+      $this->createConfigFactory('d-1234567890'),
+    );
+    $email = $this->createEmail();
+
+    $subscriber->applyTemplate($this->createEvent($email));
+
+    $template_data = $email->getDynamicTemplateDatas();
+    $this->assertArrayNotHasKey('MC_PREVIEW_TEXT', $template_data);
+    $this->assertArrayNotHasKey('archive_url', $template_data);
   }
 
   /**
@@ -64,13 +127,27 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
   }
 
   /**
+   * Tests that a legacy template ID cannot accidentally be used for a send.
+   */
+  public function testLegacyTemplateIdFails(): void {
+    $subscriber = new SendgridTemplateSubscriber(
+      $this->createConfigFactory('legacy-template-id'),
+    );
+
+    $this->expectException(\LogicException::class);
+    $this->expectExceptionMessage('MASS_SENDGRID_TEMPLATE_ID');
+    $subscriber->applyTemplate($this->createEvent($this->createEmail()));
+  }
+
+  /**
    * Creates a config factory that returns the requested template ID.
    */
-  private function createConfigFactory(string $template_id): ConfigFactoryInterface {
+  private function createConfigFactory(string $template_id, int $asm_group_id = 0): ConfigFactoryInterface {
     $config = $this->createMock(ImmutableConfig::class);
-    $config->method('get')
-      ->with('template_id')
-      ->willReturn($template_id);
+    $config->method('get')->willReturnMap([
+      ['template_id', $template_id],
+      ['asm_group_id', $asm_group_id],
+    ]);
 
     $config_factory = $this->createMock(ConfigFactoryInterface::class);
     $config_factory->method('get')
@@ -88,6 +165,10 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
     $email->setFrom('noreply@noreply.mass.gov', 'Mass.gov');
     $email->setSubject('Test subject');
     $email->addTo('recipient@example.com');
+    $email->addTo('second-recipient@example.com');
+    $email->setReplyTo('reply@example.com');
+    $email->addHeader('X-Test-Header', 'preserved');
+    $email->addCustomArg('source', 'drupal');
     $email->addContent('text/plain', 'Test body');
     $email->addContent('text/html', '<p>Test body</p>');
 

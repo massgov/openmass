@@ -52,8 +52,8 @@ $config['media_entity_download.settings']['external_file_storage'] = 1;
 // Disable autologout
 $config['autologout.settings']['timeout'] = 9999999;
 $config['autologout.settings']['max_timeout'] = 9999999;
-// Routes mail to PHP's sendmail_path which then routes to Mailhog.
-if (!getenv('MASS_MAILCHIMP')) {
+// Routes mail to PHP's sendmail_path, which DDEV captures in Mailpit.
+if (!getenv('MASS_TRANSACTIONAL_MAIL')) {
   $config['mailsystem.settings']['defaults']['sender'] = 'php_mail';
   $config['mailsystem.settings']['defaults']['formatter'] = 'php_mail';
 }
