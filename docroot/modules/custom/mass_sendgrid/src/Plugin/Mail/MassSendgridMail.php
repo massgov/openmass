@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mass_utility\Plugin\Mail;
+namespace Drupal\mass_sendgrid\Plugin\Mail;
 
 use Drupal\sendgrid\Plugin\Mail\SendgridMail;
 
@@ -8,12 +8,12 @@ use Drupal\sendgrid\Plugin\Mail\SendgridMail;
  * Sends Mass.gov email through SendGrid.
  *
  * @Mail(
- *   id = "mass_mail",
- *   label = @Translation("Mass mailer"),
- *   description = @Translation("Mass customized - sends the message through SendGrid.")
+ *   id = "mass_sendgrid_mail",
+ *   label = @Translation("Mass SendGrid mailer"),
+ *   description = @Translation("Sends Mass.gov email through SendGrid.")
  * )
  */
-class MassMail extends SendgridMail {
+class MassSendgridMail extends SendgridMail {
 
   /**
    * {@inheritdoc}
@@ -30,7 +30,13 @@ class MassMail extends SendgridMail {
     }
 
     $sendgrid_message = parent::buildMessage($message);
-    $sendgrid_message['from_email'] = 'noreply@noreply.mass.gov';
+    $from_email = $this->configFactory
+      ->get('mass_sendgrid.settings')
+      ->get('from_email');
+    if (!is_string($from_email) || $from_email === '') {
+      throw new \LogicException('The mass_sendgrid.settings from_email configuration value is required.');
+    }
+    $sendgrid_message['from_email'] = $from_email;
     $sendgrid_message['from_name'] = 'Mass.gov';
 
     return $sendgrid_message;

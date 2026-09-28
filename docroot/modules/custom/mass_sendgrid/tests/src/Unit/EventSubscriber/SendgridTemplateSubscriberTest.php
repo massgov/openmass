@@ -2,19 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\mass_utility\Unit\EventSubscriber;
+namespace Drupal\Tests\mass_sendgrid\Unit\EventSubscriber;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
-use Drupal\mass_utility\EventSubscriber\SendgridTemplateSubscriber;
+use Drupal\mass_sendgrid\EventSubscriber\SendgridTemplateSubscriber;
 use Drupal\sendgrid\Event\SendgridSendEvent;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\NullLogger;
 use SendGrid\Mail\Mail;
 
 /**
- * @coversDefaultClass \Drupal\mass_utility\EventSubscriber\SendgridTemplateSubscriber
- * @group mass_utility
+ * @coversDefaultClass \Drupal\mass_sendgrid\EventSubscriber\SendgridTemplateSubscriber
+ * @group mass_sendgrid
  */
 class SendgridTemplateSubscriberTest extends UnitTestCase {
 
@@ -62,7 +62,7 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
     $this->assertSame([
       'source' => 'drupal',
     ], $payload['personalizations'][0]['custom_args']);
-    $this->assertSame('noreply@noreply.mass.gov', $payload['from']['email']);
+    $this->assertSame('sender@example.com', $payload['from']['email']);
     $this->assertSame('Mass.gov', $payload['from']['name']);
     $this->assertSame('reply@example.com', $payload['reply_to']['email']);
     $tracking = $email->getTrackingSettings();
@@ -109,7 +109,7 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
 
     $config_factory = $this->createMock(ConfigFactoryInterface::class);
     $config_factory->method('get')
-      ->with('mass_utility.sendgrid')
+      ->with('mass_sendgrid.settings')
       ->willReturn($config);
 
     return $config_factory;
@@ -120,7 +120,7 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
    */
   private function createEmail(): Mail {
     $email = new Mail();
-    $email->setFrom('noreply@noreply.mass.gov', 'Mass.gov');
+    $email->setFrom('sender@example.com', 'Mass.gov');
     $email->setSubject('Test subject');
     $email->addTo('recipient@example.com');
     $email->addTo('second-recipient@example.com');

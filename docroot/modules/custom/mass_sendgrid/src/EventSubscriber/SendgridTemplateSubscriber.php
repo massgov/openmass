@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\mass_utility\EventSubscriber;
+namespace Drupal\mass_sendgrid\EventSubscriber;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\sendgrid\Event\SendgridSendEvent;
@@ -30,7 +30,7 @@ class SendgridTemplateSubscriber implements EventSubscriberInterface {
    * Applies the configured template and template data to an email.
    */
   public function applyTemplate(SendgridSendEvent $event): void {
-    $config = $this->configFactory->get('mass_utility.sendgrid');
+    $config = $this->configFactory->get('mass_sendgrid.settings');
     $template_id = $config->get('template_id');
 
     if (!is_string($template_id) || !str_starts_with($template_id, 'd-')) {

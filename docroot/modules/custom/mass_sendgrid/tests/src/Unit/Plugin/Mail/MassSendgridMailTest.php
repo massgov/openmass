@@ -2,26 +2,26 @@
 
 declare(strict_types=1);
 
-namespace Drupal\Tests\mass_utility\Unit\Plugin\Mail;
+namespace Drupal\Tests\mass_sendgrid\Unit\Plugin\Mail;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Queue\QueueFactory;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\mass_utility\Plugin\Mail\MassMail;
+use Drupal\mass_sendgrid\Plugin\Mail\MassSendgridMail;
 use Drupal\sendgrid\SendgridHandlerInterface;
 use Drupal\Tests\UnitTestCase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Mime\MimeTypeGuesserInterface;
 
 /**
- * @coversDefaultClass \Drupal\mass_utility\Plugin\Mail\MassMail
- * @group mass_utility
+ * @coversDefaultClass \Drupal\mass_sendgrid\Plugin\Mail\MassSendgridMail
+ * @group mass_sendgrid
  */
-class MassMailTest extends UnitTestCase {
+class MassSendgridMailTest extends UnitTestCase {
 
   /**
-   * Tests that the required Mass.gov sender overrides the site address.
+   * Tests that the configured Mass.gov sender overrides the site address.
    */
   public function testSender(): void {
     $site_config = $this->createMock(ImmutableConfig::class);
@@ -29,12 +29,17 @@ class MassMailTest extends UnitTestCase {
       ['mail', 'DigitalSupport@mass.gov'],
       ['name', 'Mass.gov'],
     ]);
+    $sendgrid_config = $this->createMock(ImmutableConfig::class);
+    $sendgrid_config->method('get')
+      ->with('from_email')
+      ->willReturn('configured-sender@example.com');
     $config_factory = $this->createMock(ConfigFactoryInterface::class);
-    $config_factory->method('get')
-      ->with('system.site')
-      ->willReturn($site_config);
+    $config_factory->method('get')->willReturnMap([
+      ['system.site', $site_config],
+      ['mass_sendgrid.settings', $sendgrid_config],
+    ]);
 
-    $plugin = new MassMail(
+    $plugin = new MassSendgridMail(
       $config_factory,
       $this->createMock(LoggerInterface::class),
       $this->createMock(RendererInterface::class),
@@ -54,7 +59,7 @@ class MassMailTest extends UnitTestCase {
       ],
     ]);
 
-    $this->assertSame('noreply@noreply.mass.gov', $message['from_email']);
+    $this->assertSame('configured-sender@example.com', $message['from_email']);
     $this->assertSame('Mass.gov', $message['from_name']);
     $this->assertSame('DigitalSupport@mass.gov', $message['reply-to']);
     $this->assertSame(['recipient@example.com'], $message['to']);
