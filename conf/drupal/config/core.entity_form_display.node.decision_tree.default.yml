@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.decision_tree.field_reusable_label
     - field.field.node.decision_tree.field_service_ref_services_6
     - field.field.node.decision_tree.field_short_title
+    - field.field.node.decision_tree.field_sme_content_owner
     - field.field.node.decision_tree.field_start_button
     - node.type.decision_tree
     - workflows.workflow.editorial
@@ -69,6 +70,7 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_decision_tree_edit_form
@@ -179,6 +181,16 @@ content:
     weight: 6
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

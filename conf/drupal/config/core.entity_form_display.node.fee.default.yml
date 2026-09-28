@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.fee.field_fee_unit
     - field.field.node.fee.field_organizations
     - field.field.node.fee.field_reusable_label
+    - field.field.node.fee.field_sme_content_owner
     - node.type.fee
     - workflows.workflow.editorial
   module:
@@ -56,8 +57,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_fee_edit_form
       weight: 1
       format_type: tab
@@ -133,6 +135,16 @@ content:
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 5
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS

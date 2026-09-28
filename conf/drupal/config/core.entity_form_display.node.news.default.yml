@@ -28,6 +28,7 @@ dependencies:
     - field.field.node.news.field_primary_parent
     - field.field.node.news.field_related_service
     - field.field.node.news.field_reusable_label
+    - field.field.node.news.field_sme_content_owner
     - image.style.thumbnail
     - node.type.news
     - workflows.workflow.editorial
@@ -162,8 +163,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_node_edit_form
       weight: 6
       format_type: tab
@@ -512,6 +514,16 @@ content:
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 13
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS

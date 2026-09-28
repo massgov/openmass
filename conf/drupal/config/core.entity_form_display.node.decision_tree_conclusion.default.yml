@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.decision_tree_conclusion.field_description
     - field.field.node.decision_tree_conclusion.field_organizations
     - field.field.node.decision_tree_conclusion.field_reusable_label
+    - field.field.node.decision_tree_conclusion.field_sme_content_owner
     - node.type.decision_tree_conclusion
     - workflows.workflow.editorial
   module:
@@ -62,8 +63,9 @@ third_party_settings:
         - url_redirects
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_decision_tree_conclusion_e
       weight: 1
       format_type: tab
@@ -151,6 +153,16 @@ content:
       placeholder: ''
     third_party_settings: {  }
   field_reusable_label:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
     type: entity_reference_autocomplete
     weight: 7
     region: content

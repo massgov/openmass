@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.contact_information.field_ref_links
     - field.field.node.contact_information.field_ref_phone_number
     - field.field.node.contact_information.field_reusable_label
+    - field.field.node.contact_information.field_sme_content_owner
     - node.type.contact_information
     - workflows.workflow.editorial
   module:
@@ -123,6 +124,7 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_contact_information_edit_f
@@ -260,6 +262,16 @@ content:
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 6
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS

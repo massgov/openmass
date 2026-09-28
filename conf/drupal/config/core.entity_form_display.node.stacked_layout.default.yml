@@ -18,6 +18,7 @@ dependencies:
     - field.field.node.stacked_layout.field_primary_parent
     - field.field.node.stacked_layout.field_related_content
     - field.field.node.stacked_layout.field_reusable_label
+    - field.field.node.stacked_layout.field_sme_content_owner
     - field.field.node.stacked_layout.field_topic_callout_links
     - field.field.node.stacked_layout.field_use_alt_header
     - node.type.stacked_layout
@@ -136,6 +137,7 @@ third_party_settings:
         - url_redirects
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page info'
       region: content
       parent_name: group_node_edit_form
@@ -277,6 +279,16 @@ content:
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 123
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS

@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.decision_tree_branch.field_multiple_answers
     - field.field.node.decision_tree_branch.field_organizations
     - field.field.node.decision_tree_branch.field_reusable_label
+    - field.field.node.decision_tree_branch.field_sme_content_owner
     - node.type.decision_tree_branch
     - workflows.workflow.editorial
   module:
@@ -63,8 +64,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_decision_tree_branch_edit_
       weight: 21
       format_type: tab
@@ -166,6 +168,16 @@ content:
   field_reusable_label:
     type: entity_reference_autocomplete
     weight: 8
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
     region: content
     settings:
       match_operator: CONTAINS

@@ -38,6 +38,7 @@ dependencies:
     - field.field.node.event.field_primary_parent
     - field.field.node.event.field_reusable_label
     - field.field.node.event.field_short_title
+    - field.field.node.event.field_sme_content_owner
     - field.field.node.event.field_updated_date
     - image.style.thumbnail
     - node.type.event
@@ -226,8 +227,9 @@ third_party_settings:
         - url_redirects
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_event_edit_form
       weight: 27
       format_type: tab
@@ -703,6 +705,16 @@ content:
     weight: 119
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

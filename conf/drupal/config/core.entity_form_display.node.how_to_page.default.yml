@@ -34,6 +34,7 @@ dependencies:
     - field.field.node.how_to_page.field_primary_parent
     - field.field.node.how_to_page.field_reusable_label
     - field.field.node.how_to_page.field_short_title
+    - field.field.node.how_to_page.field_sme_content_owner
     - field.field.node.how_to_page.field_what_you_need_header
     - node.type.how_to_page
     - workflows.workflow.editorial
@@ -172,8 +173,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_how_to_page_edit_form
       weight: 24
       format_type: tab
@@ -608,6 +610,16 @@ content:
     weight: -2
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

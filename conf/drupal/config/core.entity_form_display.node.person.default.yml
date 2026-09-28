@@ -28,6 +28,7 @@ dependencies:
     - field.field.node.person.field_ref_single_address
     - field.field.node.person.field_reusable_label
     - field.field.node.person.field_short_bio
+    - field.field.node.person.field_sme_content_owner
     - field.field.node.person.field_social_links
     - image.style.thumbnail
     - node.type.person
@@ -130,8 +131,9 @@ third_party_settings:
         - url_redirects
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_node_edit_form
       weight: 6
       format_type: tab
@@ -493,6 +495,16 @@ content:
     weight: 17
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

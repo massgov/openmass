@@ -39,6 +39,7 @@ dependencies:
     - field.field.node.location.field_services
     - field.field.node.location.field_services_header
     - field.field.node.location.field_short_title
+    - field.field.node.location.field_sme_content_owner
     - image.style.large
     - node.type.location
     - workflows.workflow.editorial
@@ -167,8 +168,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_primary
       weight: 6
       format_type: tab
@@ -666,6 +668,16 @@ content:
     weight: 5
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

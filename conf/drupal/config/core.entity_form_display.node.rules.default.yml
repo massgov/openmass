@@ -29,6 +29,7 @@ dependencies:
     - field.field.node.rules.field_rules_type
     - field.field.node.rules.field_rules_updates
     - field.field.node.rules.field_short_title
+    - field.field.node.rules.field_sme_content_owner
     - node.type.rules
     - workflows.workflow.editorial
   module:
@@ -158,8 +159,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_rules_edit_form
       weight: 3
       format_type: tab
@@ -421,6 +423,16 @@ content:
     weight: 57
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

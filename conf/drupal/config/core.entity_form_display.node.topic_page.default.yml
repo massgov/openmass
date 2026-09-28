@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.topic_page.field_restrict_orgs_field
     - field.field.node.topic_page.field_reusable_label
     - field.field.node.topic_page.field_short_title
+    - field.field.node.topic_page.field_sme_content_owner
     - field.field.node.topic_page.field_topic_content_cards
     - field.field.node.topic_page.field_topic_lede
     - field.field.node.topic_page.field_topic_metatags
@@ -109,8 +110,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_topic_page_edit_form
       weight: 23
       format_type: tab
@@ -280,6 +282,16 @@ content:
     weight: 57
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }

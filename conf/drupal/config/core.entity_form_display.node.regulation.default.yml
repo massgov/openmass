@@ -27,6 +27,7 @@ dependencies:
     - field.field.node.regulation.field_regulation_title
     - field.field.node.regulation.field_reusable_label
     - field.field.node.regulation.field_short_title
+    - field.field.node.regulation.field_sme_content_owner
     - node.type.regulation
     - workflows.workflow.editorial
   module:
@@ -126,8 +127,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_regulation_page_edit_form
       weight: 10
       format_type: tab
@@ -375,6 +377,16 @@ content:
     weight: 12
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
