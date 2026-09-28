@@ -37,8 +37,11 @@ display:
           exclude: false
           alter:
             alter_text: false
-            make_link: false
+            make_link: true
+            path: 'admin/advsearch/page?field_sme_content_owner_target_id="{{ name }}"'
             absolute: false
+            external: false
+            alt: 'View all content owned by {{ name }}'
             word_boundary: false
             ellipsis: false
             strip_tags: false
@@ -59,7 +62,7 @@ display:
           click_sort_column: value
           type: string
           settings:
-            link_to_entity: true
+            link_to_entity: false
           group_column: value
           group_columns: {  }
           group_rows: true
