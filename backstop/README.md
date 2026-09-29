@@ -42,13 +42,12 @@ they look the same.
 
 ## Usage
 
-> 🛑 If you're using an M1 Mac, the ddev commands may not work. You can try the
-> local circleci runner as described below, or [turn on Rosetta2 virtualization in Docker Desktop](https://levelup.gitconnected.com/docker-on-apple-silicon-mac-how-to-run-x86-containers-with-rosetta-2-4a679913a0d5)
-
 - If testing an Acquia environment, make sure the `LOWER_ENVIR_AUTH_USER` and
   `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
-- Enable the Backstop docker image for local running.
-  `ddev service enable backstop`
+- BackstopJS runs in DDEV's web container using the versions pinned in
+  `package.json` and `yarn.lock`. Run `ddev yarn install --frozen-lockfile`
+  before the first test. The `ddev backstop` command downloads the matching
+  Chromium build once and keeps it in DDEV's persistent global cache.
 - Before doing any testing, you will need to capture the "reference" screenshots,
   or the screenshots you want to use as the baseline for comparison. These
   reference screenshots will usually come from the production environment. Take
@@ -59,7 +58,7 @@ they look the same.
 - Take screen captures of local pages to compare
   `ddev backstop test --target=local --list=all`
 - Open the report from the comparison
-  `open backstop/report/index.html`
+  `ddev backstop-results`
 
 ## Modifying Tests
 
@@ -73,7 +72,13 @@ the `all.json` file. By `Copy + Paste` all or some of the lines into
 the `pages.json`. The `all.json` file includes a few more of the QAG pages that
 were created for testing purposes.
 
-## Runing Backstop in CircleCI
+## Running Backstop in CircleCI
+
+CircleCI installs the versions of BackstopJS and Playwright pinned in
+`package.json` and `yarn.lock`, downloads the matching Chromium build, and runs
+Backstop directly in the pinned `cimg/node:24.21.0-browsers` executor. Local
+runs use the same project dependencies and Chromium build inside DDEV's web
+container instead of maintaining a separate Backstop image.
 
 `drush ma:backstop-snapshot` will run Backstop and store the screenshots to be
 used later by `drush ma:backstop-compare` e.g.
@@ -94,14 +99,3 @@ making to backstop related code:
 ```
 drush ma:ci:backstop-compare --reference=prod --target=prod --force-reference --ci-branch=dp-26913-run-backstop-js-locally
 ```
-
-You can also run the tests using CircleCi's [local CLI](https://circleci.com/docs/local-cli/).
-
-> 🛑 Do not use the `snap` installer for Linux, use the alternative installation
-> method.
-
-After installation, you can run the backstop job in [`.circleci/config.yml`](../.circleci/config.yml)
-with `circleci local execute backstop -e LOWER_ENVIR_AUTH_USER="<USER>" -e LOWER_ENVIR_AUTH_PASS="<PASSWORD>"`.
-
-The `store_test_results` and `store_artifacts` steps are not supported, so you
-may wish to comment those out temporarily.
