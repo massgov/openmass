@@ -44,7 +44,7 @@ class OrgLookupController extends ControllerBase {
    * be open to any authenticated user. The JS passes the entity it is editing
    * (entity_type + entity_id, or entity_type + bundle for new content); access
    * is granted only when the caller can actually update that entity (or create
-   * that bundle). Only node and media are accepted.
+   * that bundle). Node, media, and taxonomy terms are accepted.
    */
   public function access(AccountInterface $account, Request $request): AccessResultInterface {
     $deny = AccessResult::forbidden()->addCacheContexts(['url.query_args', 'user.permissions']);
@@ -53,7 +53,7 @@ class OrgLookupController extends ControllerBase {
       return $deny;
     }
     $entity_type = (string) $request->query->get('entity_type', '');
-    if (!in_array($entity_type, ['node', 'media'], TRUE)) {
+    if (!in_array($entity_type, ['node', 'media', 'taxonomy_term'], TRUE)) {
       return $deny;
     }
 
