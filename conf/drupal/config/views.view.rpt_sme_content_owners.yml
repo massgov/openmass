@@ -106,7 +106,7 @@ display:
       access:
         type: perm
         options:
-          perm: 'access content'
+          perm: 'administer site configuration'
       cache:
         type: tag
         options: {  }
@@ -150,6 +150,7 @@ display:
       relationships: {  }
       header: {  }
       footer: {  }
+      use_admin_theme: true
     cache_metadata:
       max-age: -1
       contexts:
@@ -165,7 +166,16 @@ display:
     position: 1
     display_options:
       display_extenders: {  }
-      path: subject-matter-experts-content-owners
+      path: admin/reports/subject-matter-experts-content-owners
+      menu:
+        type: normal
+        title: 'Subject matter experts / content owners'
+        description: 'Directory of the SME / content owner terms used to tag pages and documents'
+        weight: 0
+        expanded: false
+        menu_name: admin
+        parent: system.admin_reports
+        context: '0'
     cache_metadata:
       max-age: -1
       contexts:
