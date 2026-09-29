@@ -2,6 +2,8 @@
 
 namespace Drupal\mass_jsonapi\EventSubscriber;
 
+use Drupal\jsonapi\ResourceType\ResourceTypeBuildEvent;
+use Drupal\jsonapi\ResourceType\ResourceTypeBuildEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -10,6 +12,16 @@ use Symfony\Component\HttpKernel\KernelEvents;
  * Mass JSONAPI event subscriber.
  */
 class MassJsonapiSubscriber implements EventSubscriberInterface {
+
+  /**
+   * The internal-only field kept out of the API.
+   */
+  private const INTERNAL_FIELD = 'field_sme_content_owner';
+
+  /**
+   * The vocabulary behind that field, also internal.
+   */
+  private const INTERNAL_VOCABULARY = 'sme_owner';
 
   /**
    * Constructs event subscriber.
@@ -35,11 +47,35 @@ class MassJsonapiSubscriber implements EventSubscriberInterface {
   }
 
   /**
+   * Keeps internal editorial fields out of the public API.
+   *
+   * The SME / content owner names staff members and is for internal tracking
+   * only, so neither the reference on content nor the vocabulary listing every
+   * owner may be served to anonymous API clients.
+   *
+   * @param \Drupal\jsonapi\ResourceType\ResourceTypeBuildEvent $event
+   *   The resource type build event.
+   */
+  public function onResourceTypeBuild(ResourceTypeBuildEvent $event) {
+    if ($event->getResourceTypeName() === 'taxonomy_term--' . self::INTERNAL_VOCABULARY) {
+      $event->disableResourceType();
+      return;
+    }
+
+    foreach ($event->getFields() as $field) {
+      if ($field->getInternalName() === self::INTERNAL_FIELD) {
+        $event->disableField($field);
+      }
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function getSubscribedEvents(): array {
     return [
       KernelEvents::RESPONSE => ['onKernelResponse'],
+      ResourceTypeBuildEvents::BUILD => ['onResourceTypeBuild'],
     ];
   }
 

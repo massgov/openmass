@@ -48,6 +48,13 @@ Added:
 Changed:
   - description: SME / Content Owner vocabulary now rejects duplicate term names, and adding the same owner twice to one page or document is now rejected with a message naming the owner.
     issue: DP-48795
+Changed:
+  - description: SME / Content Owner now reads directly under Permission Groups on every content type that has it, and first on the Page Info tab where it does not, instead of landing in a different spot per type.
+    issue: DP-48795
 Fixed:
   - description: Page Info tab now shows in the correct region on form display settings for content types where it was marked hidden.
+    issue: DP-48795
+  - description: SME / Content Owner is no longer served by the public API, which exposed both the owner of a page and the list of every owner to anonymous clients.
+    issue: DP-48795
+  - description: On Decision the SME / Content Owner field sat outside the Page Info tab because it was listed in two field groups at once.
     issue: DP-48795

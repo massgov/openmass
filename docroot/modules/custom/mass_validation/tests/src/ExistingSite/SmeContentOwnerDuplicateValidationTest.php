@@ -3,6 +3,7 @@
 namespace Drupal\Tests\mass_validation\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\taxonomy\TermInterface;
 use MassGov\Dtt\MassExistingSiteBase;
@@ -34,8 +35,8 @@ class SmeContentOwnerDuplicateValidationTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
     $vocabulary = Vocabulary::load('sme_owner');
-    $this->owner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Owner']);
-    $this->otherOwner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Other Owner']);
+    $this->owner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Owner', 'langcode' => 'en']);
+    $this->otherOwner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Other Owner', 'langcode' => 'en']);
   }
 
   /**
@@ -101,6 +102,36 @@ class SmeContentOwnerDuplicateValidationTest extends MassExistingSiteBase {
       array_keys($definitions['field_sme_content_owner']->getConstraints()),
       'The document field carries the duplicate check, not only nodes.'
     );
+  }
+
+  /**
+   * Two owners cannot share a name, so authors do not create near duplicates.
+   */
+  public function testVocabularyRejectsDuplicateName(): void {
+    $clone = Term::create([
+      'vid' => 'sme_owner',
+      'name' => $this->owner->label(),
+      'langcode' => 'en',
+    ]);
+
+    $violations = $clone->validate();
+    $messages = array_map(fn($violation) => strip_tags((string) $violation->getMessage()), iterator_to_array($violations));
+
+    $this->assertNotEmpty($violations, 'A second owner with an existing name should be rejected.');
+    $this->assertStringContainsString('already exists', implode(' ', $messages));
+  }
+
+  /**
+   * A differently named owner is still allowed.
+   */
+  public function testVocabularyAllowsDistinctName(): void {
+    $fresh = Term::create([
+      'vid' => 'sme_owner',
+      'name' => 'Duplicate Validation Owner ' . $this->randomMachineName(8),
+      'langcode' => 'en',
+    ]);
+
+    $this->assertCount(0, $fresh->validate());
   }
 
   /**
