@@ -37,26 +37,17 @@
 #    issue: DP-19843
 #
 Added:
-  - description: SME / Content Owner field added as option internal tracking field for authors.
+  - description: Authors can tag pages and documents with one or more SME / content owners, an optional internal tracking field on the Page Info tab that suggests existing owners and accepts new ones.
     issue: DP-48795
-  - description: SME / Content Owner column and exposed filter added to the advanced search, documents, content performance and accessibility report pages, not only to their CSV exports.
+  - description: Pages and documents can be searched and filtered by SME / content owner, which appears as a column on the advanced search, documents, content performance, Editoria11y and accessibility report pages and in their CSV exports.
     issue: DP-48795
-  - description: Names on the SME / Content Owner directory now link to an advanced search filtered by that owner. The directory itself moved under Reports at admin/reports/subject-matter-experts-content-owners and is limited to users who can administer site configuration.
+  - description: A directory of SME / content owners at admin/reports/subject-matter-experts-content-owners lists each owner with the number of pages and documents they are responsible for, links through to that content, and a name search. It is limited to users who can administer site configuration.
     issue: DP-48795
-  - description: The SME / Content Owner directory now lists how many pages and documents each owner is responsible for, when the owner was last updated, a link to rename or delete the term, and a name search.
-    issue: DP-48795
-Changed:
-  - description: SME / Content Owner vocabulary now rejects duplicate term names, and adding the same owner twice to one page or document is now rejected with a message naming the owner.
-    issue: DP-48795
-  - description: SME / Content Owner now reads directly under Permission Groups on every content type that has it, and first on the Page Info tab where it does not, instead of landing in a different spot per type.
+  - description: Duplicate owners are rejected. The vocabulary refuses a second term with an existing name, and the same owner cannot be attached twice to one page or document.
     issue: DP-48795
 Fixed:
-  - description: Page Info tab now shows in the correct region on form display settings for content types where it was marked hidden.
-    issue: DP-48795
-  - description: SME / Content Owner is no longer served by the public API, which exposed both the owner of a page and the list of every owner to anonymous clients.
-    issue: DP-48795
-  - description: On Decision the SME / Content Owner field sat outside the Page Info tab because it was listed in two field groups at once.
+  - description: The Page Info tab shows in the correct region on the form display settings screen for the content types where it was marked hidden.
     issue: DP-48795
 Security:
-  - description: SME / Content Owner can now only be read by roles that already see the editorial listings, so the field stays internal even if something starts rendering it, and the owner vocabulary is withheld from the public API.
+  - description: SME / content owner data stays internal. It is not rendered on published pages or carried in their metadata, the field and its vocabulary are withheld from the public API, and only roles that can already see the editorial listings are able to read it.
     issue: DP-48795
