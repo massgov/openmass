@@ -20,22 +20,23 @@ class SmeContentOwnerFieldAccessTest extends MassExistingSiteBase {
   private const FIELD_NAME = 'field_sme_content_owner';
 
   /**
-   * Role combinations held by real accounts, and whether they may author.
+   * Role combinations held by real accounts, with the access each should get.
    *
    * @return array
-   *   Each case is [roles, may edit content].
+   *   Each case is [roles, may edit content, may read the owner].
    */
   public static function roleProvider(): array {
     return [
-      'editor' => [['editor'], TRUE],
-      'author' => [['author'], TRUE],
-      'bulk_edit + editor' => [['bulk_edit', 'editor'], TRUE],
-      'content_team + editor' => [['content_team', 'editor'], TRUE],
-      'editor + tester' => [['editor', 'tester'], TRUE],
-      'data_administrator + editor' => [['data_administrator', 'editor'], TRUE],
-      'mmg_editor' => [['mmg_editor'], FALSE],
-      'viewer' => [['viewer'], FALSE],
-      'no roles' => [[], FALSE],
+      'editor' => [['editor'], TRUE, TRUE],
+      'author' => [['author'], TRUE, TRUE],
+      'bulk_edit + editor' => [['bulk_edit', 'editor'], TRUE, TRUE],
+      'content_team + editor' => [['content_team', 'editor'], TRUE, TRUE],
+      'editor + tester' => [['editor', 'tester'], TRUE, TRUE],
+      'data_administrator + editor' => [['data_administrator', 'editor'], TRUE, TRUE],
+      // Read only staff account: sees the editorial listings, edits nothing.
+      'viewer' => [['viewer'], FALSE, TRUE],
+      'mmg_editor' => [['mmg_editor'], FALSE, FALSE],
+      'no roles' => [[], FALSE, FALSE],
     ];
   }
 
@@ -48,7 +49,7 @@ class SmeContentOwnerFieldAccessTest extends MassExistingSiteBase {
    *
    * @dataProvider roleProvider
    */
-  public function testAuthoringRolesCanWriteTheField(array $roles, bool $may_edit): void {
+  public function testAuthoringRolesCanWriteTheField(array $roles, bool $may_edit, bool $may_read): void {
     $account = $this->accountWithRoles($roles);
     $node = $this->createOwnedNode();
 
@@ -67,7 +68,7 @@ class SmeContentOwnerFieldAccessTest extends MassExistingSiteBase {
    *
    * @dataProvider roleProvider
    */
-  public function testNonAuthoringRolesCannotReachTheForm(array $roles, bool $may_edit): void {
+  public function testNonAuthoringRolesCannotReachTheForm(array $roles, bool $may_edit, bool $may_read): void {
     if ($may_edit) {
       $this->markTestSkipped('Covered by testEditorSeesTheFieldOnTheForm.');
     }
@@ -97,21 +98,31 @@ class SmeContentOwnerFieldAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Reading the field is not restricted, so nothing may publish it by accident.
+   * Only roles that already see the editorial listings may read the owner.
    *
-   * Field level read access is open, including to anonymous clients. The only
-   * thing keeping owners internal is that no display, view or API resource
-   * serves the field, which is what SmeContentOwnerPrivacyTest guards. This
-   * test records the situation so the reasoning is not lost.
+   * @dataProvider roleProvider
    */
-  public function testReadAccessIsNotRestrictedByItself(): void {
+  public function testOnlyEditorialRolesCanReadTheField(array $roles, bool $may_edit, bool $may_read): void {
+    $node = $this->createOwnedNode();
+
+    $this->assertSame(
+      $may_read,
+      $node->get(self::FIELD_NAME)->access('view', $this->accountWithRoles($roles)),
+      'Unexpected read access for ' . (implode('+', $roles) ?: 'an account with no roles')
+    );
+  }
+
+  /**
+   * Anonymous visitors cannot read the owner at all.
+   *
+   * This is the backstop: even if a display, view or template starts printing
+   * the field, the public never sees a name.
+   */
+  public function testAnonymousCannotReadTheField(): void {
     $node = $this->createOwnedNode();
     $anonymous = \Drupal::entityTypeManager()->getStorage('user')->load(0);
 
-    $this->assertTrue(
-      $node->get(self::FIELD_NAME)->access('view', $anonymous),
-      'Read access became restricted; the privacy tests should now be revisited.'
-    );
+    $this->assertFalse($node->get(self::FIELD_NAME)->access('view', $anonymous));
     $this->assertFalse($node->access('update', $anonymous));
   }
 

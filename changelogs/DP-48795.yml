@@ -58,5 +58,5 @@ Fixed:
   - description: On Decision the SME / Content Owner field sat outside the Page Info tab because it was listed in two field groups at once.
     issue: DP-48795
 Security:
-  - description: Confirmed that only roles able to edit a page can record its owner, and that read access to the field is open, so the field is kept internal by not being served anywhere rather than by field permissions.
+  - description: SME / Content Owner can now only be read by roles that already see the editorial listings, so the field stays internal even if something starts rendering it, and the owner vocabulary is withheld from the public API.
     issue: DP-48795

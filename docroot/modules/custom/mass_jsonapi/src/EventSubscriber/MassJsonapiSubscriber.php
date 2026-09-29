@@ -14,12 +14,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class MassJsonapiSubscriber implements EventSubscriberInterface {
 
   /**
-   * The internal-only field kept out of the API.
-   */
-  private const INTERNAL_FIELD = 'field_sme_content_owner';
-
-  /**
-   * The vocabulary behind that field, also internal.
+   * An internal editorial vocabulary, withheld from the API.
    */
   private const INTERNAL_VOCABULARY = 'sme_owner';
 
@@ -47,11 +42,12 @@ class MassJsonapiSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Keeps internal editorial fields out of the public API.
+   * Keeps the internal owner vocabulary out of the public API.
    *
-   * The SME / content owner names staff members and is for internal tracking
-   * only, so neither the reference on content nor the vocabulary listing every
-   * owner may be served to anonymous API clients.
+   * The SME / content owner names staff members. Field access already withholds
+   * the reference on content, but that says nothing about the terms themselves:
+   * they are published, so without this the API served the entire roster at
+   * /jsonapi/taxonomy_term/sme_owner to anonymous clients.
    *
    * @param \Drupal\jsonapi\ResourceType\ResourceTypeBuildEvent $event
    *   The resource type build event.
@@ -59,13 +55,6 @@ class MassJsonapiSubscriber implements EventSubscriberInterface {
   public function onResourceTypeBuild(ResourceTypeBuildEvent $event) {
     if ($event->getResourceTypeName() === 'taxonomy_term--' . self::INTERNAL_VOCABULARY) {
       $event->disableResourceType();
-      return;
-    }
-
-    foreach ($event->getFields() as $field) {
-      if ($field->getInternalName() === self::INTERNAL_FIELD) {
-        $event->disableField($field);
-      }
     }
   }
 
