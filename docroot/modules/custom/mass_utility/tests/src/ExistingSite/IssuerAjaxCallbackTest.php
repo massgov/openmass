@@ -6,12 +6,13 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Form\FormState;
 use Drupal\mass_content_moderation\MassModeration;
 use MassGov\Dtt\MassExistingSiteBase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Issuer autocomplete AJAX callbacks on advisory and executive order forms.
- *
- * @group mass_utility
  */
+#[Group('mass_utility')]
 class IssuerAjaxCallbackTest extends MassExistingSiteBase {
 
   /**
@@ -29,9 +30,8 @@ class IssuerAjaxCallbackTest extends MassExistingSiteBase {
    *
    * Organization pages have no field_person_ref_org, which used to throw and
    * turn the AJAX request into a 500.
-   *
-   * @dataProvider callbackProvider
    */
+  #[DataProvider('callbackProvider')]
   public function testOrganizationIssuer(string $callback, string $field): void {
     $org = $this->createNode([
       'type' => 'org_page',
@@ -46,9 +46,8 @@ class IssuerAjaxCallbackTest extends MassExistingSiteBase {
 
   /**
    * Choosing a person as issuer resolves to the person's organization.
-   *
-   * @dataProvider callbackProvider
    */
+  #[DataProvider('callbackProvider')]
   public function testPersonIssuer(string $callback, string $field): void {
     $org = $this->createNode([
       'type' => 'org_page',
@@ -64,6 +63,22 @@ class IssuerAjaxCallbackTest extends MassExistingSiteBase {
     $response = $this->invoke($callback, $field, (int) $person->id());
     $this->assertInstanceOf(AjaxResponse::class, $response);
     $this->assertStringContainsString('"' . $org->id() . '"', json_encode($response->getCommands()));
+  }
+
+  /**
+   * An empty selection returns an empty AJAX response, not FALSE.
+   *
+   * Core hands anything that is not an AjaxResponse to the AJAX renderer,
+   * which requires an array, so FALSE turned clearing the field into a 500.
+   */
+  #[DataProvider('callbackProvider')]
+  public function testEmptySelection(string $callback, string $field): void {
+    $form_state = new FormState();
+    $form_state->setTriggeringElement(['#field_parents' => [$field, 0, 'subform']]);
+    $form = [];
+    $response = $callback($form, $form_state);
+    $this->assertInstanceOf(AjaxResponse::class, $response);
+    $this->assertSame([], $response->getCommands());
   }
 
   /**

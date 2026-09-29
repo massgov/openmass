@@ -869,7 +869,9 @@ function mass_utility_get_issuer_advisory_ajax_callback(array &$form, FormStateI
     return $response;
   }
 
-  return FALSE;
+  // Nothing selected (e.g. the autocomplete was cleared): an empty response
+  // keeps the form as is. Returning FALSE makes core throw a TypeError.
+  return $response;
 }
 
 /**
@@ -914,7 +916,9 @@ function mass_utility_get_issuer_executive_ajax_callback(array &$form, FormState
     return $response;
   }
 
-  return FALSE;
+  // Nothing selected (e.g. the autocomplete was cleared): an empty response
+  // keeps the form as is. Returning FALSE makes core throw a TypeError.
+  return $response;
 }
 
 /**
