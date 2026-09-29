@@ -15,6 +15,11 @@ targetEntityType: node
 bundle: glossary
 mode: default
 content:
+  content_moderation_control:
+    settings: {  }
+    third_party_settings: {  }
+    weight: -20
+    region: content
   field_organizations:
     type: entity_reference_label
     label: above
@@ -37,5 +42,6 @@ content:
     weight: 100
     region: content
 hidden:
+  field_content_organization: true
   field_sme_content_owner: true
   langcode: true
