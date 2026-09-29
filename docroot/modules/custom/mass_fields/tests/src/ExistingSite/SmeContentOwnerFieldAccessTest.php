@@ -3,7 +3,9 @@
 namespace Drupal\Tests\mass_fields\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
 use MassGov\Dtt\MassExistingSiteBase;
 
@@ -18,6 +20,50 @@ use MassGov\Dtt\MassExistingSiteBase;
 class SmeContentOwnerFieldAccessTest extends MassExistingSiteBase {
 
   private const FIELD_NAME = 'field_sme_content_owner';
+
+  /**
+   * The permission group shared by the test content and the test accounts.
+   *
+   * Content and accounts sit in the same group, so the assertions hold whether
+   * or not organization based permissions are being enforced.
+   *
+   * @var \Drupal\taxonomy\TermInterface
+   */
+  private TermInterface $permissionGroup;
+
+  /**
+   * The organization page that owns the group.
+   *
+   * @var \Drupal\node\NodeInterface
+   */
+  private NodeInterface $organization;
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function setUp(): void {
+    parent::setUp();
+
+    $this->organization = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Owner Access Org ' . $this->randomMachineName(8),
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
+
+    $this->permissionGroup = $this->createTerm(Vocabulary::load('user_organization'), [
+      'name' => 'Owner Access Group ' . $this->randomMachineName(8),
+      'langcode' => 'en',
+      'field_state_organization' => $this->organization->id(),
+    ]);
+
+    // Owner Groups are populated by hand on organization pages and copied onto
+    // their content from there.
+    $this->organization->set('field_content_organization', [['target_id' => $this->permissionGroup->id()]]);
+    $this->organization->setNewRevision(FALSE);
+    $this->organization->setSyncing(TRUE);
+    $this->organization->save();
+  }
 
   /**
    * Role combinations held by real accounts, with the access each should get.
@@ -134,6 +180,9 @@ class SmeContentOwnerFieldAccessTest extends MassExistingSiteBase {
     foreach ($roles as $role) {
       $account->addRole($role);
     }
+    if ($account->hasField('field_user_org')) {
+      $account->set('field_user_org', $this->permissionGroup->id());
+    }
     $account->activate();
     $account->save();
 
@@ -143,16 +192,17 @@ class SmeContentOwnerFieldAccessTest extends MassExistingSiteBase {
   /**
    * Creates a published page carrying an owner.
    */
-  private function createOwnedNode() {
+  private function createOwnedNode(): NodeInterface {
     $owner = $this->createTerm(Vocabulary::load('sme_owner'), [
       'name' => 'Access Owner ' . $this->randomMachineName(8),
       'langcode' => 'en',
     ]);
 
     return $this->createNode([
-      'type' => 'advisory',
+      'type' => 'info_details',
       'title' => 'Owner access ' . $this->randomMachineName(8),
       'field_sme_content_owner' => [$owner->id()],
+      'field_organizations' => [$this->organization->id()],
       'moderation_state' => MassModeration::PUBLISHED,
     ]);
   }
