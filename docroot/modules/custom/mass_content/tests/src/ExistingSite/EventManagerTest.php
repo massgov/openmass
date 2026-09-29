@@ -91,6 +91,8 @@ class EventManagerTest extends MassExistingSiteBase {
     $this->assertEventInArray($this->event2, $past);
     $this->assertEventNotInArray($this->event1, $past);
     $this->assertEquals(1, $em->getPastCount($this->org));
+    $this->assertCount(1, $em->getPast($this->org, 1), 'Past events can be limited');
+    $this->assertCount(0, $em->getPast($this->org, 1, 1), 'Past events can be offset');
   }
 
   /**
