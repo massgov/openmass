@@ -68,6 +68,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   private UserInterface $userB;
 
   /**
+   * MASS_ORG_ACCESS_ENFORCE as the environment had it before the test.
+   */
+  private string|false $originalEnforceEnv = FALSE;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -78,6 +83,11 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     // because it is shared between the test process and the webserver
     // process that handles DTT HTTP requests.
     \Drupal::state()->set('mass_org_access.enforce', TRUE);
+    // The env var would override State (DDEV and Acquia set it), so drop it
+    // from this process and let each test drive enforcement through State.
+    // tearDown() puts it back.
+    $this->originalEnforceEnv = getenv(OrgAccessSettings::ENFORCE_ENV);
+    putenv(OrgAccessSettings::ENFORCE_ENV);
 
     $this->orgPageA = $this->createNode([
       'type' => 'org_page',
@@ -129,6 +139,9 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   protected function tearDown(): void {
     \Drupal::state()->delete('mass_org_access.enforce');
     putenv(OrgAccessSettings::DEBUG_SECRET_ENV);
+    putenv($this->originalEnforceEnv === FALSE
+      ? OrgAccessSettings::ENFORCE_ENV
+      : OrgAccessSettings::ENFORCE_ENV . '=' . $this->originalEnforceEnv);
     parent::tearDown();
   }
 
