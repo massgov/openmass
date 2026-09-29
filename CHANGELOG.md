@@ -1,5 +1,19 @@
 
 
+## [0.495.0] - September 29, 2026
+
+### Changed
+  - DP-41516: Accessibility fixes related to high contrast modes.
+  - DP-48741: Announce the document title before file type and size so screen readers hear the link name first.
+  
+### Fixed
+  - DP-48604: Paginate organization event listing pages so large archives no longer 500.
+  
+### Removed
+  - DP-48966: Remove IAL1 form the Service card idv level options.
+  
+
+
 ## [0.494.0] - September 22, 2026
 
 ### Changed
