@@ -104,18 +104,20 @@ class EventManager {
    *   The parent node.
    * @param int $limit
    *   The number of items to return (-1 for unlimited)
+   * @param int $offset
+   *   The number of items to skip.
    *
    * @return \Drupal\Core\Entity\EntityInterface[]
    *   The events.
    */
-  public function getUpcoming(NodeInterface $parent, int $limit = 10) {
+  public function getUpcoming(NodeInterface $parent, int $limit = 10, int $offset = 0) {
     $query = $this->getUpcomingQuery($parent);
 
     $query
       ->sort('field_event_date.value', 'ASC')
       ->sort('title', 'ASC');
     if ($limit !== -1) {
-      $query->range(0, $limit);
+      $query->range($offset, $limit);
     }
 
     return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());
@@ -128,17 +130,19 @@ class EventManager {
    *   The parent node.
    * @param int $limit
    *   The number of items to return (-1 for unlimited).
+   * @param int $offset
+   *   The number of items to skip.
    *
    * @return \Drupal\Core\Entity\EntityInterface[]
    *   The events.
    */
-  public function getPast(NodeInterface $parent, int $limit = 10) {
+  public function getPast(NodeInterface $parent, int $limit = 10, int $offset = 0) {
     $query = $this->getPastQuery($parent);
     $query
       ->sort('field_event_date.end_value', 'DESC')
       ->sort('title', 'ASC');
     if ($limit !== -1) {
-      $query->range(0, $limit);
+      $query->range($offset, $limit);
     }
 
     return $this->getStorage()->loadMultiple($query->accessCheck(FALSE)->execute());

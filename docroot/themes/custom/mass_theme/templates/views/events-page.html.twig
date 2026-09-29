@@ -82,31 +82,15 @@
     <div class="page-content">
       {% if events %}
         {% block pageContent %}
-          {% set listingMaxItems = 10 %}
-          {% set initialVisibleCount = events|length > listingMaxItems ? listingMaxItems : events|length %}
-          {% set eventListingInteractive = {
-            maxItems: listingMaxItems,
-            resultsHeading: {
-              numResults: '1-' ~ initialVisibleCount,
-              totalResults: events|length,
-            },
-            eventListing: {
-              maxItems: listingMaxItems,
-              events: events,
-            },
-            pagination: {
-              next: {
-                text: 'Next',
-                disabled: pages|length < 2,
-              },
-              prev: {
-                text: 'Previous',
-                disabled: true,
-              },
-              pages: pages,
-            },
+          {% if results_heading %}
+            {% set resultsHeading = results_heading %}
+            {{ include('@molecules/results-heading.twig') }}
+          {% endif %}
+          {% set eventListing = {
+            events: events,
           } %}
-          {{ include('@organisms/by-author/event-listing-interactive.twig') }}
+          {{ include('@organisms/by-author/event-listing.twig') }}
+          {{ pager }}
         {% endblock %}
       {% endif %}
     </div>
