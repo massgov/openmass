@@ -56,6 +56,12 @@ function mass_validation_entity_type_alter(array &$entity_types) {
  */
 function mass_validation_entity_bundle_field_info_alter(&$fields, EntityTypeInterface $entity_type, $bundle) {
 
+  // Authors can add the same owner twice, once per widget row. Core does not
+  // object, which leaves the name repeated in every report that lists it.
+  if (array_key_exists('field_sme_content_owner', $fields) && !empty($fields['field_sme_content_owner'])) {
+    $fields['field_sme_content_owner']->addConstraint('MassDuplicateReference');
+  }
+
   if ($entity_type->id() == 'node') {
     if (array_key_exists('field_social_links', $fields) && !empty($fields['field_social_links'])) {
       /** @var Drupal\field\Entity\FieldConfig $field_social_links */
