@@ -391,16 +391,38 @@ class RedirectLinkResolver {
    * Resolves a local path to node/media entity when possible.
    */
   private function resolvePathToEntity(string $path): ?EntityInterface {
-    $candidatePaths = [
-      '/' . ltrim((string) parse_url($path, PHP_URL_PATH), '/'),
-    ];
-    $internal = $this->pathAliasManager->getPathByAlias($candidatePaths[0]);
+    $pathOnly = '/' . ltrim((string) parse_url($path, PHP_URL_PATH), '/');
+    $entity = $this->resolveAliasedPathToEntity($pathOnly);
+    if ($entity instanceof EntityInterface) {
+      return $entity;
+    }
+
+    // Public document download links append "/download" to the media alias
+    // (e.g. /doc/slug/download). Path aliases are stored without that suffix
+    // (/doc/slug -> /media/N), so lookup on the full download URL fails and
+    // the live-source guard cannot recognize published media.
+    if (str_ends_with($pathOnly, '/download') && $pathOnly !== '/download') {
+      $basePath = substr($pathOnly, 0, -strlen('/download'));
+      $entity = $this->resolveAliasedPathToEntity($basePath);
+      if ($entity instanceof EntityInterface && $entity->getEntityTypeId() === 'media') {
+        return $entity;
+      }
+    }
+
+    return NULL;
+  }
+
+  /**
+   * Resolves a path via alias lookup to a node or media entity.
+   */
+  private function resolveAliasedPathToEntity(string $path): ?EntityInterface {
+    $candidatePaths = [$path];
+    $internal = $this->pathAliasManager->getPathByAlias($path);
     if ($internal !== '') {
       $candidatePaths[] = '/' . ltrim((string) parse_url($internal, PHP_URL_PATH), '/');
     }
 
-    $candidatePaths = array_unique($candidatePaths);
-    foreach ($candidatePaths as $candidate) {
+    foreach (array_unique($candidatePaths) as $candidate) {
       if (preg_match('/^\/node\/(\d+)$/', $candidate, $matches)) {
         $node = $this->entityTypeManager->getStorage('node')->load((int) $matches[1]);
         if ($node instanceof EntityInterface) {

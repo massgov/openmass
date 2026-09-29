@@ -92,7 +92,7 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
    * Tests oversized header tag sets are logged.
    */
   public function testOversizedHeaderTagSetLogged(): void {
-    $tags = range(1, 129);
+    $tags = range(1, 1025);
     $tags = array_map(static fn ($tag): string => "node:$tag", $tags);
     $event = new AkamaiHeaderEvents($tags);
     $logger = $this->createMock(LoggerInterface::class);
@@ -101,8 +101,8 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
       ->with(
         'Akamai Edge-Cache-Tag header contains {count} tags, exceeding Akamai\'s {limit}-tag header limit. Akamai may reject or truncate the header.',
         [
-          'count' => 129,
-          'limit' => 128,
+          'count' => 1025,
+          'limit' => 1024,
         ]
       );
     $subscriber = $this->createSubscriber($logger);
@@ -114,7 +114,7 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
    * Tests oversized tag sets are not logged while hashing purge events.
    */
   public function testOversizedPurgeTagSetNotLoggedWhileHashing(): void {
-    $tags = range(1, 129);
+    $tags = range(1, 1025);
     $tags = array_map(static fn ($tag): string => "node:$tag", $tags);
     $event = new AkamaiPurgeEvents($tags);
     $logger = $this->createMock(LoggerInterface::class);

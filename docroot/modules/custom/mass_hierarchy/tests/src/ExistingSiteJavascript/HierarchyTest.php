@@ -3,12 +3,12 @@
 namespace Drupal\Tests\mass_hierarchy\ExistingSite;
 
 use Drupal\mass_content_moderation\MassModeration;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests Hierachy tab.
  */
-class HierarchyTest extends ExistingSiteSelenium2DriverTestBase {
+class HierarchyTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Creates a random user with a specified role.

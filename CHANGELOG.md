@@ -1,17 +1,112 @@
 
 
+## [0.494.0] - September 22, 2026
+
+### Changed
+  - DP-48482: Updated PHP version to 8.4, along with updates and patches to modules for compatibility.
+  - DP-48482: Upgraded Flag, Referenced Blocked Users, and OpenID Connect major versions
+  - DP-48482: OpenID Connect now handles /user/logout for SSO logout
+  - DP-48482: Changed Flag unwatch email URLs for Flag 5 compatibility. Unwatch links in emails sent before this release will return 404
+  - DP-48546: Override the audit trail row limit with time-based retention rules displayed on the report.
+  - DP-48764: Update the AI module to 1.4.9.
+  
+### Added
+  - DP-48520: Add IDV level to API service cards.
+  
+### Security
+  - DP-48764: Update Entity Browser to 2.16.0 and Key Auth to 2.2.4 to address Drupal security advisories.
+  - DP-48764: Update highlight.js Input Filter to 1.2.0 and Video Embed Field to 3.1.0.
+  - DP-48764: Update Drupal core to 11.3.17
+  
+
+
+## [0.493.0] - September 15, 2026
+
+### Changed
+  - DP-48467: Replace the old Mayflower Brand Banner with the new MDS State Banner component.
+  
+### Added
+  - DP-48740: Add Portuguese language to Drupal site.
+  - DP-48740: Add Portuguese to content and document view language filters.
+  - DP-48740: Show Portuguese instead of Portuguese, International on public translation links.
+  
+
+
+## [0.492.0] - September 8, 2026
+
+### Changed
+  - DP-47485: Reduced permissions for Content Administrator role.
+
+### Added
+  - DP-48650: Added s-maxage to document downloads.
+
+### Fixed
+  - DP-48112: Accessibility report for authors now shows current Editoria11y issue counts, ignores stale scans from old page URLs, and no longer double-counts issues when filtering by organization. The content Organization filter also accepts multiple organizations without SQL errors. The “doesn’t equal” operator is now the exact complement of “equals.”
+  - DP-48428: Stop redirect normalization from rewriting published media download aliases like /doc/{slug}/download when a stale redirect points elsewhere.
+
+
+
+## [0.491.0] - September 1, 2026
+
+### Changed
+  - DP-45698: Serve media download links as binary instead of redirect.
+
+### Fixed
+  - DP-47588: Fix the error that stopped bulk actions from being applied to the rows selected in All Content.
+  - DP-47588: Apply a label typed during a bulk edit to every selected page instead of only the first ten.
+  - DP-48597: Fixed post-release Backstop jobs.
+
+
+
+## [0.490.0] - August 25, 2026
+
+### Changed
+  - DP-47839: Changed docker image repo from Docker Hub to AWS.
+  - DP-47935: Increased max for detecting and logging when edge cache tag limit is exceeded.
+
+### Added
+  - DP-48212: Enhance Editoria11y Dismissal Report
+
+### Fixed
+  - DP-48501: Fixes intermittent 500 errors on the All Content page by stopping the media view from claiming a local task that core already provides.
+
+
+
+## [0.489.0] - August 18, 2026
+
+### Fixed
+  - DP-36234: Trash purge command now matches trashed items per entity type and current workflow record, deletes oldest first, validates its options, re-checks trash state before each delete, and reports a run summary.
+  - DP-45938: Restrict Map fields on Organization and Service pages to Location content.
+  - DP-46813: Keep document media names in sync with field_title so authors no longer see old titles.
+
+### Changed
+  - DP-39502: Changed page analytics dashboard from looker to powerbi.
+  - DP-47937: Mosaic featured item images are now decorative. Authors no longer see an alt text input for mosaic images, help text explains the images must not carry content beyond the link text, mosaic images always render with an empty alt attribute, and Editoria11y no longer flags mosaic image links.
+  - DP-48235: Make the Permission Groups field read-only on non-organization pages — hide the "Browse organizations" launcher and rewrite the help text to say the field is managed automatically.
+
+### Security
+  - DP-46097: Match the CORS allowlist on /api/v1 endpoints against the exact origin host, so lookalike hostnames no longer get an Access-Control-Allow-Origin header.
+  - DP-46097: Restrict the HTTP host headers the site answers to with trusted_host_patterns.
+  - DP-46097: Send Referrer-Policy and X-Content-Type-Options response headers.
+  - DP-46097: Update npm dependencies flagged by Dependabot.
+
+### Added
+  - DP-47937: Added the ma:mosaic-alt-report drush command that lists mosaic images with stored alt text, so authors using images in a non-decorative way can be notified.
+
+
+
 ## [0.488.0] - August 4, 2026
 
 ### Added
   - DP-47917: Permission group validation report for admins.
   - DP-48073: Numbered Steps Component Help Text
-  
+
 ### Fixed
   - DP-47963: Content Performance report exports no longer time out for large result sets.
   - DP-47987: Added check for whether file is a directory before attemping file move.
   - DP-48153: Tableau Connected Apps visualizations now load one at a time, so concurrent embed sessions no longer fall back to the Tableau sign-in form.
   - DP-48291: Permission report queries fixed, minor view changes.
-  
+
 
 
 ## [0.487.0] - July 21, 2026

@@ -1,0 +1,72 @@
+diff --git a/src/AiContentAdvisorAnalyzer.php b/src/AiContentAdvisorAnalyzer.php
+--- a/src/AiContentAdvisorAnalyzer.php
++++ b/src/AiContentAdvisorAnalyzer.php
+@@ -140,7 +140,7 @@ class AiContentAdvisorAnalyzer {
+   /**
+    * Render entity as HTML and analyze it.
+    */
+-  public function analyzeEntity(string $prompt, string $entity_type_id, int $entity_id, int $revision_id = NULL, string $view_mode = 'full', string $langcode = NULL, array $options = []) {
++  public function analyzeEntity(string $prompt, string $entity_type_id, int $entity_id, ?int $revision_id = NULL, string $view_mode = 'full', ?string $langcode = NULL, array $options = []) {
+     // Fetch the raw HTML.
+     $html = $this->fetchEntityHtml($entity_type_id, $entity_id, $revision_id, $view_mode, $langcode, $options);
+ 
+@@ -166,7 +166,7 @@ class AiContentAdvisorAnalyzer {
+   /**
+    * Analyze passed HTML and return results.
+    */
+-  protected function analyzeHtml(string $html, string $prompt, string $url = NULL, string $entity_type_id = NULL, int $entity_id = NULL, int $revision_id = NULL, string $langcode = NULL, array $options = []) {
++  protected function analyzeHtml(string $html, string $prompt, ?string $url = NULL, ?string $entity_type_id = NULL, ?int $entity_id = NULL, ?int $revision_id = NULL, ?string $langcode = NULL, array $options = []) {
+     // Determine whether to use HTML minification based on report type.
+     $use_minification = TRUE;  // Default to TRUE for backwards compatibility
+     $report_type = $options['report_type'] ?? 'full';
+@@ -331,7 +331,7 @@ class AiContentAdvisorAnalyzer {
+    * @return int
+    *   The unique identifier (ID) of the inserted report record.
+    */
+-  protected function saveReport(string $report, string $prompt, string $html_analyzed, string $url = NULL, string $entity_type_id = NULL, int $entity_id = NULL, int $revision_id = NULL, string $langcode = NULL, array $options = []) {
++  protected function saveReport(string $report, string $prompt, string $html_analyzed, ?string $url = NULL, ?string $entity_type_id = NULL, ?int $entity_id = NULL, ?int $revision_id = NULL, ?string $langcode = NULL, array $options = []) {
+     // Set the report type.
+     $report_type = $options['report_type'] ?? 'full';
+ 
+@@ -447,7 +447,7 @@ class AiContentAdvisorAnalyzer {
+    * @return string
+    *   Fetched HTML.
+    */
+-  protected function fetchEntityHtml(string $entity_type_id, int $entity_id, int $revision_id = NULL, string $view_mode = 'full', string $langcode = NULL, $options = []) {
++  protected function fetchEntityHtml(string $entity_type_id, int $entity_id, ?int $revision_id = NULL, string $view_mode = 'full', ?string $langcode = NULL, $options = []) {
+     $html = $this->renderEntityHtml->renderHtml($entity_type_id, $entity_id, $revision_id, $view_mode, $langcode, $options);
+     return $html;
+   }
+diff --git a/src/Form/ConfigurationForm.php b/src/Form/ConfigurationForm.php
+--- a/src/Form/ConfigurationForm.php
++++ b/src/Form/ConfigurationForm.php
+@@ -68,7 +68,7 @@ class ConfigurationForm extends ConfigFormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function buildForm(array $form, FormStateInterface $form_state, string $preferences_token = NULL) {
++  public function buildForm(array $form, FormStateInterface $form_state, ?string $preferences_token = NULL) {
+     // Create the form.
+     $config = $this->config('ai_content_advisor.configuration');
+     // Get models from AI provider.
+@@ -145,7 +145,7 @@ class ConfigurationForm extends ConfigFormBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function submitForm(array &$form, FormStateInterface $form_state, string $preferences_token = NULL) {
++  public function submitForm(array &$form, FormStateInterface $form_state, ?string $preferences_token = NULL) {
+     $config = $this->config('ai_content_advisor.configuration');
+     $custom_system_prompt = $form_state->getValue('custom_system_prompt') ?? '';
+     $disclaimer_text = $form_state->getValue('disclaimer_text')['value'] ?? '';
+diff --git a/src/RenderEntityHtmlService.php b/src/RenderEntityHtmlService.php
+--- a/src/RenderEntityHtmlService.php
++++ b/src/RenderEntityHtmlService.php
+@@ -161,7 +161,7 @@ class RenderEntityHtmlService {
+    * @return string
+    *   The HTML rendering of the entity.
+    */
+-  public function renderHtml(string $entity_type_id, int $entity_id, int $revision_id = NULL, string $view_mode = 'full', string $langcode = NULL, array $options = []): ?string {
++  public function renderHtml(string $entity_type_id, int $entity_id, ?int $revision_id = NULL, string $view_mode = 'full', ?string $langcode = NULL, array $options = []): ?string {
+     $storage = $this->entityTypeManager->getStorage($entity_type_id);
+ 
+     if (!empty($revision_id)) {

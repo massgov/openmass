@@ -1,0 +1,64 @@
+--- a/src/Form/BulkEditFormTrait.php
++++ b/src/Form/BulkEditFormTrait.php
+@@ -7,6 +7,7 @@
+ use Drupal\Core\Entity\EntityInterface;
+ use Drupal\Core\Entity\RevisionLogInterface;
+ use Drupal\Core\Entity\RevisionableEntityBundleInterface;
++use Drupal\Core\Field\FieldItemListInterface;
+ use Drupal\Core\Form\FormStateInterface;
+ use Drupal\Core\Language\LanguageInterface;
+ use Drupal\Core\Plugin\Context\Context;
+@@ -520,13 +521,52 @@
+           $form_display->extractFormValues($entity, $form_clone, $form_state);
+ 
+           foreach (array_keys($modify) as $field) {
+-            $this->configuration[$entity_type_id][$bundle]['values'][$field] = $entity->{$field}->getValue();
++            $this->configuration[$entity_type_id][$bundle]['values'][$field] = $this->extractFieldValues($entity->{$field});
+             $this->configuration[$entity_type_id][$bundle]['change_method'][$field] = $field_data["{$field}_change_method"];
+           }
+           $this->configuration[$entity_type_id][$bundle]['revision_information'] = $field_data['revision_information'] ?? [];
+         }
++      }
++    }
++  }
++
++  /**
++   * Reads the values to keep in the action configuration off a field.
++   *
++   * An entity reference autocomplete hands back an unsaved entity for a value
++   * the editor typed instead of picked. The action configuration is serialised
++   * once, when the batch is created, so every batch request restores that same
++   * unsaved entity and tries to insert it again under the one UUID it carries,
++   * which the database refuses - leaving only the entities of the first batch
++   * request saved. Save the referenced entity here instead, so the whole batch
++   * shares the single entity the editor asked for.
++   *
++   * @param \Drupal\Core\Field\FieldItemListInterface $items
++   *   The field to read the values off.
++   *
++   * @return array
++   *   The field values to store.
++   */
++  protected function extractFieldValues(FieldItemListInterface $items): array {
++    $values = $items->getValue();
++
++    // Entity reference revisions and its kin want an own revision per edited
++    // entity, so leave everything but a plain reference alone.
++    if ($items->getFieldDefinition()->getType() !== 'entity_reference') {
++      return $values;
++    }
++
++    foreach ($items as $delta => $item) {
++      if ($item->hasNewEntity()) {
++        $item->entity->save();
++        $values[$delta]['target_id'] = $item->entity->id();
+       }
++      // The referenced entity is on file now, and carrying the object along
++      // would only give it another chance to be saved.
++      unset($values[$delta]['entity']);
+     }
++
++    return $values;
+   }
+ 
+   /**

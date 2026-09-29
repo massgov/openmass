@@ -1,0 +1,24 @@
+# Based on https://www.drupal.org/project/draggableviews/issues/3605582.
+# Also covers the same deprecation in the create() migration parameter.
+
+diff --git a/src/Plugin/migrate/destination/DraggableViews.php b/src/Plugin/migrate/destination/DraggableViews.php
+--- a/src/Plugin/migrate/destination/DraggableViews.php
++++ b/src/Plugin/migrate/destination/DraggableViews.php
+@@ -33,7 +33,7 @@ class DraggableViews extends DestinationBase implements ContainerFactoryPluginIn
+     array $configuration,
+     $plugin_id,
+     $plugin_definition,
+-    MigrationInterface $migration = NULL,
++    ?MigrationInterface $migration = NULL,
+   ) {
+     return new static(
+       $configuration,
+@@ -101,7 +101,7 @@ class DraggableViews extends DestinationBase implements ContainerFactoryPluginIn
+   /**
+    * {@inheritdoc}
+    */
+-  public function fields(MigrationInterface $migration = NULL) {
++  public function fields(?MigrationInterface $migration = NULL) {
+     return [
+       'dvid' => $this->t('The primary identifier'),
+       'view_name' => $this->t('The view name.'),
