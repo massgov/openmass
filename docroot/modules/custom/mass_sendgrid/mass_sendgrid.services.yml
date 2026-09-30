@@ -1,0 +1,6 @@
+services:
+  mass_sendgrid.template_subscriber:
+    class: Drupal\mass_sendgrid\EventSubscriber\SendgridTemplateSubscriber
+    arguments: ['@config.factory']
+    tags:
+      - { name: event_subscriber }
