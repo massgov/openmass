@@ -90,6 +90,13 @@ class MassOrgAccessHooks {
     if ($account->hasPermission('bypass org access')) {
       return AccessResult::neutral();
     }
+    // Bundles without a Permission Groups field (API service cards, basic
+    // pages, sitewide alerts, videos, ...) are outside org-based access
+    // entirely. Treating their missing field like an empty one would make
+    // them admin-only for every other role.
+    if (!$entity->hasField('field_content_organization')) {
+      return AccessResult::neutral();
+    }
 
     $forbidden = AccessResult::forbidden()
       ->cachePerUser()
@@ -254,6 +261,11 @@ class MassOrgAccessHooks {
       return;
     }
     $entity = $form_object->getEntity();
+    // Same scope rule as checkAccess(): bundles without the field are not
+    // org-restricted, so no organization is required to save them.
+    if (!$entity->hasField('field_content_organization')) {
+      return;
+    }
     /** @var \Drupal\mass_org_access\OrgAccessChecker $checker */
     $checker = \Drupal::service('mass_org_access.org_access_checker');
 

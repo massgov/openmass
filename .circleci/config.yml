@@ -81,6 +81,23 @@ executors:
       - image: seleniarm/standalone-chromium:4.1.4-20220429
 
 commands:
+  install_backstop:
+    description: Install BackstopJS and its pinned Playwright browser
+    steps:
+      - *yarn_install
+      - restore_cache:
+          name: Restore Playwright browser cache
+          keys:
+            - playwright-v1-{{ arch }}-{{ checksum "yarn.lock" }}
+      - run:
+          name: Install Playwright Chromium
+          command: ./node_modules/.bin/playwright install chromium
+      - save_cache:
+          name: Save Playwright browser cache
+          key: playwright-v1-{{ arch }}-{{ checksum "yarn.lock" }}
+          paths:
+            - ~/.cache/ms-playwright
+
   git_configure_user:
     steps:
       - run: git config --global user.email "circleci@example.com"
@@ -481,10 +498,12 @@ jobs:
         default: true
     resource_class: xlarge
     docker:
-      # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
-      - image: backstopjs/backstopjs:6.3.25
+      - image: cimg/node:24.21.0-browsers
+        environment:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
     steps:
       - checkout
+      - install_backstop
       - run:
           name: "Setup environment variables"
           command: |
@@ -495,13 +514,10 @@ jobs:
           name: Capture Backstop Reference Screenshots
           working_directory: backstop
           command: |
-            backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+            ../node_modules/.bin/backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
       - run:
           name: Archive Reference Screenshots
-          command: |
-            apt-get -o Acquire::Check-Valid-Until=false update --allow-releaseinfo-change
-            apt-get install zip -y
-            zip -r references.zip backstop/reference
+          command: zip -r references.zip backstop/reference
       - store_artifacts:
           path: references.zip
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
@@ -544,11 +560,12 @@ jobs:
         default: false
     resource_class: 2xlarge+
     docker:
-      # Update this in .ddev/.disabled-services/docker-compose.backstop.yaml too.
-      # Update this after https://github.com/garris/BackstopJS/issues/1468
-      - image: backstopjs/backstopjs:6.3.25
+      - image: cimg/node:24.21.0-browsers
+        environment:
+          PUPPETEER_SKIP_DOWNLOAD: "true"
     steps:
       - checkout
+      - install_backstop
       - run:
           name: "Setup environment variables"
           command: |
@@ -562,16 +579,13 @@ jobs:
                 name: Capture Backstop Reference Screenshots
                 working_directory: backstop
                 command: |
-                  backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+                  ../node_modules/.bin/backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
       - unless:
           condition: << parameters.force-reference >>
           steps:
             - run:
                 name: Verify Artifacts
                 command: |
-                  curl -fsSL https://dl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /etc/apt/trusted.gpg.d/google-linux-signing-key.gpg
-                  apt-get -o Acquire::Check-Valid-Until=false update --allow-releaseinfo-change
-                  apt-get install jq -y
                   BACKSTOP_REF="BACKSTOP_REF_<< parameters.reference >>_<< parameters.list >>_<< parameters.viewport >>"
 
                   # Ensure the env var exists and is non-empty.
@@ -619,14 +633,14 @@ jobs:
             - run:
                 name: Backstop test (Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
+                command: ../node_modules/.bin/backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
       - unless:
           condition: << parameters.tugboat >>
           steps:
             - run:
                 name: Backstop test (non Tugboat target)
                 working_directory: backstop
-                command: backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
+                command: ../node_modules/.bin/backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER}
                 no_output_timeout: 300m
       - store_test_results:
           path: backstop/report
