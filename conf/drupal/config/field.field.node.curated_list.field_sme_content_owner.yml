@@ -1,0 +1,29 @@
+uuid: 13f911e9-7c73-4030-8036-864546d078ff
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sme_content_owner
+    - node.type.curated_list
+    - taxonomy.vocabulary.sme_owner
+id: node.curated_list.field_sme_content_owner
+field_name: field_sme_content_owner
+entity_type: node
+bundle: curated_list
+label: 'Subject Matter Expert / Content Owner'
+description: 'Optional. The business owner of content. This can be used for internal tracking. Include an organization abbreviation with names to prevent confusion. Begin typing to find an existing entry. Before adding a new entry, verify spelling to avoid duplicates. '
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      sme_owner: sme_owner
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

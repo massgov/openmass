@@ -24,6 +24,7 @@ dependencies:
     - field.field.node.executive_order.field_primary_parent
     - field.field.node.executive_order.field_reusable_label
     - field.field.node.executive_order.field_short_title
+    - field.field.node.executive_order.field_sme_content_owner
     - node.type.executive_order
     - workflows.workflow.editorial
   module:
@@ -120,8 +121,9 @@ third_party_settings:
         - simple_sitemap
         - search_nosnippet
         - search
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_node_edit_form
       weight: 8
       format_type: tab
@@ -337,6 +339,16 @@ content:
     weight: 9
     region: content
     settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 2
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
     third_party_settings: {  }
