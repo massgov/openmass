@@ -9,6 +9,7 @@ use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_org_access\Controller\OrgLookupController;
+use Drupal\mass_org_access\Hook\MassOrgAccessHooks;
 use Drupal\mass_org_access\OrgAccessSettings;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Vocabulary;
@@ -1494,6 +1495,69 @@ class MassOrgAccessTest extends MassExistingSiteBase {
 
     // Restore the value setUp() established for the rest of the run.
     \Drupal::state()->set('mass_org_access.enforce', TRUE);
+  }
+
+  /**
+   * Bundles that have no Permission Groups field.
+   */
+  public static function outOfScopeBundleProvider(): array {
+    return [
+      'api_service_card' => ['api_service_card'],
+      'page' => ['page'],
+      'utility_drawer' => ['utility_drawer'],
+    ];
+  }
+
+  /**
+   * The org gate stays neutral on bundles without the Permission Groups field.
+   *
+   * A missing field must not be treated like an empty one; otherwise every
+   * such bundle becomes admin-only once enforcement is on. Asserted on the
+   * hook itself because other modules (content moderation, core bundle
+   * permissions) have their own say over these bundles.
+   *
+   * @dataProvider outOfScopeBundleProvider
+   */
+  public function testOrgGateIgnoresBundleWithoutPermissionGroupsField(string $bundle): void {
+    $node = $this->createNode([
+      'type' => $bundle,
+      'title' => 'Out of scope ' . $this->randomMachineName(),
+    ]);
+    $this->assertFalse($node->hasField('field_content_organization'), 'Test premise: bundle has no Permission Groups field.');
+
+    $hooks = \Drupal::service(MassOrgAccessHooks::class);
+    $orgless = $this->createUser();
+    foreach ([$this->userA, $orgless] as $account) {
+      foreach (['update', 'delete'] as $op) {
+        $this->assertFalse(
+          $hooks->nodeAccess($node, $op, $account)->isForbidden(),
+          sprintf('Org gate must not forbid %s on %s for %s.', $op, $bundle, $account->getAccountName())
+        );
+      }
+    }
+  }
+
+  /**
+   * MMG editors can edit API service cards with enforcement on.
+   *
+   * The reported regression: mmg_editor users could view service cards but
+   * not edit them after organization-based permissions were enforced.
+   */
+  public function testMmgEditorCanEditServiceCardUnderEnforcement(): void {
+    $card = $this->createNode([
+      'type' => 'api_service_card',
+      'title' => 'Service card ' . $this->randomMachineName(),
+    ]);
+    $mmg = $this->createUser();
+    $mmg->addRole('mmg_editor');
+    $mmg->set('field_user_org', $this->termA->id());
+    $mmg->activate();
+    $mmg->save();
+
+    $this->assertTrue(
+      $card->access('update', $mmg),
+      'mmg_editor must be able to edit an API service card under enforcement.'
+    );
   }
 
   /**
