@@ -41,7 +41,7 @@ class SmeContentOwnerDirectoryTest extends MassExistingSiteBase {
     parent::setUp();
     $vocabulary = Vocabulary::load('sme_owner');
     $suffix = $this->randomMachineName(8);
-    $this->busyOwner = $this->createTerm($vocabulary, ['name' => 'Directory Busy Owner ' . $suffix, 'langcode' => 'en']);
+    $this->busyOwner = $this->createTerm($vocabulary, ['name' => 'Directory Busy Owner & Services #' . $suffix, 'langcode' => 'en']);
     $this->idleOwner = $this->createTerm($vocabulary, ['name' => 'Directory Idle Owner ' . $suffix, 'langcode' => 'en']);
   }
 
@@ -65,18 +65,15 @@ class SmeContentOwnerDirectoryTest extends MassExistingSiteBase {
   }
 
   /**
-   * Only users who can administer site configuration reach the directory.
+   * Only users with Mass dashboard access reach the directory.
    */
-  public function testDirectoryIsRestrictedToSiteAdministrators(): void {
+  public function testDirectoryRequiresMassDashboardPermission(): void {
     $this->assertDirectoryIsClosed('anonymous visitors');
 
-    $editor = $this->createUser();
-    $editor->addRole('editor');
-    $editor->save();
-    $this->drupalLogin($editor);
-    $this->assertDirectoryIsClosed('an editor');
+    $this->drupalLogin($this->createUser());
+    $this->assertDirectoryIsClosed('an authenticated user without Mass dashboard access');
 
-    $this->drupalLogin($this->createUser([], NULL, TRUE));
+    $this->drupalLogin($this->createUser(['use mass dashboard']));
     $this->visit(self::PATH);
     $this->assertEquals(200, $this->getSession()->getStatusCode());
     $this->assertSession()->pageTextContains($this->busyOwner->label());
@@ -113,20 +110,52 @@ class SmeContentOwnerDirectoryTest extends MassExistingSiteBase {
   }
 
   /**
-   * Each name links to the search for the content that owner is responsible for.
+   * Page and document counts link to searches filtered by the stable term ID.
    */
-  public function testOwnerNameLinksToTheFilteredSearch(): void {
+  public function testOwnerCountsLinkToTheFilteredSearch(): void {
     $node = $this->createOwnedNode();
+    $document = $this->createOwnedDocument();
     $this->drupalLogin($this->createUser([], NULL, TRUE));
     $this->visit(self::PATH);
 
-    $link = $this->getSession()->getPage()->findLink($this->busyOwner->label());
-    $this->assertNotNull($link, 'The owner name is not a link.');
-    $this->assertStringContainsString('field_sme_content_owner_target_id', $link->getAttribute('href'));
+    $row = $this->findDirectoryRow($this->busyOwner->label());
+    $this->assertNotNull($row, 'The owner is missing from the directory.');
 
-    $this->getSession()->visit($this->getAbsoluteUrl($link->getAttribute('href')));
-    $this->assertEquals(200, $this->getSession()->getStatusCode());
-    $this->assertSession()->pageTextContains($node->label());
+    $links = [
+      'page count' => [$row->find('css', '.views-field-nid a'), $node->label()],
+      'document count' => [$row->find('css', '.views-field-mid a'), $document->label()],
+    ];
+
+    foreach ($links as $description => [$link, $expected_label]) {
+      $this->assertNotNull($link, "The $description is not a link.");
+
+      $query = [];
+      parse_str(parse_url($link->getAttribute('href'), PHP_URL_QUERY) ?? '', $query);
+      $this->assertSame(
+        'Content owner (' . $this->busyOwner->id() . ')',
+        $query['field_sme_content_owner_target_id'] ?? NULL,
+        "The $description does not filter by the stable taxonomy term ID."
+      );
+
+      $this->getSession()->visit($this->getAbsoluteUrl($link->getAttribute('href')));
+      $this->assertEquals(200, $this->getSession()->getStatusCode());
+      $this->assertSession()->pageTextContains($expected_label);
+      $this->visit(self::PATH);
+      $row = $this->findDirectoryRow($this->busyOwner->label());
+    }
+  }
+
+  /**
+   * Finds an owner row in the rendered directory table.
+   */
+  private function findDirectoryRow(string $owner_name) {
+    foreach ($this->getSession()->getPage()->findAll('css', 'tbody tr') as $row) {
+      if (str_contains($row->getText(), $owner_name)) {
+        return $row;
+      }
+    }
+
+    return NULL;
   }
 
   /**
