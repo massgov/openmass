@@ -41,10 +41,12 @@ Changed:
     issue: DP-48403
   - description: Upgrade entity_hierarchy to 5.0.0-rc1 for Drupal 11.4 database fetch compatibility.
     issue: DP-48403
+  - description: Upgrade field_tokens from 2.0.0-rc3 to 2.0.0, which includes the Drupal 11.4 EntityType constraint fix and the config-entity field definition guard.
+    issue: DP-48403
 Fixed:
   - description: Align mass_serializer ContentEntityNormalizer subclasses with Drupal 11.4 array return types.
     issue: DP-48403
-  - description: Handle Drupal 11.4 EntityType constraint arrays in field_tokens token info.
+  - description: Retarget the field_tokens formatted-render Fiber fallback for 2.0.0.
     issue: DP-48403
   - description: Retarget the AccessPolicyProcessor Fiber fallback so a failed Fiber start calculates permissions inline without switching the account or writing cache.
     issue: DP-48403

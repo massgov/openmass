@@ -1,8 +1,8 @@
 diff --git a/field_tokens.tokens.inc b/field_tokens.tokens.inc
 --- a/field_tokens.tokens.inc
 +++ b/field_tokens.tokens.inc
-@@ -292,8 +292,18 @@ function field_tokens_tokens($type, $tokens, array $data, array $options, Bubbl
-         $element = $cloned_entity->{$field->get('field_name')}->view($display);
+@@ -383,8 +383,18 @@
+         $element = $cloned_entity->{$field->getName()}->view($display);
          if ($element) {
            foreach (Element::children($element) as $delta) {
 -            $output .= \Drupal::service('renderer')
