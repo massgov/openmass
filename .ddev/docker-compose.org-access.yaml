@@ -1,0 +1,10 @@
+# Enforce organization-based editing permissions (mass_org_access) locally,
+# the same way as on Acquia (prod, test, dev) and Tugboat previews.
+# The env var takes precedence over the mass_org_access.enforce State key.
+# Also listed in config.yaml web_environment; this compose override keeps it
+# in place when a personal .ddev/config.*.yaml uses override_config: true and
+# replaces web_environment.
+services:
+  web:
+    environment:
+      - MASS_ORG_ACCESS_ENFORCE=true
