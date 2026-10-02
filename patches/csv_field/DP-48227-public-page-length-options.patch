@@ -1,0 +1,65 @@
+diff --git a/README.md b/README.md
+--- a/README.md
++++ b/README.md
+@@ -59,9 +59,11 @@ removes that attribute so buttons keep their native button semantics.
+ 
+ ### Page length (rows per page)
+ 
+-End users can choose **5, 10, or 15** rows per page. The default is **5**.
+-Existing content that stored higher values (25, 50, etc.) is normalized at
+-runtime in JavaScript (capped at 15) without a database migration.
++Authors configure the initial page length as **5, 10, or 15** rows (default
++**5**). On the public site, end users can choose **5, 10, 15, 50, or 100**
++rows per page when the length control is enabled. Existing content that stored
++higher initial values (25, 50, etc.) is normalized at runtime in JavaScript
++(capped at 15) without a database migration.
+ 
+ ### CSV download link
+ 
+diff --git a/js/csv-field.js b/js/csv-field.js
+--- a/js/csv-field.js
++++ b/js/csv-field.js
+@@ -1,33 +1,36 @@
+ (function ($, Drupal, once) {
+   let csvFieldLandmarkCounter = 0;
+ 
+-  const ALLOWED_PAGE_LENGTHS = [5, 10, 15];
++  const AUTHOR_MAX_PAGE_LENGTH = 15;
+   const DEFAULT_PAGE_LENGTH = 5;
++  const AUTHOR_PAGE_LENGTH_OPTIONS = [5, 10, 15];
++  const PUBLIC_PAGE_LENGTH_OPTIONS = [5, 10, 15, 50, 100];
+ 
+   /**
+    * Normalizes page length settings for backward compatibility.
+    *
+-   * Existing content may store pageLength values above 15 (25, 50, etc.).
+-   * Those are capped at 15 at runtime; lengthMenu is always [5, 10, 15].
++   * Authors configure initial page length as 5, 10, or 15. Existing content
++   * may store values above 15 (25, 50, etc.); those are capped at 15 at
++   * runtime. Public users may choose up to 100 rows via lengthMenu.
+    */
+   const normalizePageLengthSettings = (tableSettings) => {
+     if (!tableSettings || typeof tableSettings !== 'object') {
+       return tableSettings;
+     }
+ 
+     let pageLength = parseInt(tableSettings.pageLength, 10);
+     if (isNaN(pageLength)) {
+       pageLength = DEFAULT_PAGE_LENGTH;
+     }
+-    else if (pageLength > 15) {
+-      pageLength = 15;
++    else if (pageLength > AUTHOR_MAX_PAGE_LENGTH) {
++      pageLength = AUTHOR_MAX_PAGE_LENGTH;
+     }
+-    else if (ALLOWED_PAGE_LENGTHS.indexOf(pageLength) === -1) {
++    else if (AUTHOR_PAGE_LENGTH_OPTIONS.indexOf(pageLength) === -1) {
+       pageLength = DEFAULT_PAGE_LENGTH;
+     }
+ 
+     tableSettings.pageLength = pageLength;
+-    tableSettings.lengthMenu = ALLOWED_PAGE_LENGTHS.slice();
++    tableSettings.lengthMenu = PUBLIC_PAGE_LENGTH_OPTIONS.slice();
+     return tableSettings;
+   };
+ 
