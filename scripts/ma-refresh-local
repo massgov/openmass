@@ -151,7 +151,7 @@ function import_backup() {
     # If you make a change here, also do so at scripts/ma-import-backup.
     echo "${HEADING}[+] Import database backup ${TEXTRESET}"
     echo "Database import in progress..."
-    zgrep --line-buffered -v -e "^INSERT INTO \`cache_" -e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" $HOME/db-backup.sql.gz | `drush sql:connect`
+    zgrep --line-buffered -v -e "^INSERT INTO \`cache_" -e "^INSERT INTO \`migrate_map_" -e "^INSERT INTO \`config_log" -e "^INSERT INTO \`key_value_expire" -e "^INSERT INTO \`sessions" $HOME/db-backup.sql.gz | `drush sql:connect --extra=--disable-ssl-verify-server-cert`
 }
 
 
@@ -159,7 +159,7 @@ function sql_create() {
     # Create a database.
     echo
     echo "${HEADING}[+] Drop old database and create new one ${TEXTRESET}" | tee -a $LOGFILE_NAME
-    drush -y sql:create
+    drush -y sql:create --extra=--disable-ssl-verify-server-cert
     nonzero_exit
 }
 
