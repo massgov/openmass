@@ -97,6 +97,7 @@ class SmeContentOwnerFieldPlacementTest extends MassExistingSiteBase {
 
     $description = strtolower($field->getDescription());
     $this->assertStringContainsString('abbreviation', $description, 'The help text should ask for an organization abbreviation.');
+    $this->assertStringContainsString('in parentheses', $description, 'The help text should say the abbreviation goes in parentheses.');
     $this->assertStringContainsString('duplicate', $description, 'The help text should warn about duplicate names.');
   }
 

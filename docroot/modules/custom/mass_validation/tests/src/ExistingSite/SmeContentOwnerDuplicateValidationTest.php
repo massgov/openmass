@@ -35,8 +35,8 @@ class SmeContentOwnerDuplicateValidationTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
     $vocabulary = Vocabulary::load('sme_owner');
-    $this->owner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Owner', 'langcode' => 'en']);
-    $this->otherOwner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Other Owner', 'langcode' => 'en']);
+    $this->owner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Owner (TEST)', 'langcode' => 'en']);
+    $this->otherOwner = $this->createTerm($vocabulary, ['name' => 'Duplicate Validation Other Owner (TEST)', 'langcode' => 'en']);
   }
 
   /**
@@ -127,7 +127,7 @@ class SmeContentOwnerDuplicateValidationTest extends MassExistingSiteBase {
   public function testVocabularyAllowsDistinctName(): void {
     $fresh = Term::create([
       'vid' => 'sme_owner',
-      'name' => 'Duplicate Validation Owner ' . $this->randomMachineName(8),
+      'name' => 'Duplicate Validation Owner ' . $this->randomMachineName(8) . ' (TEST)',
       'langcode' => 'en',
     ]);
 
