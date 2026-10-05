@@ -63,3 +63,38 @@ diff --git a/js/csv-field.js b/js/csv-field.js
      return tableSettings;
    };
  
+diff --git a/src/Plugin/Field/FieldFormatter/CsvFileTableFormatter.php b/src/Plugin/Field/FieldFormatter/CsvFileTableFormatter.php
+--- a/src/Plugin/Field/FieldFormatter/CsvFileTableFormatter.php
++++ b/src/Plugin/Field/FieldFormatter/CsvFileTableFormatter.php
+@@ -91,7 +91,7 @@ class CsvFileTableFormatter extends DescriptionAwareFileFormatterBase {
+       
+       // Whether to open autolinked URLs in a new window.
+       $settings['autolinkNewWindow'] = 0;
+-      $settings['lengthMenu'] = array_keys(CsvFileWidget::pageLengthOptions());
++      $settings['lengthMenu'] = array_keys(CsvFileWidget::publicLengthMenuOptions());
+       if (isset($settings['pageLength'])) {
+         $settings['pageLength'] = CsvFileWidget::normalizePageLength($settings['pageLength']);
+       }
+diff --git a/src/Plugin/Field/FieldWidget/CsvFileWidget.php b/src/Plugin/Field/FieldWidget/CsvFileWidget.php
+--- a/src/Plugin/Field/FieldWidget/CsvFileWidget.php
++++ b/src/Plugin/Field/FieldWidget/CsvFileWidget.php
+@@ -437,6 +437,19 @@ class CsvFileWidget extends FileWidget implements TrustedCallbackInterface {
+     ];
+   }
+ 
++  /**
++   * Page length options available to end users in the public length menu.
++   */
++  public static function publicLengthMenuOptions(): array {
++    return [
++      5 => 5,
++      10 => 10,
++      15 => 15,
++      50 => 50,
++      100 => 100,
++    ];
++  }
++
+   /**
+    * Normalizes a stored page length for display and saving.
+    *

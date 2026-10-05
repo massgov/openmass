@@ -60,6 +60,22 @@ class CsvFieldUserFlowTest extends MassExistingSiteSelenium2DriverTestBase {
   }
 
   /**
+   * Creates a CSV with many rows for page-length pagination testing.
+   */
+  private function createPaginatedCsvFile(string $name, int $row_count): File {
+    $rows = ['Name,Department,Website'];
+    for ($i = 1; $i <= $row_count; $i++) {
+      $rows[] = sprintf(
+        'Agency %03d,Department %d,https://www.mass.gov/agency-%d',
+        $i,
+        $i % 10,
+        $i
+      );
+    }
+    return $this->createCsvFile($name, implode("\n", $rows) . "\n");
+  }
+
+  /**
    * Creates a wide CSV fixture for responsive interaction testing.
    */
   private function createWideCsvFile(string $name): File {
@@ -284,7 +300,7 @@ class CsvFieldUserFlowTest extends MassExistingSiteSelenium2DriverTestBase {
    * Counts visible body rows in the first rendered CSV DataTable.
    */
   private function countVisibleCsvTableBodyRows(): int {
-    return count($this->getSession()->getPage()->findAll('css', 'table.dataTable.display tbody tr, table.dataTable tbody tr'));
+    return count($this->getSession()->getPage()->findAll('css', 'table.dataTable tbody tr:not(.child)'));
   }
 
   /**
@@ -534,37 +550,47 @@ JS
   }
 
   /**
-   * Ensures end users can choose 50 rows per page from the length dropdown.
+   * Ensures end users can choose 50 and 100 rows per page from the dropdown.
    */
-  public function testCsvFlowPublicPageLengthFiftyOption(): void {
+  public function testCsvFlowPublicPageLengthFiftyAndHundredOptions(): void {
     $this->drupalLogin($this->createAdminUser());
 
-    $file = $this->createLargeCsvFile('csv-page-length-fifty.csv');
+    $file = $this->createPaginatedCsvFile('csv-page-length-public.csv', 120);
     $csv_table = $this->createCsvTableParagraph($file, [
-      'searching' => 1,
+      'searching' => 0,
       'pageLength' => 5,
       'lengthChange' => 1,
       'responsive' => 'childRow',
-      'download' => 1,
+      'download' => 0,
       'urls' => [
         'autolink' => 0,
       ],
-    ], 'CSV Page Length Fifty');
+    ], 'CSV Page Length Public');
     $section = $this->createSectionParagraph($csv_table);
-    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow Public Page Length Fifty');
+    $node = $this->createOrgPageWithCsvTable($section, 'CSV Flow Public Page Length Options');
 
     $this->drupalGet('node/' . $node->id());
 
     $assert = $this->assertSession();
-    $this->waitForCsvTableReady();
+    $this->waitForCsvTables();
+    $this->waitForCsvTableRowText('Agency 001');
     $this->assertSame(5, $this->countVisibleCsvTableBodyRows());
 
     $length_select = $assert->elementExists('css', '.dataTables_length select, .dt-length select');
-    $length_select->selectOption('50');
-    $this->waitForCsvTableText('Unique Agency');
+    $length_select->selectOption('15');
+    $this->waitForCsvTableRowText('Agency 015');
+    $this->assertSame(15, $this->countVisibleCsvTableBodyRows());
+    $this->assertFalse($this->csvTableBodyContainsText('Agency 016'));
 
-    $this->assertSame(12, $this->countVisibleCsvTableBodyRows());
-    $assert->pageTextContains('Unique Agency');
+    $length_select->selectOption('50');
+    $this->waitForCsvTableRowText('Agency 050');
+    $this->assertSame(50, $this->countVisibleCsvTableBodyRows());
+    $this->assertFalse($this->csvTableBodyContainsText('Agency 051'));
+
+    $length_select->selectOption('100');
+    $this->waitForCsvTableRowText('Agency 100');
+    $this->assertSame(100, $this->countVisibleCsvTableBodyRows());
+    $this->assertFalse($this->csvTableBodyContainsText('Agency 101'));
   }
 
   /**
@@ -1117,6 +1143,7 @@ JS
 
     $settings = $this->getCsvTableSettingsWrapper()->getAttribute('data-settings');
     $this->assertStringContainsString('"pageLength":15', $settings);
+    $this->assertStringContainsString('"lengthMenu":[5,10,15,50,100]', $settings);
     $this->assertSame([5, 10, 15, 50, 100], $this->getPageLengthOptionValues());
   }
 
