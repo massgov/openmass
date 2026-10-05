@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\mass_admin_audit_trail\Unit\Hook;
 
+use Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks as ContribAdminAuditTrailHooks;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\ConditionInterface;
@@ -108,12 +109,15 @@ final class MassAdminAuditTrailHooksTest extends UnitTestCase {
   public function testCronAttributes(): void {
     $method = new \ReflectionMethod(MassAdminAuditTrailHooks::class, 'cron');
     $hook = $method->getAttributes(Hook::class)[0]->newInstance();
-    $remove = $method->getAttributes(RemoveHook::class)[0]->newInstance();
+    $removals = array_map(
+      static fn (\ReflectionAttribute $attribute): RemoveHook => $attribute->newInstance(),
+      $method->getAttributes(RemoveHook::class),
+    );
 
     $this->assertSame('cron', $hook->hook);
-    $this->assertSame('cron', $remove->hook);
-    $this->assertSame(ProceduralCall::class, $remove->class);
-    $this->assertSame('admin_audit_trail_cron', $remove->method);
+    $this->assertEquals([
+      new RemoveHook('cron', ContribAdminAuditTrailHooks::class, 'cron'),
+    ], $removals);
   }
 
   /**
