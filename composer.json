@@ -26,6 +26,19 @@
     },
     "repositories": [
         {
+            "type": "package",
+            "package": {
+                "name": "drupal/entity_usage_queue_tracking",
+                "type": "drupal-module",
+                "version": "9.1.x-dev",
+                "source": {
+                    "type": "git",
+                    "url": "https://git.drupalcode.org/issue/entity_usage_queue_tracking-3576935.git",
+                    "reference": "ed5b6b3980f08f6976e999116a180a7f3bcf9ad7"
+                }
+            }
+        },
+        {
             "type": "composer",
             "url": "https://packages.drupal.org/8",
             "canonical": false
@@ -128,19 +141,6 @@
             }
         },
         {
-            "type": "package",
-            "package": {
-                "name": "drupal/entity_usage_queue_tracking",
-                "type": "drupal-module",
-                "version": "9.1.x-dev",
-                "source": {
-                    "type": "git",
-                    "url": "https://git.drupalcode.org/project/entity_usage_queue_tracking.git",
-                    "reference": "f3bea1425080c9137c052257d7f8f4e1813f8eb8"
-                }
-            }
-        },
-        {
             "type": "composer",
             "url": "https://asset-packagist.org"
         }
@@ -202,7 +202,7 @@
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "*",
         "drupal/entity_usage": "^2.0@beta",
-        "drupal/entity_usage_queue_tracking": "^9.1",
+        "drupal/entity_usage_queue_tracking": "9.1.x-dev",
         "drupal/entityreference_filter": "^2.0@beta",
         "drupal/environment_indicator": "~4.0",
         "drupal/field_group": "^4.0",
@@ -449,9 +449,6 @@
             },
             "drupal/entity_usage": {
                 "Change methods to be protected": "patches/entity_usage/change_methods_to_be_protected.patch"
-            },
-            "drupal/entity_usage_queue_tracking": {
-                "Skip destructive revision_delete queue items (queued item loses the deleted revision ID and the worker deletes usage of the current revision instead)": "patches/entity_usage_queue_tracking/skip-destructive-revision-delete-queue-items.patch"
             },
             "drupal/entity_embed": {
                 "Alt text optional": "patches/DP-33643_entity_embed_alt_optional.patch",
