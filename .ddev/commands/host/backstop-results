@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+## Description: Launch a browser with latest backstop results
+## Usage: backstop-results
+## Example: "ddev backstop-results"
+
+case $OSTYPE in
+  linux-gnu)
+    xdg-open "${DDEV_APPROOT}/backstop/report/index.html"
+    ;;
+  "darwin"*)
+    open "${DDEV_APPROOT}/backstop/report/index.html"
+    ;;
+  "win*"* | "msys"*)
+    start "${DDEV_APPROOT}/backstop/report/index.html"
+    ;;
+esac

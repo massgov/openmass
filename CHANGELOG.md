@@ -1,5 +1,21 @@
 
 
+## [0.495.0] - September 29, 2026
+
+### Changed
+  - DP-41516: Accessibility fixes related to high contrast modes.
+  - DP-48741: Announce the document title before file type and size so screen readers hear the link name first.
+
+### Fixed
+  - DP-48604: Paginate organization event listing pages so large archives no longer 500.
+  - DP-49003: Choosing an organization as the Issuer on executive orders and advisories no longer fails with an AJAX error, which had blocked saving those pages.
+  - DP-48999: Organization-based access no longer blocks editing of content types that have no Permission Groups field (API service cards, basic pages, sitewide alerts, videos and others), which had become admin-only once enforcement was turned on.
+
+### Removed
+  - DP-48966: Remove IAL1 form the Service card idv level options.
+
+
+
 ## [0.494.0] - September 22, 2026
 
 ### Changed
@@ -9,27 +25,27 @@
   - DP-48482: Changed Flag unwatch email URLs for Flag 5 compatibility. Unwatch links in emails sent before this release will return 404
   - DP-48546: Override the audit trail row limit with time-based retention rules displayed on the report.
   - DP-48764: Update the AI module to 1.4.9.
-  
+
 ### Added
   - DP-48520: Add IDV level to API service cards.
-  
+
 ### Security
   - DP-48764: Update Entity Browser to 2.16.0 and Key Auth to 2.2.4 to address Drupal security advisories.
   - DP-48764: Update highlight.js Input Filter to 1.2.0 and Video Embed Field to 3.1.0.
   - DP-48764: Update Drupal core to 11.3.17
-  
+
 
 
 ## [0.493.0] - September 15, 2026
 
 ### Changed
   - DP-48467: Replace the old Mayflower Brand Banner with the new MDS State Banner component.
-  
+
 ### Added
   - DP-48740: Add Portuguese language to Drupal site.
   - DP-48740: Add Portuguese to content and document view language filters.
   - DP-48740: Show Portuguese instead of Portuguese, International on public translation links.
-  
+
 
 
 ## [0.492.0] - September 8, 2026
