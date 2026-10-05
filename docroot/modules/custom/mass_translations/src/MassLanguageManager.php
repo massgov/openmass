@@ -19,6 +19,9 @@ class MassLanguageManager extends ConfigurableLanguageManager {
       'tw' => ['Twi', 'Twi'],
     ];
     $list = array_merge($extra, $standard);
+    // Core labels generic pt as "Portuguese, International". Public
+    // translation links use this list, so keep the public name "Portuguese".
+    $list['pt'] = ['Portuguese', 'Português'];
     ksort($list);
     return $list;
   }

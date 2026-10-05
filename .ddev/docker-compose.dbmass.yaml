@@ -5,7 +5,7 @@
 services:
   dbmass:
     container_name: ddev-${DDEV_SITENAME}-dbmass
-    image: ${MASS_DB_IMAGE-massgov/mysql-sanitized:super}
+    image: ${MASS_DB_AWS_ACCOUNT_ID}.dkr.ecr.${MASS_DB_AWS_REGION}.amazonaws.com/${MASS_DB_IMAGE-massgov/mysql-sanitized:super}
     ports:
       - 3206:3306
     # These labels ensure this service is discoverable by ddev.

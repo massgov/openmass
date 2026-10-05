@@ -5,7 +5,7 @@ namespace Drupal\Tests\mass_fields\ExistingSiteJavascript;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Test the behavior field on Topic Page.
@@ -13,7 +13,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  * Ensures organization field is disabled if
  * "Disable organization(s) field and make it optional" is selected.
  */
-class TopicPageAdminFieldsTest extends ExistingSiteSelenium2DriverTestBase {
+class TopicPageAdminFieldsTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Creates and returns a topic page node.
@@ -46,12 +46,13 @@ class TopicPageAdminFieldsTest extends ExistingSiteSelenium2DriverTestBase {
   }
 
   /**
-   * Creates an admin, saves it and returns it.
+   * Creates a Content Administrator, saves it and returns it.
    */
   private function createAdmin(): AccountInterface {
-    // An admin is needed.
     $admin = $this->createUser();
     $admin->addRole('content_team');
+    // Content Administrator is additive to Editor in production.
+    $admin->addRole('editor');
     $admin->activate();
     $admin->save();
     return $admin;

@@ -17,7 +17,7 @@ class AkamaiHeaderCreationSubscriber implements EventSubscriberInterface {
   /**
    * Akamai Edge-Cache-Tag response header tag count limit.
    */
-  private const MAX_HEADER_TAGS = 128;
+  private const MAX_HEADER_TAGS = 1024;
 
   /**
    * Akamai cache tag formatter.

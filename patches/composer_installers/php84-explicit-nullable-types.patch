@@ -1,0 +1,29 @@
+# Based on https://github.com/composer/installers/issues/544.
+# Backports explicit nullable parameter types to composer/installers 1.12.0.
+
+diff --git a/src/Composer/Installers/BaseInstaller.php b/src/Composer/Installers/BaseInstaller.php
+--- a/src/Composer/Installers/BaseInstaller.php
++++ b/src/Composer/Installers/BaseInstaller.php
+@@ -19,7 +19,7 @@ abstract class BaseInstaller
+      * @param Composer         $composer
+      * @param IOInterface      $io
+      */
+-    public function __construct(PackageInterface $package = null, Composer $composer = null, IOInterface $io = null)
++    public function __construct(?PackageInterface $package = null, ?Composer $composer = null, ?IOInterface $io = null)
+     {
+         $this->composer = $composer;
+         $this->package = $package;
+diff --git a/src/Composer/Installers/Installer.php b/src/Composer/Installers/Installer.php
+--- a/src/Composer/Installers/Installer.php
++++ b/src/Composer/Installers/Installer.php
+@@ -137,8 +137,8 @@ class Installer extends LibraryInstaller
+         IOInterface $io,
+         Composer $composer,
+         $type = 'library',
+-        Filesystem $filesystem = null,
+-        BinaryInstaller $binaryInstaller = null
++        ?Filesystem $filesystem = null,
++        ?BinaryInstaller $binaryInstaller = null
+     ) {
+         parent::__construct($io, $composer, $type, $filesystem,
+             $binaryInstaller);
