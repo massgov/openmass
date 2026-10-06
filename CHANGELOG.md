@@ -1,5 +1,20 @@
 
 
+## [0.496.0] - October 6, 2026
+
+### Changed
+  - DP-48821: Changed local and CI Backstop runs to run directly on DDEV and CircleCI images rather than use BackstopJS docker image due to image staleness that was causing failures.
+  - DP-49005: Enforce organization-based editing permissions in local DDEV and in CircleCI tests through MASS_ORG_ACCESS_ENFORCE, matching Acquia and Tugboat; mass_org_access tests no longer depend on the environment variable.
+  - DP-49017: Updated Admin Audit Trail and enabled new CLI option.
+  
+### Security
+  - DP-48959: Updates Editoria11y from 3.0.5 to 3.0.9, a security release. The update adds a unique key to the accessibility page table and drops the duplicate rows it finds, and rewrites the alert listing filter and the CSV export links in the exported views.
+  
+### Fixed
+  - DP-49042: Fixed mysql_rebuild external database commands.
+  
+
+
 ## [0.495.0] - September 29, 2026
 
 ### Changed

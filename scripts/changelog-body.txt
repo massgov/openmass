@@ -1,16 +1,15 @@
 
 
-## [0.495.0] - September 29, 2026
+## [0.496.0] - October 6, 2026
 
 ### Changed
-  - DP-41516: Accessibility fixes related to high contrast modes.
-  - DP-48741: Announce the document title before file type and size so screen readers hear the link name first.
-
+  - DP-48821: Changed local and CI Backstop runs to run directly on DDEV and CircleCI images rather than use BackstopJS docker image due to image staleness that was causing failures.
+  - DP-49005: Enforce organization-based editing permissions in local DDEV and in CircleCI tests through MASS_ORG_ACCESS_ENFORCE, matching Acquia and Tugboat; mass_org_access tests no longer depend on the environment variable.
+  - DP-49017: Updated Admin Audit Trail and enabled new CLI option.
+  
+### Security
+  - DP-48959: Updates Editoria11y from 3.0.5 to 3.0.9, a security release. The update adds a unique key to the accessibility page table and drops the duplicate rows it finds, and rewrites the alert listing filter and the CSV export links in the exported views.
+  
 ### Fixed
-  - DP-48604: Paginate organization event listing pages so large archives no longer 500.
-  - DP-49003: Choosing an organization as the Issuer on executive orders and advisories no longer fails with an AJAX error, which had blocked saving those pages.
-  - DP-48999: Organization-based access no longer blocks editing of content types that have no Permission Groups field (API service cards, basic pages, sitewide alerts, videos and others), which had become admin-only once enforcement was turned on.
-
-### Removed
-  - DP-48966: Remove IAL1 form the Service card idv level options.
-
+  - DP-49042: Fixed mysql_rebuild external database commands.
+  
