@@ -303,6 +303,10 @@ jobs:
     executor:
       name: base
       instance: << parameters.instance >>
+    # Run tests with organization-based editing permissions enforced, as on
+    # prod. Job-level so both PHPUnit and Apache (started below) see it.
+    environment:
+      MASS_ORG_ACCESS_ENFORCE: "true"
     parallelism: 4
     steps:
       - attach_workspace: {at: /var/www}
@@ -321,6 +325,14 @@ jobs:
       - run: drush deploy
       # Get an overview
       - run: drush status
+      - run:
+          name: Show org access enforcement (CLI and web)
+          command: |
+            echo "MASS_ORG_ACCESS_ENFORCE in shell: ${MASS_ORG_ACCESS_ENFORCE:-<unset>}"
+            drush php:eval 'echo "CLI isEnforcementEnabled: " . var_export(\Drupal::service("mass_org_access.settings")->isEnforcementEnabled(), TRUE) . "\n";'
+            printf '%s\n' '<?php' 'echo "web getenv: " . var_export(getenv("MASS_ORG_ACCESS_ENFORCE"), TRUE) . "\n";' > docroot/org-access-env-check.php
+            curl -sS http://mass.local/org-access-env-check.php
+            rm -f docroot/org-access-env-check.php
       - run: cat /proc/cpuinfo
       - run: cat /proc/meminfo
       # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.

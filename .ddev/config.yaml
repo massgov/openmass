@@ -26,6 +26,10 @@ web_environment:
   - MEMCACHED_HOST=memcached
   - DRUSH_OPTIONS_URI=https://mass.local:$DDEV_ROUTER_HTTPS_PORT
   - DTT_BASE_URL=https://web
+  # Enforce organization-based editing permissions, as on Acquia and Tugboat.
+  # Also set in docker-compose.org-access.yaml, which survives a personal
+  # config.*.yaml with override_config: true.
+  - MASS_ORG_ACCESS_ENFORCE=true
   - MASS_PURGERS
   - MASS_MAILCHIMP
 #  - BROWSERTEST_OUTPUT_DIRECTORY=/tmp

@@ -2887,10 +2887,10 @@ display:
       automatic_download: true
       export_method: batch
       export_batch_size: 1000
-      store_in_public_file_directory: null
       custom_redirect_path: false
       redirect_to_display: dismissals
       include_query_params: true
+      export_filesystem: private
     cache_metadata:
       max-age: -1
       contexts:
@@ -2937,10 +2937,10 @@ display:
       automatic_download: true
       export_method: batch
       export_batch_size: 1000
-      store_in_public_file_directory: null
       custom_redirect_path: false
       redirect_to_display: pages
       include_query_params: true
+      export_filesystem: private
     cache_metadata:
       max-age: -1
       contexts:
@@ -4256,10 +4256,10 @@ display:
       automatic_download: true
       export_method: batch
       export_batch_size: 1000
-      store_in_public_file_directory: null
       custom_redirect_path: false
       redirect_to_display: results
       include_query_params: true
+      export_filesystem: private
     cache_metadata:
       max-age: -1
       contexts:
@@ -5676,7 +5676,7 @@ display:
           plugin_id: text_custom
           label: ''
           empty: true
-          content: '<a href="./pages">Export pages with alerts</a>'
+          content: '<a href="./export/pages">Export pages with alerts</a>'
           tokenize: false
         display_link_1:
           id: display_link_1
@@ -5688,7 +5688,7 @@ display:
           plugin_id: text_custom
           label: ''
           empty: false
-          content: '<a href="./dismissals">Export dismissals</a>'
+          content: '<a href="./export/dismissals">Export dismissals</a>'
           tokenize: false
         display_link_2:
           id: display_link_2
@@ -5700,7 +5700,7 @@ display:
           plugin_id: text_custom
           label: ''
           empty: false
-          content: '<a href="./alerts">Export alert list</a>'
+          content: '<a href="./export/alerts">Export alert list</a>'
           tokenize: false
       footer: {  }
       display_extenders: {  }
