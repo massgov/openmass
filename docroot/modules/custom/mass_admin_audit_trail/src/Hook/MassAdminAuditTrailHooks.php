@@ -8,7 +8,6 @@ use Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks as ContribAdminAuditTrail
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\Delete;
-use Drupal\Core\Extension\ProceduralCall;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Hook\Attribute\RemoveHook;

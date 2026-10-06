@@ -9,7 +9,6 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\ConditionInterface;
 use Drupal\Core\Database\Query\Delete;
-use Drupal\Core\Extension\ProceduralCall;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Hook\Attribute\RemoveHook;
@@ -109,15 +108,15 @@ final class MassAdminAuditTrailHooksTest extends UnitTestCase {
   public function testCronAttributes(): void {
     $method = new \ReflectionMethod(MassAdminAuditTrailHooks::class, 'cron');
     $hook = $method->getAttributes(Hook::class)[0]->newInstance();
-    $removals = array_map(
-      static fn (\ReflectionAttribute $attribute): RemoveHook => $attribute->newInstance(),
-      $method->getAttributes(RemoveHook::class),
-    );
+    $attributes = $method->getAttributes(RemoveHook::class);
 
     $this->assertSame('cron', $hook->hook);
-    $this->assertEquals([
-      new RemoveHook('cron', ContribAdminAuditTrailHooks::class, 'cron'),
-    ], $removals);
+    $this->assertCount(1, $attributes);
+
+    $removal = $attributes[0]->newInstance();
+    $this->assertSame('cron', $removal->hook);
+    $this->assertSame(ContribAdminAuditTrailHooks::class, $removal->class);
+    $this->assertSame('cron', $removal->method);
   }
 
   /**
