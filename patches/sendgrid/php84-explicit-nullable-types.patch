@@ -1,0 +1,12 @@
+diff --git a/lib/mail/Mail.php b/lib/mail/Mail.php
+--- a/lib/mail/Mail.php
++++ b/lib/mail/Mail.php
+@@ -101,7 +101,7 @@ class Mail implements \JsonSerializable
+         $subject = null,
+         $plainTextContent = null,
+         $htmlContent = null,
+-        array $globalSubstitutions = null
++        ?array $globalSubstitutions = null
+     ) {
+         if (!isset($from)
+             && !isset($to)
