@@ -1,17 +1,3 @@
 Added:
-  - description: Authors can tag pages and documents with one or more SME / content owners, an optional internal tracking field on the Page Info tab that suggests existing owners and accepts new ones.
-    issue: DP-48795
-  - description: Pages and documents can be searched and filtered by SME / content owner, which appears as a column on the advanced search, documents, content performance, Editoria11y and accessibility report pages and in their CSV exports.
-    issue: DP-48795
-  - description: A directory of SME / content owners at admin/reports/subject-matter-experts-content-owners lists each owner with the number of pages and documents they are responsible for, links through to that content, and a name search. It is limited to users with permission to use the Mass dashboard.
-    issue: DP-48795
-  - description: Duplicate owners are rejected. The vocabulary refuses a second term with an existing name, and the same owner cannot be attached twice to one page or document.
-    issue: DP-48795
-  - description: Owner names must end with an organization abbreviation in parentheses, such as John Doe (DPH), both when added from a page or document and when added to the vocabulary directly. Such names can be typed straight into the field, and spacing is normalized so the same owner is not created twice.
-    issue: DP-48795
-Fixed:
-  - description: The Page Info tab shows in the correct region on the form display settings screen for the content types where it was marked hidden.
-    issue: DP-48795
-Security:
-  - description: SME / content owner data stays internal. It is not rendered on published pages or carried in their metadata, the field and its vocabulary are withheld from the public API, and only roles that can already see the editorial listings are able to read it.
+  - description: Internal SME / content owner field for pages and documents, with report filters and an owner directory.
     issue: DP-48795
