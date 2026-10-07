@@ -48,6 +48,8 @@ class EventsPagePaginationTest extends MassExistingSiteBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains('Showing 1–' . $limit . ' of ' . $total . ' results');
     $this->assertSession()->elementsCount('css', '.ma__event-listing__item', $limit);
+    $this->assertSession()->elementsCount('css', 'h2.ma__event-teaser__title', $limit);
+    $this->assertSession()->elementsCount('css', 'h3.ma__event-teaser__title', 0);
     $this->assertSession()->pageTextContains($event_titles[0]);
     $this->assertSession()->pageTextNotContains($event_titles[$limit]);
 
