@@ -1,8 +1,8 @@
-#ddev-generated
-# Remove the line above if you don't want this file to be overwritten when you run
-# ddev get ddev/ddev-selenium-standalone-chrome
-#
 # This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
+#
+# Edited locally, so the add-on must not overwrite it: chromedriver in
+# selenium/standalone-chromium only speaks the W3C protocol, and "w3c":false
+# fails with "session not created". CircleCI runs the tests with these values.
 #
 web_environment:
   - BROWSERTEST_OUTPUT_DIRECTORY=/var/www/html/docroot/sites/simpletest/browser_output
@@ -12,7 +12,7 @@ web_environment:
   # Use disable-dev-shm-usage instead of setting shm_usage
   # https://developers.google.com/web/tools/puppeteer/troubleshooting#tips
   # The format of chromeOptions is defined at https://chromedriver.chromium.org/capabilities
-  - MINK_DRIVER_ARGS_WEBDRIVER=[\"chrome\", {\"browserName\":\"chrome\",\"goog:chromeOptions\":{\"w3c\":false,\"args\":[\"--disable-gpu\",\"--headless\", \"--no-sandbox\", \"--disable-dev-shm-usage\"]}}, \"http://selenium-chrome:4444/wd/hub\"]
+  - MINK_DRIVER_ARGS_WEBDRIVER=[\"chrome\", {\"browserName\":\"chrome\",\"goog:chromeOptions\":{\"w3c\":true,\"args\":[\"--disable-gpu\",\"--headless\", \"--no-sandbox\", \"--disable-dev-shm-usage\"]}}, \"http://selenium-chrome:4444/wd/hub\"]
   # Nightwatch
   - DRUPAL_TEST_BASE_URL=http://web
   - DRUPAL_TEST_DB_URL=mysql://db:db@db/db
@@ -26,4 +26,4 @@ web_environment:
   - DRUPAL_NIGHTWATCH_OUTPUT=reports/nightwatch
   # DTT
   - DTT_BASE_URL=http://web
-  - DTT_MINK_DRIVER_ARGS=[\"chrome\", {\"browserName\":\"chrome\",\"goog:chromeOptions\":{\"w3c\":false,\"args\":[\"--disable-gpu\",\"--headless\", \"--no-sandbox\", \"--disable-dev-shm-usage\"]}}, \"http://selenium-chrome:4444/wd/hub\"]
+  - DTT_MINK_DRIVER_ARGS=[\"chrome\", {\"browserName\":\"chrome\",\"goog:chromeOptions\":{\"w3c\":true,\"args\":[\"--disable-gpu\",\"--headless\", \"--no-sandbox\", \"--disable-dev-shm-usage\"]}}, \"http://selenium-chrome:4444/wd/hub\"]

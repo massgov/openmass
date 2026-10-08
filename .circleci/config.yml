@@ -367,6 +367,104 @@ jobs:
           # Save Junit files for timing inspection.
           path: /tmp/test-results
 
+  # Runs the same suite as `test`, but in DDEV, so CI takes PHP, the database
+  # image, memcached and Selenium from .ddev/ like local development does.
+  test_ddev:
+    parameters:
+      db_image:
+        type: string
+        default: massgov/mysql-sanitized:latest
+    machine:
+      image: ubuntu-2404:current
+    resource_class: xlarge
+    working_directory: /home/circleci/project/code
+    environment:
+      DDEV_VERSION: v1.25.0
+      DDEV_NONINTERACTIVE: "true"
+    parallelism: 4
+    steps:
+      - attach_workspace: {at: /home/circleci/project}
+      - run:
+          name: Machine overview
+          command: |
+            nproc
+            free -g
+            df -h /
+            docker version --format '{{.Server.Version}}'
+      - aws-cli/setup:
+          role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
+          region: "$MYSQL_REBUILD_AWS_REGION"
+          session_duration: "3600"
+      - run:
+          name: Install DDEV
+          command: |
+            curl -fsSL "https://raw.githubusercontent.com/ddev/ddev/${DDEV_VERSION}/scripts/install_ddev.sh" | bash -s "${DDEV_VERSION}"
+            ddev config global --instrumentation-opt-in=false --omit-containers=ddev-ssh-agent
+            ddev --version
+      - run:
+          name: Configure DDEV for CI
+          command: |
+            # Read by docker-compose.dbmass.yaml and the ecr-login pre-start hook.
+            # No MASS_DB_AWS_PROFILE_NAME: ecr-login uses the role assumed above.
+            printf '%s\n' \
+              "MASS_DB_AWS_ACCOUNT_ID=${MYSQL_REBUILD_AWS_ACCOUNT_ID}" \
+              "MASS_DB_AWS_REGION=${MYSQL_REBUILD_AWS_REGION}" \
+              "MASS_DB_IMAGE=<< parameters.db_image >>" > .ddev/.env
+            # Same Drupal settings as the `test` job (no development.services.yml).
+            printf '%s\n' 'web_environment:' '  - DOCKER_ENV=ci' > .ddev/config.ci.yaml
+            # Keep the database in the container layer, as the `test` job does.
+            # A named volume would first copy the whole image data directory.
+            printf '%s\n' 'services:' '  dbmass:' '    volumes: !reset []' > .ddev/docker-compose.ci.yaml
+            # The web-build Dockerfile only adds developer CLIs (Tugboat, Jira,
+            # gh, Playwright libraries) that the tests do not use.
+            rm .ddev/web-build/Dockerfile
+            ddev service enable selenium-chrome
+      - run:
+          name: Start DDEV
+          command: time ddev start -y
+          no_output_timeout: 30m
+      - run:
+          name: Wait for mysql
+          command: |
+            time ddev exec 'for i in $(seq 1 120); do mysqladmin ping -h dbmass -u circle -pcircle --silent && exit 0; sleep 2; done; exit 1'
+      - run:
+          name: Runtime overview
+          command: |
+            ddev exec php -v
+            ddev exec mysql -h dbmass -u circle -pcircle -e 'SELECT VERSION()'
+            docker images --format '{{.Repository}}:{{.Tag}} {{.Size}}'
+            df -h /
+      - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output test-results/dtt
+      # Run drush updatedb and cim.
+      - run: ddev drush deploy -y
+      - run: ddev drush status
+      - run:
+          name: Show org access enforcement (CLI and web)
+          command: |
+            ddev exec 'echo "MASS_ORG_ACCESS_ENFORCE in shell: ${MASS_ORG_ACCESS_ENFORCE:-<unset>}"'
+            ddev drush php:eval 'echo "CLI isEnforcementEnabled: " . var_export(\Drupal::service("mass_org_access.settings")->isEnforcementEnabled(), TRUE) . "\n";'
+            printf '%s\n' '<?php' 'echo "web getenv: " . var_export(getenv("MASS_ORG_ACCESS_ENFORCE"), TRUE) . "\n";' > docroot/org-access-env-check.php
+            ddev exec curl -sS http://web/org-access-env-check.php
+            rm -f docroot/org-access-env-check.php
+      - run:
+          name: Ensure no differences between between config on disk and config in Drupal.
+          command: ddev drush --no config:export --diff
+      - run:
+          name: Generate PHPUnit test inventory
+          command: ddev exec php scripts/list-tests.php
+      - run:
+          name: Run functional tests
+          command: |
+            TESTS_TO_RUN=$(ddev exec phpunit -c /var/www/html/phpunit.xml.dist --list-test-files --colors=never | sed -n 's/^ - //p')
+            echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -I{} sh -c 'f=\"\$1\"; ddev exec phpunit \"\$f\" --log-junit \"/var/www/html/test-results/dtt/\${f##*/}.xml\" </dev/null' _ {}" --verbose --split-by=timings
+          no_output_timeout: 20m
+      - store_test_results:
+          path: test-results
+      - store_artifacts:
+          path: docroot/sites/simpletest/browser_output
+      - store_artifacts:
+          path: test-results
+
   # Cut the release branch for weekly release
   cut_release_branch:
     working_directory: /tmp/code
@@ -754,6 +852,12 @@ workflows:
       - test:
           name: test-phpunit
           command: phpunit
+          requires: [build]
+          filters:
+            branches:
+              <<: *branch_ignore
+      - test_ddev:
+          name: test-phpunit-ddev
           requires: [build]
           filters:
             branches:
