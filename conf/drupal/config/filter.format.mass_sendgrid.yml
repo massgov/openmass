@@ -1,9 +1,12 @@
 uuid: 021ec5bc-3572-4ff0-a5ca-c0d6805adc7f
 langcode: en
 status: true
-dependencies: {  }
-name: Mailchimp
-format: mailchimp
+dependencies:
+  enforced:
+    module:
+      - mass_sendgrid
+name: 'Mass SendGrid email'
+format: mass_sendgrid
 weight: 0
 filters:
   filter_autop:
