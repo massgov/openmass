@@ -432,7 +432,8 @@ jobs:
           name: Runtime overview
           command: |
             ddev exec php -v
-            ddev exec mysql -h dbmass -u circle -pcircle -e 'SELECT VERSION()'
+            ddev exec mysql -h dbmass -u circle -pcircle circle -e 'SELECT VERSION()'
+            docker inspect ddev-mass-dbmass --format '{{json .Mounts}}'
             docker images --format '{{.Repository}}:{{.Tag}} {{.Size}}'
             df -h /
       - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output test-results/dtt

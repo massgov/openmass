@@ -1,8 +1,9 @@
 # This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
 #
-# Edited locally, so the add-on must not overwrite it: chromedriver in
-# selenium/standalone-chromium only speaks the W3C protocol, and "w3c":false
-# fails with "session not created". CircleCI runs the tests with these values.
+# Edited locally, so the add-on must not overwrite it: "w3c":true, because
+# newer selenium/standalone-chromium images reject "w3c":false with "session
+# not created". Chromedriver has defaulted to W3C since version 75, so this also
+# matches the older image in .disabled-services. CircleCI uses these values.
 #
 web_environment:
   - BROWSERTEST_OUTPUT_DIRECTORY=/var/www/html/docroot/sites/simpletest/browser_output
