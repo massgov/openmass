@@ -418,7 +418,8 @@ jobs:
             # The web-build Dockerfile only adds developer CLIs (Tugboat, Jira,
             # gh, Playwright libraries) that the tests do not use.
             rm .ddev/web-build/Dockerfile
-            ddev service enable selenium-chrome
+            # `ddev service enable` no longer exists in DDEV 1.25.
+            mv .ddev/.disabled-services/docker-compose.selenium-chrome.yaml .ddev/
       - run:
           name: Start DDEV
           command: time ddev start -y
