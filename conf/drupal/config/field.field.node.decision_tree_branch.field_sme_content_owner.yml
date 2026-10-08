@@ -1,0 +1,29 @@
+uuid: ee53d4fe-0ee7-429e-aec3-edd8f740fed2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_sme_content_owner
+    - node.type.decision_tree_branch
+    - taxonomy.vocabulary.sme_owner
+id: node.decision_tree_branch.field_sme_content_owner
+field_name: field_sme_content_owner
+entity_type: node
+bundle: decision_tree_branch
+label: 'Subject Matter Expert / Content Owner'
+description: 'Optional. The business owner of content. This can be used for internal tracking. Include an organization abbreviation in parentheses after names to prevent confusion, e.g., John Doe (DPH). Start typing to choose an existing name or add a new one by entering it directly in the field. Verify spelling to avoid duplicates.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      sme_owner: sme_owner
+    sort:
+      field: name
+      direction: asc
+    auto_create: true
+    auto_create_bundle: ''
+field_type: entity_reference

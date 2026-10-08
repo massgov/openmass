@@ -18,6 +18,7 @@ dependencies:
     - field.field.node.action.field_metatags
     - field.field.node.action.field_organizations
     - field.field.node.action.field_search
+    - field.field.node.action.field_sme_content_owner
     - node.type.action
     - workflows.workflow.editorial
   module:
@@ -176,8 +177,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_form
       weight: 9
       format_type: tab
@@ -350,6 +352,16 @@ content:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 2
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 3
@@ -375,20 +387,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 4
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -423,7 +435,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
