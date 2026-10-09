@@ -624,7 +624,8 @@ jobs:
           name: Turn off the InnoDB redo log
           command: ./redo-log.sh disable
       - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+          name: Import the production backup
+          command: docker-compose exec drupal .circleci/mysql-rebuild/import-backup.sh
           no_output_timeout: 60m
       - aws-cli/setup:
           role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
@@ -696,28 +697,20 @@ workflows:
             branches:
               <<: *branch_ignore
       - populate:
-          name: populate-dp-49058
+          name: populate-par
           requires: [build]
           sanitizeOption: --sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-par
           filters:
             branches:
-              only: feature/DP-49058-faster-populate
+              only: feature/DP-49058-parallel-import
       - test:
-          name: test-phpunit-dp-49058
-          db_image: massgov/mysql-sanitized:dp-49058
-          requires: [populate-dp-49058]
+          name: test-phpunit-par
+          db_image: massgov/mysql-sanitized:dp-49058-par
+          requires: [populate-par]
           filters:
             branches:
-              only: feature/DP-49058-faster-populate
-      - populate:
-          name: populate-dp-49058-super
-          requires: [build]
-          sanitizeOption: --super-sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-super
-          filters:
-            branches:
-              only: feature/DP-49058-faster-populate
+              only: feature/DP-49058-parallel-import
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
