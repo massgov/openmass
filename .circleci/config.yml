@@ -621,6 +621,9 @@ jobs:
           command: sleep 5
       - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
       - run:
+          name: Turn off the InnoDB redo log
+          command: ./redo-log.sh disable
+      - run:
           command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
           no_output_timeout: 60m
       - aws-cli/setup:
@@ -635,6 +638,9 @@ jobs:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
+      - run:
+          name: Turn the InnoDB redo log back on
+          command: ./redo-log.sh enable
       - run: docker-compose stop --timeout 60 mysql
       - run:
           name: Commit mysql image
@@ -689,6 +695,29 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
+      - populate:
+          name: populate-dp-49058
+          requires: [build]
+          sanitizeOption: --sanitize
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058
+          filters:
+            branches:
+              only: feature/DP-49058-faster-populate
+      - test:
+          name: test-phpunit-dp-49058
+          db_image: massgov/mysql-sanitized:dp-49058
+          requires: [populate-dp-49058]
+          filters:
+            branches:
+              only: feature/DP-49058-faster-populate
+      - populate:
+          name: populate-dp-49058-super
+          requires: [build]
+          sanitizeOption: --super-sanitize
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-super
+          filters:
+            branches:
+              only: feature/DP-49058-faster-populate
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
