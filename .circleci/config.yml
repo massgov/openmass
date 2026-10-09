@@ -284,6 +284,7 @@ jobs:
       - run: {name: Pull database image, command: .circleci/ddev/pull-db-image.sh, no_output_timeout: 30m}
       - run: {name: Start DDEV, command: .circleci/ddev/start-ddev.sh, no_output_timeout: 30m}
       - run: {name: Wait for mysql, command: .circleci/ddev/wait-for-mysql.sh}
+      - run: {name: InnoDB row estimates (trial), command: "ddev exec mysql -h dbmass -u circle -pcircle circle -e \"SELECT TABLE_NAME, TABLE_ROWS FROM information_schema.TABLES WHERE TABLE_SCHEMA='circle' AND TABLE_NAME IN ('node_revision','node_field_revision','media_revision','content_moderation_state_revision','content_moderation_state_field_revision','paragraphs_item_revision','paragraphs_item_revision_field_data','entity_usage'); SELECT 'node_field_revision', COUNT(*) FROM node_field_revision; SELECT 'content_moderation_state_field_revision', COUNT(*) FROM content_moderation_state_field_revision; SELECT 'entity_usage', COUNT(*) FROM entity_usage;\" </dev/null"}
       - run: {name: Machine and runtime overview, command: .circleci/ddev/overview.sh}
       - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run drush updatedb and cim.
