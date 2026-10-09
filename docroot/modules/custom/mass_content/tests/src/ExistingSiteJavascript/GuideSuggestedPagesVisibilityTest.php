@@ -37,16 +37,18 @@ class GuideSuggestedPagesVisibilityTest extends MassExistingSiteSelenium2DriverT
     $node->set('field_guide_page_related_guides', [$related]);
     $node->save();
 
-    // Visit the guide page again and verify that
-    // the suggested pages block is now rendered.
-    $this->drupalGet($node->toUrl()->toString());
+    // Reload the guide page and verify that the suggested pages block is now
+    // rendered. A second visit to the same URL would show the copy Chrome keeps
+    // in its HTTP cache (anonymous pages are sent with max-age), while a
+    // reload revalidates it with Drupal.
+    $this->getSession()->reload();
     $this->assertSession()->elementExists('css', '.post-content .ma__suggested-pages');
 
     // Unpublish the related guide and verify that
     // the suggested pages block is not rendered.
     $related->setUnpublished()->set('moderation_state', 'unpublished')->save();
 
-    $this->drupalGet($node->toUrl()->toString());
+    $this->getSession()->reload();
     $this->assertSession()->elementNotExists('css', '.post-content .ma__suggested-pages');
   }
 

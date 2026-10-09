@@ -747,10 +747,7 @@ jobs:
       - run: docker-compose exec drupal drush cr
       - run:
           name: Rebuild tables to drop the free space left by import and sanitize
-          command: |
-            docker-compose exec -T mysql du -sh /var/lib/mysql-no-volume
-            docker-compose exec -T mysql mysqlcheck --silent --optimize -u circle -pcircle circle
-            docker-compose exec -T mysql du -sh /var/lib/mysql-no-volume
+          command: ./optimize-tables.sh
           no_output_timeout: 60m
       - run: docker-compose stop --timeout 60 mysql
       - run:

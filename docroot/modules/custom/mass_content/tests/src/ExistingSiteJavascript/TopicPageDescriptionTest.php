@@ -30,9 +30,11 @@ class TopicPageDescriptionTest extends MassExistingSiteSelenium2DriverTestBase {
     $node->set('field_display_short_description', FALSE);
     $node->save();
 
-    // Visit the node page again and check
-    // if the short description is NOT rendered.
-    $this->drupalGet($node->toUrl()->toString());
+    // Reload the node page and check if the short description is NOT
+    // rendered. A second visit to the same URL would show the copy Chrome
+    // keeps in its HTTP cache (anonymous pages are sent with max-age), while
+    // a reload revalidates it with Drupal.
+    $this->getSession()->reload();
     $this->assertSession()->elementNotExists('css', '.pre-content .ma__page-header__content .ma__page-header__description');
   }
 
