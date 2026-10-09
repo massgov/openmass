@@ -130,6 +130,10 @@ $rebuild = function (string $table, string $select) use ($db, $dry_run, $count, 
   $db->query("INSERT INTO trim_new $select");
   $db->query("RENAME TABLE $table TO trim_old, trim_new TO $table");
   $db->query("DROP TABLE trim_old");
+  // A fresh table has no saved statistics until the background thread gets
+  // to it, and the image is committed before that happens. Without them the
+  // optimizer sees zero rows and picks bad plans for the content views.
+  $db->query("ANALYZE TABLE $table");
   $log("$table: {$count($table)} rows");
 };
 
