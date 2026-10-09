@@ -44,42 +44,6 @@ references:
       - master
       - /^mayflower-dev-.*/
 
-executors:
-  base:
-    parameters:
-      instance:
-        type: string
-        default: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
-    working_directory: /var/www/code
-    # https://circleci.com/docs/2.0/configuration-reference/#resource_class
-    resource_class: xlarge
-    docker:
-      - image: massgov/drupal-container:1.2.0-ci
-        environment:
-          COMPOSER_ALLOW_SUPERUSER: 1
-          DOCKER_ENV: ci
-          APACHE_DOCROOT: /var/www/code/docroot
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_HOST: 127.0.0.1
-          MEMCACHED_HOST: 127.0.0.1
-          DTT_BASE_URL: http://mass.local
-          DTT_API_URL: http://mass.local:9222
-          BROWSERTEST_OUTPUT_DIRECTORY: /tmp
-      - image: << parameters.instance >>
-        aws_auth:
-          oidc_role_arn: $MYSQL_REBUILD_AWS_ROLE_TO_ASSUME
-        environment:
-          MYSQL_USER: circle
-          MYSQL_PASSWORD: circle
-          MYSQL_DATABASE: circle
-          MYSQL_RANDOM_ROOT_PASSWORD: 1
-        command: --datadir=/var/lib/mysql-no-volume --max_allowed_packet=32M --innodb_flush_method=O_DIRECT --tmp_table_size=16M --innodb-flush-log-at-trx-commit=2  --innodb_buffer_pool_size=500M --innodb_log_buffer_size=64M --skip-innodb_doublewrite --innodb_log_file_size=64M
-      - image: memcached:1-alpine
-        command: memcached -m 128
-      - image: seleniarm/standalone-chromium:4.1.4-20220429
-
 commands:
   install_backstop:
     description: Install BackstopJS and its pinned Playwright browser
@@ -292,80 +256,50 @@ jobs:
       # Lint Twig
       - run: vendor/bin/twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction
 
+  # Runs the PHPUnit suite in DDEV, so CI takes PHP, the database image,
+  # memcached and Selenium from .ddev/, the same as local development.
   test:
     parameters:
-      instance:
+      # Production data without old revisions, built nightly by mysql_rebuild.
+      # The full images (latest, super) keep every revision for local work.
+      db_image:
         type: string
-        default: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:latest
-      command:
-        type: enum
-        enum: ['phpunit']
-    executor:
-      name: base
-      instance: << parameters.instance >>
-    # Run tests with organization-based editing permissions enforced, as on
-    # prod. Job-level so both PHPUnit and Apache (started below) see it.
+        default: massgov/mysql-sanitized:trimmed
+    machine:
+      image: ubuntu-2404:current
+    resource_class: xlarge
+    working_directory: /home/circleci/project/code
     environment:
-      MASS_ORG_ACCESS_ENFORCE: "true"
-    parallelism: 4
+      DDEV_VERSION: v1.25.0
+      DDEV_NONINTERACTIVE: "true"
+    parallelism: 8
     steps:
-      - attach_workspace: {at: /var/www}
-      - *vendor_bin_add_path
-      - run: { name: 'Start Apache', command: '/usr/local/bin/apache2-foreground-enhanced', background: true }
-      - run:
-          name: Update host file
-          command: echo '127.0.0.1 mass.local' >> /etc/hosts
-      - run:
-          name: Wait for mysql
-          command: dockerize -wait tcp://localhost:3306 -timeout 2m
-      # Ensure files and DTT directories are writable by www-data
-      - run: mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
-      - run: chown -R www-data:www-data docroot/sites/default/files docroot/sites/simpletest/browser_output
+      - attach_workspace: {at: /home/circleci/project}
+      - aws-cli/setup:
+          role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
+          region: "$MYSQL_REBUILD_AWS_REGION"
+          session_duration: "3600"
+      - run: {name: Install DDEV, command: .circleci/ddev/install-ddev.sh}
+      - run: {name: Configure DDEV for CI, command: .circleci/ddev/configure-ddev.sh << parameters.db_image >>}
+      - run: {name: Pull database image, command: .circleci/ddev/pull-db-image.sh, no_output_timeout: 30m}
+      - run: {name: Start DDEV, command: .circleci/ddev/start-ddev.sh, no_output_timeout: 30m}
+      - run: {name: Wait for mysql, command: .circleci/ddev/wait-for-mysql.sh}
+      - run: {name: Machine and runtime overview, command: .circleci/ddev/overview.sh}
+      - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
       # Run drush updatedb and cim.
-      - run: drush deploy
-      # Get an overview
-      - run: drush status
-      - run:
-          name: Show org access enforcement (CLI and web)
-          command: |
-            echo "MASS_ORG_ACCESS_ENFORCE in shell: ${MASS_ORG_ACCESS_ENFORCE:-<unset>}"
-            drush php:eval 'echo "CLI isEnforcementEnabled: " . var_export(\Drupal::service("mass_org_access.settings")->isEnforcementEnabled(), TRUE) . "\n";'
-            printf '%s\n' '<?php' 'echo "web getenv: " . var_export(getenv("MASS_ORG_ACCESS_ENFORCE"), TRUE) . "\n";' > docroot/org-access-env-check.php
-            curl -sS http://mass.local/org-access-env-check.php
-            rm -f docroot/org-access-env-check.php
-      - run: cat /proc/cpuinfo
-      - run: cat /proc/meminfo
-      # We've adopted the decision at https://architecture.lullabot.com/adr/20211212-config-status-check/.
-      - run:
-          name: Ensure no differences between between config on disk and config in Drupal.
-          # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
-          command: drush --no config:export --diff
-      - run:
-          name: Generate PHPUnit test inventory
-          command: php scripts/list-tests.php
-      - when:
-          condition:
-            and:
-              - equal: [ phpunit, << parameters.command >> ]
-          steps:
-            - run:
-                # https://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-testshttps://circleci.com/docs/use-the-circleci-cli-to-split-tests/#configure-a-job-running-phpunit-tests
-                name: Run functional tests
-                command: |
-                  TESTS_TO_RUN=$(phpunit -c /var/www/code/phpunit.xml.dist --list-test-files --colors=never | sed -n 's/^ - //p')
-                  echo "$TESTS_TO_RUN" | circleci tests run --command="tr ' ' '\n' | sed '/^$/d' | xargs -I{} sh -c 'f=\"\$1\"; phpunit \"\$f\" --log-junit \"/tmp/test-results/dtt/\${f##*/}.xml\"' _ {}" --verbose --split-by=timings
-                no_output_timeout: 20m
+      - run: ddev drush deploy -y
+      - run: ddev drush status
+      - run: {name: Show org access enforcement (CLI and web), command: .circleci/ddev/check-org-access.sh}
+      # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
+      - run: {name: Ensure no differences between config on disk and config in Drupal, command: ddev drush --no config:export --diff}
+      - run: {name: Generate PHPUnit test inventory, command: ddev exec php scripts/list-tests.php}
+      - run: {name: Run functional tests, command: .circleci/ddev/run-tests.sh, no_output_timeout: 20m}
       - store_test_results:
-          path: /tmp/test-results
+          path: test-results
       - store_artifacts:
-          # Pages saved via 'Then save the html for the page'. @see \FeatureContext::saveHtml.
-          path: /var/www/code/output
+          path: docroot/sites/simpletest/browser_output
       - store_artifacts:
-          # DTT saves page output for all requests.
-          path: /var/www/code/docroot/sites/simpletest/browser_output
-      - store_artifacts:
-          # Save Junit files for timing inspection.
-          path: /tmp/test-results
+          path: test-results
 
   # Cut the release branch for weekly release
   cut_release_branch:
@@ -673,6 +607,9 @@ jobs:
       resource_class:
         type: string
         default: large
+      trim_revisions:
+        type: boolean
+        default: false
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     machine:
@@ -689,7 +626,11 @@ jobs:
           command: sleep 5
       - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
       - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+          name: Turn off the InnoDB redo log
+          command: ./redo-log.sh disable
+      - run:
+          name: Import the production backup
+          command: docker-compose exec drupal .circleci/mysql-rebuild/import-backup.sh
           no_output_timeout: 60m
       - aws-cli/setup:
           role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
@@ -702,15 +643,29 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
+      - when:
+          condition: << parameters.trim_revisions >>
+          steps:
+            - run:
+                name: Remove old revisions
+                command: docker-compose exec drupal drush php:script .circleci/mysql-rebuild/trim-revisions.php
+                no_output_timeout: 60m
       - run: docker-compose exec drupal drush cr
+      - run:
+          name: Turn the InnoDB redo log back on
+          command: ./redo-log.sh enable
       - run: docker-compose stop --timeout 60 mysql
+      # The stopped container holds a second copy of the database. Remove it,
+      # otherwise the push runs out of disk on the super-sanitized image.
       - run:
           name: Commit mysql image
-          command: docker commit "$(docker-compose ps --all -q mysql)" "<< parameters.instance >>"
+          command: |
+            docker commit "$(docker-compose ps --all -q mysql)" "<< parameters.instance >>"
+            docker-compose rm -f mysql
           no_output_timeout: 60m
       - run:
           name: Push mysql image
-          command: docker push "<< parameters.instance >>"
+          command: ./push-image.sh "<< parameters.instance >>"
           no_output_timeout: 60m
 
   pending_security:
@@ -753,7 +708,6 @@ workflows:
               <<: *branch_ignore
       - test:
           name: test-phpunit
-          command: phpunit
           requires: [build]
           filters:
             branches:
@@ -783,7 +737,6 @@ workflows:
               only: /^release\/.*$/
       - test:
           name: test-phpunit
-          command: phpunit
           requires: [build]
           filters:
             branches:
@@ -837,7 +790,6 @@ workflows:
               only: /^hotfix\/.*$/
       - test:
           name: test-phpunit
-          command: phpunit
           requires: [build]
           filters:
            branches:
@@ -906,7 +858,6 @@ workflows:
               only: /^mayflower\/.*$/
       - test:
           name: test-phpunit
-          command: phpunit
           requires: [build]
           filters:
             branches:
@@ -956,7 +907,6 @@ workflows:
               only: master
       - test:
           name: test-phpunit
-          command: phpunit
           requires: [build]
           filters:
             branches:
@@ -1124,8 +1074,7 @@ workflows:
       - build
       - test:
           name: test-phpunit-super
-          command: phpunit
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
+          db_image: massgov/mysql-sanitized:super
           requires: [build]
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
@@ -1145,6 +1094,12 @@ workflows:
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
+      - populate:
+          name: massgov.populate --sanitize --trim-revisions
+          requires: [build]
+          sanitizeOption: --sanitize
+          trim_revisions: true
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:trimmed
       - populate:
           name: massgov.populate.arm --sanitize
           requires: [ build ]
