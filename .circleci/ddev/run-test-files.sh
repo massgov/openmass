@@ -9,7 +9,10 @@ mapfile -t files < <(tr ' ' '\n' | sed '/^$/d')
 
 status=0
 for file in "${files[@]}"; do
-  junit="test-results/dtt/${file##*/}.xml"
+  # Name the report after the module path: two modules can have test files
+  # with the same name, and one report would overwrite the other.
+  rel="${file#*/modules/custom/}"
+  junit="test-results/dtt/${rel//\//__}.xml"
   # ddev exec reads stdin, which would swallow the remaining file names.
   ddev exec phpunit "$file" --log-junit "/var/www/html/${junit}" </dev/null || status=1
   # PHPUnit records the file that defines each test method, which for
