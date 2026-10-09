@@ -1,12 +1,11 @@
 # This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
 #
 # Edited locally, so the add-on must not overwrite it: "w3c":true, because
-# newer selenium/standalone-chromium images reject "w3c":false with "session
-# not created". Chromedriver has defaulted to W3C since version 75, so this also
-# matches the older image in .disabled-services. No --headless: headless Chrome
-# opens an 800x600 window, the pages switch to the mobile layout and tests that
-# click desktop-only elements fail. Without it Chrome uses the Selenium
-# container's virtual display. CircleCI uses these values.
+# current selenium/standalone-chromium images reject "w3c":false with "session
+# not created". No --headless: headless Chrome opens an 800x600 window, the
+# pages switch to the mobile layout and tests that click desktop-only elements
+# fail. Without it Chrome uses the Selenium container's virtual display, sized
+# in docker-compose.selenium-chrome.yaml. CircleCI uses these values.
 #
 web_environment:
   - BROWSERTEST_OUTPUT_DIRECTORY=/var/www/html/docroot/sites/simpletest/browser_output
