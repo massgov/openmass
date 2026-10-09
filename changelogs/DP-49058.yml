@@ -3,3 +3,7 @@ Changed:
     issue: DP-49058
   - description: Build the mysql-sanitized database images without MySQL binary logs and push them with zstd-compressed layers, so they are about a quarter smaller. Pulling them needs Docker 23 or newer.
     issue: DP-49058
+  - description: Build the database images in about half the time by importing the production backup table by table in parallel with the InnoDB redo log turned off.
+    issue: DP-49058
+  - description: Add a nightly mysql-sanitized:trimmed image without old revisions and run the PHPUnit suite against it. The full latest and super images keep every revision for local development.
+    issue: DP-49058

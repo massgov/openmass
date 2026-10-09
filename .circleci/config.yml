@@ -260,9 +260,11 @@ jobs:
   # memcached and Selenium from .ddev/, the same as local development.
   test:
     parameters:
+      # Production data without old revisions, built nightly by mysql_rebuild.
+      # The full images (latest, super) keep every revision for local work.
       db_image:
         type: string
-        default: massgov/mysql-sanitized:latest
+        default: massgov/mysql-sanitized:trimmed
     machine:
       image: ubuntu-2404:current
     resource_class: xlarge
@@ -1092,6 +1094,12 @@ workflows:
           requires: [build]
           sanitizeOption: --super-sanitize
           instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
+      - populate:
+          name: massgov.populate --sanitize --trim-revisions
+          requires: [build]
+          sanitizeOption: --sanitize
+          trim_revisions: true
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:trimmed
       - populate:
           name: massgov.populate.arm --sanitize
           requires: [ build ]

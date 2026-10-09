@@ -6,8 +6,9 @@
  *
  * Keeps, for every node and media item, the default revision and every
  * revision saved after it, plus revisions that scheduled transitions and
- * entity hierarchy point at. Keeps the paragraph revisions those revisions (or the current field
- * data) reference, and the moderation states of everything kept. Revision
+ * entity hierarchy point at. Keeps the paragraph revisions those revisions
+ * (or the current field data) reference, and the moderation states of
+ * everything kept. Revision
  * tables are rebuilt by copying the kept rows into a new table, so InnoDB
  * frees the space instead of leaving empty pages in the old file.
  *
