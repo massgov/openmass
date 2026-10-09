@@ -605,6 +605,9 @@ jobs:
       resource_class:
         type: string
         default: large
+      trim_revisions:
+        type: boolean
+        default: false
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     machine:
@@ -621,7 +624,11 @@ jobs:
           command: sleep 5
       - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
       - run:
-          command: docker-compose exec drupal scripts/ma-refresh-local --db-prep-only
+          name: Turn off the InnoDB redo log
+          command: ./redo-log.sh disable
+      - run:
+          name: Import the production backup
+          command: docker-compose exec drupal .circleci/mysql-rebuild/import-backup.sh
           no_output_timeout: 60m
       - aws-cli/setup:
           role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
@@ -634,11 +641,25 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
+      - when:
+          condition: << parameters.trim_revisions >>
+          steps:
+            - run:
+                name: Remove old revisions
+                command: docker-compose exec drupal drush php:script .circleci/mysql-rebuild/trim-revisions.php
+                no_output_timeout: 60m
       - run: docker-compose exec drupal drush cr
+      - run:
+          name: Turn the InnoDB redo log back on
+          command: ./redo-log.sh enable
       - run: docker-compose stop --timeout 60 mysql
+      # The stopped container holds a second copy of the database. Remove it,
+      # otherwise the push runs out of disk on the super-sanitized image.
       - run:
           name: Commit mysql image
-          command: docker commit "$(docker-compose ps --all -q mysql)" "<< parameters.instance >>"
+          command: |
+            docker commit "$(docker-compose ps --all -q mysql)" "<< parameters.instance >>"
+            docker-compose rm -f mysql
           no_output_timeout: 60m
       - run:
           name: Push mysql image
