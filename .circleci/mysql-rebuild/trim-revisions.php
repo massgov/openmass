@@ -4,9 +4,9 @@
  * @file
  * Removes old revisions from the CI database image.
  *
- * Keeps, for every node and media item, the default revision and the latest
- * one, plus revisions that scheduled transitions and entity hierarchy point
- * at. Keeps the paragraph revisions those revisions (or the current field
+ * Keeps, for every node and media item, the default revision and every
+ * revision saved after it, plus revisions that scheduled transitions and
+ * entity hierarchy point at. Keeps the paragraph revisions those revisions (or the current field
  * data) reference, and the moderation states of everything kept. Revision
  * tables are rebuilt by copying the kept rows into a new table, so InnoDB
  * frees the space instead of leaving empty pages in the old file.
@@ -55,14 +55,14 @@ foreach (['node', 'media', 'paragraph', 'content_moderation_state'] as $entity_t
   $db->query("CREATE TABLE {$keep_table($entity_type_id)} (rid INT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=InnoDB");
 }
 
-// Nodes and media: default and latest revisions.
+// Nodes and media: the default revision and everything saved after it
+// (forward drafts).
 foreach (['node', 'media'] as $entity_type_id) {
   $entity_type = $etm->getDefinition($entity_type_id);
   $id = $entity_type->getKey('id');
   $rev = $entity_type->getKey('revision');
   $keep = $keep_table($entity_type_id);
-  $db->query("INSERT IGNORE INTO $keep SELECT $rev FROM {$entity_type->getBaseTable()}");
-  $db->query("INSERT IGNORE INTO $keep SELECT MAX($rev) FROM {$entity_type->getRevisionTable()} GROUP BY $id");
+  $db->query("INSERT IGNORE INTO $keep SELECT r.$rev FROM {$entity_type->getRevisionTable()} r JOIN {$entity_type->getBaseTable()} b ON b.$id = r.$id WHERE r.$rev >= b.$rev");
   $db->query("INSERT IGNORE INTO $keep SELECT entity_revision_id FROM scheduled_transition WHERE entity__target_type = :type AND entity_revision_id IS NOT NULL", [':type' => $entity_type_id]);
   $log("$entity_type_id: keep {$count($keep)} of {$count($entity_type->getRevisionTable())} revisions");
 }
