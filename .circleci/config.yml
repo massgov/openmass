@@ -745,6 +745,13 @@ jobs:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
+      - run:
+          name: Rebuild tables to drop the free space left by import and sanitize
+          command: |
+            docker-compose exec -T mysql du -sh /var/lib/mysql-no-volume
+            docker-compose exec -T mysql mysqlcheck --silent --optimize -u circle -pcircle circle
+            docker-compose exec -T mysql du -sh /var/lib/mysql-no-volume
+          no_output_timeout: 60m
       - run: docker-compose stop --timeout 60 mysql
       - run:
           name: Commit mysql image
@@ -806,6 +813,23 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
+      # DP-49058 trial, remove before merge: build a slimmer database image under
+      # its own tag and run the tests on it. Shared tags are not touched.
+      - populate:
+          name: populate-dp-49058
+          requires: [build]
+          sanitizeOption: --sanitize
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058
+          filters:
+            branches:
+              only: feature/DP-49058-ddev-ci-tests
+      - test_ddev:
+          name: test-phpunit-ddev-dp-49058
+          db_image: massgov/mysql-sanitized:dp-49058
+          requires: [populate-dp-49058]
+          filters:
+            branches:
+              only: feature/DP-49058-ddev-ci-tests
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
