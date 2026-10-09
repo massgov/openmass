@@ -9,7 +9,14 @@ mapfile -t files < <(tr ' ' '\n' | sed '/^$/d')
 
 status=0
 for file in "${files[@]}"; do
+  junit="test-results/dtt/${file##*/}.xml"
   # ddev exec reads stdin, which would swallow the remaining file names.
-  ddev exec phpunit "$file" --log-junit "/var/www/html/test-results/dtt/${file##*/}.xml" </dev/null || status=1
+  ddev exec phpunit "$file" --log-junit "/var/www/html/${junit}" </dev/null || status=1
+  # PHPUnit records the file that defines each test method, which for
+  # inherited tests is the base class. CircleCI splits by the file names it was
+  # given, so record this one, or the next split has no timing for it.
+  if [ -f "$junit" ]; then
+    sed -i "s#file=\"[^\"]*\"#file=\"${file}\"#g" "$junit"
+  fi
 done
 exit "$status"

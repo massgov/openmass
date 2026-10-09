@@ -21,13 +21,15 @@ web_environment:
   - DOCKER_ENV=ci
 YAML
 
-# Keep the database in the container layer. A named volume would first copy
-# the whole data directory out of the image before MySQL starts.
-cat > .ddev/docker-compose.ci.yaml <<'YAML'
-services:
-  dbmass:
-    volumes: !reset []
-YAML
+# Keep the database in the container layer. A named volume makes Docker copy
+# the whole data directory out of the image before MySQL starts (about three
+# minutes). DDEV does not honour `!reset` in an override file, so drop the
+# mount from the service itself; this checkout is thrown away after the job.
+sed -i '/^    volumes:$/{N;\#\n      - dbmass:/var/lib/mysql-no-volume$#d}' .ddev/docker-compose.dbmass.yaml
+if grep -q 'dbmass:/var/lib/mysql-no-volume' .ddev/docker-compose.dbmass.yaml; then
+  echo "Could not remove the dbmass volume mount." >&2
+  exit 1
+fi
 
 # The web-build Dockerfile only adds developer CLIs (Tugboat, Jira, gh,
 # Playwright libraries) that the tests do not use.

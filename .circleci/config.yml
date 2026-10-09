@@ -381,7 +381,7 @@ jobs:
     environment:
       DDEV_VERSION: v1.25.0
       DDEV_NONINTERACTIVE: "true"
-    parallelism: 6
+    parallelism: 8
     steps:
       - attach_workspace: {at: /home/circleci/project}
       - aws-cli/setup:
@@ -821,6 +821,21 @@ workflows:
           name: test-phpunit-ddev-dp-49058
           db_image: massgov/mysql-sanitized:dp-49058
           requires: [populate-dp-49058]
+          filters:
+            branches:
+              only: feature/DP-49058-ddev-ci-tests
+      - populate:
+          name: populate-dp-49058-super
+          requires: [build]
+          sanitizeOption: --super-sanitize
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-super
+          filters:
+            branches:
+              only: feature/DP-49058-ddev-ci-tests
+      - test_ddev:
+          name: test-phpunit-ddev-dp-49058-super
+          db_image: massgov/mysql-sanitized:dp-49058-super
+          requires: [populate-dp-49058-super]
           filters:
             branches:
               only: feature/DP-49058-ddev-ci-tests
