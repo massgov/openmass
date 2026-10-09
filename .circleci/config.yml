@@ -381,7 +381,7 @@ jobs:
     environment:
       DDEV_VERSION: v1.25.0
       DDEV_NONINTERACTIVE: "true"
-    parallelism: 4
+    parallelism: 6
     steps:
       - attach_workspace: {at: /home/circleci/project}
       - aws-cli/setup:
@@ -390,7 +390,8 @@ jobs:
           session_duration: "3600"
       - run: {name: Install DDEV, command: .circleci/ddev/install-ddev.sh}
       - run: {name: Configure DDEV for CI, command: .circleci/ddev/configure-ddev.sh << parameters.db_image >>}
-      - run: {name: Start DDEV, command: ddev start -y, no_output_timeout: 30m}
+      - run: {name: Pull database image, command: .circleci/ddev/pull-db-image.sh, no_output_timeout: 30m}
+      - run: {name: Start DDEV, command: .circleci/ddev/start-ddev.sh, no_output_timeout: 30m}
       - run: {name: Wait for mysql, command: .circleci/ddev/wait-for-mysql.sh}
       - run: {name: Machine and runtime overview, command: .circleci/ddev/overview.sh}
       - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
@@ -745,10 +746,6 @@ jobs:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
       - run: docker-compose exec drupal drush cr
-      - run:
-          name: Rebuild tables to drop the free space left by import and sanitize
-          command: ./optimize-tables.sh
-          no_output_timeout: 60m
       - run: docker-compose stop --timeout 60 mysql
       - run:
           name: Commit mysql image
@@ -756,7 +753,7 @@ jobs:
           no_output_timeout: 60m
       - run:
           name: Push mysql image
-          command: docker push "<< parameters.instance >>"
+          command: ./push-image.sh "<< parameters.instance >>"
           no_output_timeout: 60m
 
   pending_security:

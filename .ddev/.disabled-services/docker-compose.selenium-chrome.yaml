@@ -1,13 +1,12 @@
-# This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
+#ddev-generated
+# Remove the line above if you don't want this file to be overwritten when you run
+# ddev get ddev/ddev-selenium-standalone-chrome
 #
-# Edited locally, so the add-on must not overwrite it. The image is pinned to
-# an exact Chromium and Grid build (chromedriver ships inside it, matched to the
-# browser), and is multi-arch, so Apple Silicon and CircleCI run the same
-# browser. Bump the tag on purpose; never use "latest".
+# This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
 #
 services:
   selenium-chrome:
-    image: selenium/standalone-chromium:152.0.7977.82-chromedriver-152.0.7977.82-grid-4.49.0-20260909
+    image: seleniarm/standalone-chromium:4.1.4-20220429
     container_name: ddev-${DDEV_SITENAME}-selenium-chrome
     expose:
       #      The internal noVNC port, which operates over HTTP so it can be exposed
@@ -18,13 +17,6 @@ services:
       - HTTPS_EXPOSE=7900:7900
       - HTTP_EXPOSE=7910:7900
       - VNC_NO_PASSWORD=1
-      # Chrome runs on the container's virtual display, not headless. Keep the
-      # size fixed so a new image default cannot change the page layout.
-      - SE_SCREEN_WIDTH=1920
-      - SE_SCREEN_HEIGHT=1080
-      # Enables multiple parallel connections to the Selenium.
-      - SE_NODE_MAX_SESSIONS=12
-      - SE_NODE_OVERRIDE_MAX_SESSIONS=true
     external_links:
       - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
     # To enable VNC access for traditional VNC clients like macOS "Screen Sharing",
@@ -35,8 +27,6 @@ services:
       com.ddev.site-name: ${DDEV_SITENAME}
       com.ddev.approot: $DDEV_APPROOT
     volumes:
-      # To enable file uploads in E2E tests.
-      - "../:/var/www/html"
       - ".:/mnt/ddev_config"
 
   web:
