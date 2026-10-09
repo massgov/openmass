@@ -27,27 +27,35 @@ function mass_caching_purge_purgers_alter(array &$definitions): void {
     }
   }
 
-  // Change handled types depending on env. Start with all purgers disabled.
-  $akamai = $akamai_tag = $acquia_purge = FALSE;
+  $enabled = [
+    'akamai' => FALSE,
+    'akamai_tag' => FALSE,
+    'acquia_purge' => FALSE,
+  ];
 
   $env = getenv('AH_SITE_ENVIRONMENT');
   if ($env) {
     // We are in an Acquia env.
-    $acquia_purge = TRUE;
+    $enabled['acquia_purge'] = TRUE;
     if (in_array($env, ['test', 'prod'], TRUE)) {
-      $akamai = $akamai_tag = TRUE;
+      $enabled['akamai'] = TRUE;
+      $enabled['akamai_tag'] = TRUE;
     }
   }
 
-  if ($purger = getenv('MASS_PURGERS')) {
-    // Force the specified purger to on. Used for local testing.
-    $$purger = TRUE;
+  if ($purgers = getenv('MASS_PURGERS')) {
+    // Force the specified purgers on. Used for local testing.
+    foreach (explode(',', $purgers) as $purger) {
+      $purger = trim($purger);
+      if (isset($enabled[$purger])) {
+        $enabled[$purger] = TRUE;
+      }
+    }
   }
 
-  foreach (['akamai', 'akamai_tag', 'acquia_purge'] as $name) {
-    // The double dollar sign is deliberate - It refers to one of the bool variables above.
+  foreach ($enabled as $name => $is_enabled) {
     // We need to run queue invalidations during testing so that tests pass like AutomatedPurgingTest.
-    if (!$$name && isset($definitions[$name]) && !defined('PHPUNIT_COMPOSER_INSTALL')) {
+    if (!$is_enabled && isset($definitions[$name]) && !defined('PHPUNIT_COMPOSER_INSTALL')) {
       // To disable a purger, make it capable of an operation we dont use.
       // It can't be an empty array as we get ValueError in \Drupal\purge\Plugin\Purge\Purger\CapacityTracker::getTimeHintTotal.
       // Purge bug reported at https://www.drupal.org/project/purge/issues/3298855

@@ -14,6 +14,27 @@ use MassGov\Dtt\MassExistingSiteBase;
 class AutomatedPurgingTest extends MassExistingSiteBase {
 
   /**
+   * Tests that an unknown purger override cannot overwrite local variables.
+   */
+  public function testUnknownPurgerOverrideIsIgnored(): void {
+    $definitions = ['sentinel' => []];
+    $expected = $definitions;
+    $original_purgers = getenv('MASS_PURGERS');
+
+    putenv('MASS_PURGERS=definitions');
+    try {
+      mass_caching_purge_purgers_alter($definitions);
+    }
+    finally {
+      putenv($original_purgers === FALSE
+        ? 'MASS_PURGERS'
+        : 'MASS_PURGERS=' . $original_purgers);
+    }
+
+    $this->assertSame($expected, $definitions);
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
