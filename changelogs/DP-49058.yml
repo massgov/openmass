@@ -1,3 +1,5 @@
 Changed:
-  - description: Run the PHPUnit suite in DDEV on CircleCI, so tests use the same PHP 8.4 runtime as local development and production.
+  - description: Run the PHPUnit suite in DDEV on CircleCI, so tests use the same PHP 8.4 runtime and services as local development.
+    issue: DP-49058
+  - description: Build the mysql-sanitized database images without MySQL binary logs and push them with zstd-compressed layers, so they are about a quarter smaller. Pulling them needs Docker 23 or newer.
     issue: DP-49058
