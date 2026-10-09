@@ -605,6 +605,9 @@ jobs:
       resource_class:
         type: string
         default: large
+      trim_revisions:
+        type: boolean
+        default: false
     working_directory: /home/circleci/code/.circleci/mysql-rebuild
     resource_class: << parameters.resource_class >>
     machine:
@@ -637,6 +640,13 @@ jobs:
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
+      - when:
+          condition: << parameters.trim_revisions >>
+          steps:
+            - run:
+                name: Remove old revisions
+                command: docker-compose exec drupal drush php:script .circleci/mysql-rebuild/trim-revisions.php
+                no_output_timeout: 60m
       - run: docker-compose exec drupal drush cr
       - run:
           name: Turn the InnoDB redo log back on
@@ -696,28 +706,21 @@ workflows:
             branches:
               <<: *branch_ignore
       - populate:
-          name: populate-dp-49058
+          name: populate-dp-49058-trim
           requires: [build]
           sanitizeOption: --sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058
+          trim_revisions: true
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-trim
           filters:
             branches:
-              only: feature/DP-49058-faster-populate
+              only: feature/DP-49058-trim-revisions
       - test:
-          name: test-phpunit-dp-49058
-          db_image: massgov/mysql-sanitized:dp-49058
-          requires: [populate-dp-49058]
+          name: test-phpunit-dp-49058-trim
+          db_image: massgov/mysql-sanitized:dp-49058-trim
+          requires: [populate-dp-49058-trim]
           filters:
             branches:
-              only: feature/DP-49058-faster-populate
-      - populate:
-          name: populate-dp-49058-super
-          requires: [build]
-          sanitizeOption: --super-sanitize
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-super
-          filters:
-            branches:
-              only: feature/DP-49058-faster-populate
+              only: feature/DP-49058-trim-revisions
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
