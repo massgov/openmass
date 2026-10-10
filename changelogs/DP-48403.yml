@@ -43,6 +43,10 @@ Changed:
     issue: DP-48403
   - description: Upgrade field_tokens from 2.0.0-rc3 to 2.0.0, which includes the Drupal 11.4 EntityType constraint fix and the config-entity field definition guard.
     issue: DP-48403
+  - description: Replace the ckeditor5_fullscreen module with Drupal core's CKEditor 5 fullscreen plugin.
+    issue: DP-48403
+  - description: Boot the front controller through Symfony Runtime while still using ProdNoRedirectDrupalKernel.
+    issue: DP-48403
 Fixed:
   - description: Align mass_serializer ContentEntityNormalizer subclasses with Drupal 11.4 array return types.
     issue: DP-48403
@@ -51,4 +55,10 @@ Fixed:
   - description: Retarget the AccessPolicyProcessor Fiber fallback so a failed Fiber start calculates permissions inline without switching the account or writing cache.
     issue: DP-48403
   - description: Fix bulk file replace ExistingSite tests to reload file entities after web-process URI updates.
+    issue: DP-48403
+  - description: Refresh the content moderation state-change actions patch so ModerationStateChange::access() accepts a nullable account on PHP 8.4.
+    issue: DP-48403
+  - description: Deny web access to package-lock.json and replace deprecated Views, region-list, and image-style helpers.
+    issue: DP-48403
+  - description: Merge Drupal 11.4 robots.txt asset and path rules into the customized robots.txt without dropping Mass.gov crawler rules.
     issue: DP-48403
