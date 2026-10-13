@@ -1,8 +1,8 @@
 # SendGrid transactional email
 
-Drupal sends email through the `mass_sendgrid_mail` mail system plugin provided
-by the `mass_sendgrid` custom module. It extends `drupal/sendgrid`, and all
-messages use one SendGrid Dynamic Template.
+Drupal sends email through the `sendgrid_mail` mail system plugin provided by
+`drupal/sendgrid`. The `mass_sendgrid` custom module configures the sender,
+reply-to address, and one SendGrid Dynamic Template for all messages.
 
 ## Required environment variables
 

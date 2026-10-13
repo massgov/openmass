@@ -62,9 +62,9 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
     $this->assertSame([
       'source' => 'drupal',
     ], $payload['personalizations'][0]['custom_args']);
-    $this->assertSame('sender@example.com', $payload['from']['email']);
+    $this->assertSame('configured-sender@example.com', $payload['from']['email']);
     $this->assertSame('Mass.gov', $payload['from']['name']);
-    $this->assertSame('reply@example.com', $payload['reply_to']['email']);
+    $this->assertSame('DigitalSupport@mass.gov', $payload['reply_to']['email']);
     $tracking = $email->getTrackingSettings();
     $this->assertFalse($tracking->getClickTracking()->getEnable());
     $this->assertFalse($tracking->getClickTracking()->getEnableText());
@@ -101,16 +101,23 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
    * Creates a config factory that returns the requested template ID.
    */
   private function createConfigFactory(string $template_id, int $asm_group_id = 0): ConfigFactoryInterface {
-    $config = $this->createMock(ImmutableConfig::class);
-    $config->method('get')->willReturnMap([
+    $sendgrid_config = $this->createMock(ImmutableConfig::class);
+    $sendgrid_config->method('get')->willReturnMap([
       ['template_id', $template_id],
       ['asm_group_id', $asm_group_id],
+      ['from_email', 'configured-sender@example.com'],
+    ]);
+    $site_config = $this->createMock(ImmutableConfig::class);
+    $site_config->method('get')->willReturnMap([
+      ['mail', 'DigitalSupport@mass.gov'],
+      ['name', 'Mass.gov'],
     ]);
 
     $config_factory = $this->createMock(ConfigFactoryInterface::class);
-    $config_factory->method('get')
-      ->with('mass_sendgrid.settings')
-      ->willReturn($config);
+    $config_factory->method('get')->willReturnMap([
+      ['mass_sendgrid.settings', $sendgrid_config],
+      ['system.site', $site_config],
+    ]);
 
     return $config_factory;
   }
