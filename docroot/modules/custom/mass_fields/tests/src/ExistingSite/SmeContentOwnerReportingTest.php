@@ -79,19 +79,24 @@ class SmeContentOwnerReportingTest extends MassExistingSiteBase {
   }
 
   /**
-   * The owner column is on the report page itself, not only in its export.
+   * Report pages offer the owner as a filter.
+   *
+   * On most reports the owner is a filter on the page and a column in the CSV
+   * export, not a column in the on-page table, which keeps those tables
+   * narrow. The check looks for the filter's input itself, since the filter
+   * label is the same text as the column heading.
    *
    * @dataProvider reportPageProvider
    */
-  public function testReportPagesShowTheOwnerColumn(string $path): void {
+  public function testReportPagesOfferTheOwnerFilter(string $path): void {
     $this->visit($path);
 
     $this->assertEquals(200, $this->getSession()->getStatusCode(), "$path did not load.");
-    $this->assertSession()->pageTextContains(self::COLUMN_LABEL);
+    $this->assertSession()->elementExists('css', 'input[name="' . self::FILTER_ID . '"]');
   }
 
   /**
-   * Report pages carrying the owner column.
+   * Report pages offering the owner filter.
    */
   public static function reportPageProvider(): array {
     return [
@@ -101,6 +106,29 @@ class SmeContentOwnerReportingTest extends MassExistingSiteBase {
       'all documents' => ['/admin/ma-dash/documents'],
       'editoria11y pages' => ['/admin/reports/editoria11y/export/pages'],
       'accessibility report for authors' => ['/admin/ma-dash/report/accessibility-report-for-authors'],
+    ];
+  }
+
+  /**
+   * The Editoria11y report pages do show the owner as a table column.
+   *
+   * @dataProvider ownerColumnPageProvider
+   */
+  public function testEditoria11yPagesShowTheOwnerColumn(string $path): void {
+    $this->visit($path);
+
+    $this->assertEquals(200, $this->getSession()->getStatusCode(), "$path did not load.");
+    $this->assertSession()->elementExists('xpath', '//table//th[contains(normalize-space(.), "' . self::COLUMN_LABEL . '")]');
+  }
+
+  /**
+   * Report pages whose table carries the owner column.
+   */
+  public static function ownerColumnPageProvider(): array {
+    return [
+      'editoria11y pages' => ['/admin/reports/editoria11y/export/pages'],
+      'editoria11y alerts' => ['/admin/reports/editoria11y/export/alerts'],
+      'editoria11y dismissals' => ['/admin/reports/editoria11y/export/dismissals'],
     ];
   }
 
@@ -155,6 +183,8 @@ class SmeContentOwnerReportingTest extends MassExistingSiteBase {
       'advanced search export' => ['advancedsearch', 'data_export_1'],
       'documents advanced search export' => ['adv_srch_documents', 'data_export_1'],
       'content performance export' => ['content_performance', 'data_export_1'],
+      'all documents export' => ['all_documents', 'data_export_1'],
+      'accessibility report for authors export' => ['accessibility_report_for_authors', 'data_export_1'],
       'editoria11y pages export' => ['ed11y_export', 'data_export_pages'],
     ];
   }
