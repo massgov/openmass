@@ -1,5 +1,12 @@
 
 
+## [0.497.0] - October 13, 2026
+
+### Fixed
+  - DP-49018: Use H2 for event titles on past and upcoming event listing pages so the heading order no longer skips from H1 to H3.
+  
+
+
 ## [0.496.0] - October 6, 2026
 
 ### Changed
