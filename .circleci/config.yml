@@ -267,12 +267,15 @@ jobs:
         default: massgov/mysql-sanitized:trimmed
     machine:
       image: ubuntu-2404:current
-    resource_class: xlarge
+    # A large machine costs a fifth of an xlarge one per minute and runs the
+    # tests only about 20% slower. Six nodes is as fast as eight, because the
+    # longest test class alone takes about ten minutes.
+    resource_class: large
     working_directory: /home/circleci/project/code
     environment:
       DDEV_VERSION: v1.25.0
       DDEV_NONINTERACTIVE: "true"
-    parallelism: 8
+    parallelism: 6
     steps:
       - attach_workspace: {at: /home/circleci/project}
       - aws-cli/setup:
