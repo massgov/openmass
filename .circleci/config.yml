@@ -265,14 +265,20 @@ jobs:
       db_image:
         type: string
         default: massgov/mysql-sanitized:trimmed
+      resource_class:
+        type: string
+        default: xlarge
+      nodes:
+        type: integer
+        default: 8
     machine:
       image: ubuntu-2404:current
-    resource_class: xlarge
+    resource_class: << parameters.resource_class >>
     working_directory: /home/circleci/project/code
     environment:
       DDEV_VERSION: v1.25.0
       DDEV_NONINTERACTIVE: "true"
-    parallelism: 8
+    parallelism: << parameters.nodes >>
     steps:
       - attach_workspace: {at: /home/circleci/project}
       - aws-cli/setup:
@@ -707,11 +713,32 @@ workflows:
             branches:
               <<: *branch_ignore
       - test:
-          name: test-phpunit
+          name: test-phpunit-large8
+          db_image: massgov/mysql-sanitized:dp-49058-trim2
+          resource_class: large
+          nodes: 8
           requires: [build]
           filters:
             branches:
-              <<: *branch_ignore
+              only: feature/DP-49058-large
+      - test:
+          name: test-phpunit-large6
+          db_image: massgov/mysql-sanitized:dp-49058-trim2
+          resource_class: large
+          nodes: 6
+          requires: [build]
+          filters:
+            branches:
+              only: feature/DP-49058-large
+      - test:
+          name: test-phpunit-large4
+          db_image: massgov/mysql-sanitized:dp-49058-trim2
+          resource_class: large
+          nodes: 4
+          requires: [build]
+          filters:
+            branches:
+              only: feature/DP-49058-large
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
