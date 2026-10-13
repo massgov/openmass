@@ -37,7 +37,6 @@ class MassSendgridMail extends SendgridMail {
       throw new \LogicException('The mass_sendgrid.settings from_email configuration value is required.');
     }
     $sendgrid_message['from_email'] = $from_email;
-    $sendgrid_message['from_name'] = 'Mass.gov';
 
     return $sendgrid_message;
   }
