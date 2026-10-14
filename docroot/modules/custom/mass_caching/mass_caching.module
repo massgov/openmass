@@ -4,6 +4,7 @@ use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\file\FileInterface;
 use Drupal\mass_caching\AkamaiPurger;
+use Drupal\mass_caching\AkamaiTagPurger;
 use Drupal\media\MediaInterface;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
@@ -24,6 +25,9 @@ function mass_caching_purge_purgers_alter(array &$definitions): void {
     // Akamai purger is active.
     if (isset($definitions['akamai'])) {
       $definitions['akamai']['class'] = AkamaiPurger::class;
+    }
+    if (isset($definitions['akamai_tag'])) {
+      $definitions['akamai_tag']['class'] = AkamaiTagPurger::class;
     }
   }
 
