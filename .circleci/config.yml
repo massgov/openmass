@@ -721,12 +721,15 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: test-phpunit
+      - populate:
+          name: populate-trial-trim
           requires: [build]
+          sanitizeOption: --sanitize
+          trim_revisions: true
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-trim4
           filters:
             branches:
-              <<: *branch_ignore
+              only: feature/DP-49058-trial4
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
