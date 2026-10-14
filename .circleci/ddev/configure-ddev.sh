@@ -2,10 +2,10 @@
 # Prepares the throwaway CI checkout for DDEV: writes .ddev/.env and a CI
 # config file, removes the dbmass volume and the web-build Dockerfile, and
 # turns Selenium on. Usage: configure-ddev.sh <database image>
-# e.g. configure-ddev.sh massgov/mysql-sanitized:trimmed
+# e.g. configure-ddev.sh massgov/mysql-sanitized:trimmed.arm
 set -euo pipefail
 
-db_image="${1:?Pass the database image, e.g. massgov/mysql-sanitized:trimmed}"
+db_image="${1:?Pass the database image, e.g. massgov/mysql-sanitized:trimmed.arm}"
 : "${MYSQL_REBUILD_AWS_ACCOUNT_ID:?}"
 : "${MYSQL_REBUILD_AWS_REGION:?}"
 
