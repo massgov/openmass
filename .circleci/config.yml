@@ -718,12 +718,44 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: test-phpunit
+      - populate:
+          name: populate-trial-super
           requires: [build]
+          sanitizeOption: --super-sanitize
+          trim_revisions: false
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-super2
           filters:
             branches:
-              <<: *branch_ignore
+              only: feature/DP-49058-trial3
+      - populate:
+          name: populate-trial-trim
+          requires: [build]
+          sanitizeOption: --sanitize
+          trim_revisions: true
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-trim3
+          filters:
+            branches:
+              only: feature/DP-49058-trial3
+      - populate:
+          name: populate-trial-arm
+          requires: [build]
+          sanitizeOption: --sanitize
+          trim_revisions: false
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-arm
+          resource_class: arm.large
+          filters:
+            branches:
+              only: feature/DP-49058-trial3
+      - populate:
+          name: populate-trial-super-arm
+          requires: [build]
+          sanitizeOption: --super-sanitize
+          trim_revisions: false
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-super-arm
+          resource_class: arm.large
+          filters:
+            branches:
+              only: feature/DP-49058-trial3
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
