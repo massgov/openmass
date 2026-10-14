@@ -27,10 +27,14 @@ fi
 echo "Pulled ${MASS_DB_IMAGE} in ${SECONDS} s."
 
 # A failed nightly build leaves the previous image under the tag, so the tests
-# would keep passing on older and older data. Make that visible.
+# would keep passing on older and older data. Warn after two days, fail after a
+# week.
 created="$(docker inspect -f '{{.Created}}' "${registry}/${MASS_DB_IMAGE}")"
 age_days=$(( ($(date +%s) - $(date -d "${created}" +%s)) / 86400 ))
 echo "${MASS_DB_IMAGE} was built ${created}, ${age_days} days ago."
-if (( age_days > 2 )); then
+if (( age_days >= 7 )); then
+  echo "${MASS_DB_IMAGE} is ${age_days} days old. Fix the mysql_rebuild workflow." >&2
+  exit 1
+elif (( age_days >= 2 )); then
   echo "WARNING: ${MASS_DB_IMAGE} is ${age_days} days old. Check the mysql_rebuild workflow." >&2
 fi

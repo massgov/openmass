@@ -270,7 +270,7 @@ jobs:
       image: ubuntu-2404:current
     # A large machine costs a fifth of an xlarge one per minute and runs the
     # tests only about 20% slower. Six nodes is as fast as eight, because the
-    # longest test class alone takes about nine minutes.
+    # longest test class alone takes almost ten minutes.
     resource_class: large
     working_directory: /home/circleci/project/code
     environment:
@@ -293,7 +293,7 @@ jobs:
       # Run drush updatedb and cim.
       - run: ddev drush deploy -y
       - run: ddev drush status
-      - run: {name: Show org access enforcement (CLI and web), command: .circleci/ddev/check-org-access.sh}
+      - run: {name: Check org access enforcement (CLI and web), command: .circleci/ddev/check-org-access.sh}
       # --no will error if there are differences as per https://github.com/drush-ops/drush/issues/4770
       - run: {name: Ensure no differences between config on disk and config in Drupal, command: ddev drush --no config:export --diff}
       - run: {name: Generate PHPUnit test inventory, command: ddev exec php scripts/list-tests.php}
@@ -644,6 +644,8 @@ jobs:
           name: Log in to ECR
           command: |
             aws ecr get-login-password --region "$MYSQL_REBUILD_AWS_REGION" | docker login --username AWS --password-stdin "$MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com"
+            # push-image.sh reuses this login after the role session expired.
+            aws ecr get-authorization-token --region "$MYSQL_REBUILD_AWS_REGION" --query 'authorizationData[0].expiresAt' --output text
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m

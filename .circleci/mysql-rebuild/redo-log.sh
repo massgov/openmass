@@ -14,11 +14,13 @@ case "${action}" in
 esac
 
 # The first start initializes the data directory on a temporary server
-# (port 0), then starts the real one on 3306. grep without -q reads the whole
-# log, so docker-compose does not die of SIGPIPE and fail the pipeline.
+# (port 0), then starts the real one on 3306. The X Plugin also reports "ready
+# for connections" on 33060, hence the "mysqld:" and the trailing space. grep
+# without -q reads the whole log, so docker-compose does not die of SIGPIPE and
+# fail the pipeline.
 ready=
 for _ in $(seq 90); do
-  if docker-compose logs --no-color mysql | grep 'ready for connections.*port: 3306' >/dev/null; then
+  if docker-compose logs --no-color mysql | grep 'mysqld: ready for connections.*port: 3306 ' >/dev/null; then
     ready=1
     break
   fi

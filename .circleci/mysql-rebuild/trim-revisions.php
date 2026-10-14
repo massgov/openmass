@@ -11,7 +11,8 @@
  * moderation states of everything kept. Revision tables are rebuilt by copying
  * the kept rows into a new table, so InnoDB frees the space instead of leaving
  * empty pages in the old file. Usage rows of removed revisions go too. Fails
- * if the trim left a reference to a revision that is gone.
+ * if the trim adds entities without their current revision or paragraph
+ * references to removed paragraph revisions.
  *
  * Usage: drush php:script .circleci/mysql-rebuild/trim-revisions.php [dry-run]
  */

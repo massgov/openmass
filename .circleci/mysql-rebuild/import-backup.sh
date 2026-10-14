@@ -20,11 +20,14 @@ MYSQL_CMD="$(drush sql:connect --extra=--disable-ssl-verify-server-cert)"
 export MYSQL_CMD
 log "Importing with ${workers} clients"
 
+# curl, not wget: wget -nv prints the presigned URL of the unsanitized backup to
+# the public CircleCI log, and wget -q hides why a download failed. curl -sS
+# prints the error without the URL.
 # Same tables as ma-refresh-local skips.
 # gawk prints each finished table file, xargs loads it and deletes it. The
 # lines before the first table (character set, FOREIGN_KEY_CHECKS=0 and so on)
 # are repeated at the top of every file.
-wget -nv -O - "${url}" \
+curl -fsS "${url}" \
   | pigz -dc \
   | grep -v -e '^INSERT INTO `cache_' -e '^INSERT INTO `migrate_map_' -e '^INSERT INTO `config_log' -e '^INSERT INTO `key_value_expire' -e '^INSERT INTO `sessions' \
   | gawk -v dir="${dir}" '

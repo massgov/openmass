@@ -5,7 +5,7 @@
 # e.g. configure-ddev.sh massgov/mysql-sanitized:trimmed
 set -euo pipefail
 
-db_image="${1:?Pass the database image, e.g. massgov/mysql-sanitized:latest}"
+db_image="${1:?Pass the database image, e.g. massgov/mysql-sanitized:trimmed}"
 : "${MYSQL_REBUILD_AWS_ACCOUNT_ID:?}"
 : "${MYSQL_REBUILD_AWS_REGION:?}"
 
