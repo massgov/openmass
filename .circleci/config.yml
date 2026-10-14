@@ -266,12 +266,15 @@ jobs:
       db_image:
         type: string
         default: massgov/mysql-sanitized:trimmed
+      resource_class:
+        type: string
+        default: large
     machine:
       image: ubuntu-2404:current
     # A large machine costs a fifth of an xlarge one per minute and runs the
     # tests only about 20% slower. Six nodes are as fast as eight, because the
     # longest test class alone takes almost ten minutes.
-    resource_class: large
+    resource_class: << parameters.resource_class >>
     working_directory: /home/circleci/project/code
     environment:
       DDEV_VERSION: v1.25.0
@@ -721,12 +724,24 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - test:
-          name: test-phpunit
+      - populate:
+          name: populate-trial-trim-arm
           requires: [build]
+          sanitizeOption: --sanitize
+          trim_revisions: true
+          resource_class: arm.large
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:dp-49058-trim-arm
           filters:
             branches:
-              <<: *branch_ignore
+              only: feature/DP-49058-arm
+      - test:
+          name: test-phpunit-arm
+          db_image: massgov/mysql-sanitized:dp-49058-trim-arm
+          resource_class: arm.large
+          requires: [build, populate-trial-trim-arm]
+          filters:
+            branches:
+              only: feature/DP-49058-arm
 
   # This is to automate the creation of the release branch.
   # The trigger time needs to be updated every Fall/Spring for daylight saving time.
