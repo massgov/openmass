@@ -1,6 +1,8 @@
 #!/bin/bash
-# Writes the CI-only DDEV files. Usage: configure-ddev.sh <database image>
-# e.g. configure-ddev.sh massgov/mysql-sanitized:latest
+# Prepares the throwaway CI checkout for DDEV: writes .ddev/.env and a CI
+# config file, removes the dbmass volume and the web-build Dockerfile, and
+# turns Selenium on. Usage: configure-ddev.sh <database image>
+# e.g. configure-ddev.sh massgov/mysql-sanitized:trimmed
 set -euo pipefail
 
 db_image="${1:?Pass the database image, e.g. massgov/mysql-sanitized:latest}"
@@ -31,8 +33,9 @@ if grep -q 'dbmass:/var/lib/mysql-no-volume' .ddev/docker-compose.dbmass.yaml; t
   exit 1
 fi
 
-# The web-build Dockerfile only adds developer CLIs (Tugboat, Jira, gh,
-# Playwright libraries) that the tests do not use.
+# The web-build Dockerfile only adds developer tools the tests do not use:
+# the Tugboat, Jira, CircleCI, GitHub and New Relic CLIs, and the system
+# libraries Playwright needs for BackstopJS.
 rm .ddev/web-build/Dockerfile
 
 # Selenium is opt-in locally. `ddev service enable` no longer exists.

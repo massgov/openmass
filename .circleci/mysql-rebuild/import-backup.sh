@@ -24,7 +24,7 @@ log "Importing with ${workers} clients"
 # gawk prints each finished table file, xargs loads it and deletes it. The
 # lines before the first table (character set, FOREIGN_KEY_CHECKS=0 and so on)
 # are repeated at the top of every file.
-wget -q -O - "${url}" \
+wget -nv -O - "${url}" \
   | pigz -dc \
   | grep -v -e '^INSERT INTO `cache_' -e '^INSERT INTO `migrate_map_' -e '^INSERT INTO `config_log' -e '^INSERT INTO `key_value_expire' -e '^INSERT INTO `sessions' \
   | gawk -v dir="${dir}" '

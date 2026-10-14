@@ -1,5 +1,5 @@
 #!/bin/bash
-# Waits up to 4 minutes for the dbmass service to accept connections.
+# Waits for the dbmass service to accept connections: 120 tries, 2 s apart.
 set -euo pipefail
 
 for _ in $(seq 1 120); do

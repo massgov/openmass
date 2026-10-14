@@ -261,7 +261,8 @@ jobs:
   test:
     parameters:
       # Production data without old revisions, built nightly by mysql_rebuild.
-      # The full images (latest, super) keep every revision for local work.
+      # :latest keeps every revision. :super keeps only default revisions and is
+      # used locally and by test-phpunit-super.
       db_image:
         type: string
         default: massgov/mysql-sanitized:trimmed
@@ -269,7 +270,7 @@ jobs:
       image: ubuntu-2404:current
     # A large machine costs a fifth of an xlarge one per minute and runs the
     # tests only about 20% slower. Six nodes is as fast as eight, because the
-    # longest test class alone takes about ten minutes.
+    # longest test class alone takes about nine minutes.
     resource_class: large
     working_directory: /home/circleci/project/code
     environment:
@@ -663,7 +664,15 @@ jobs:
       - run:
           name: Commit mysql image
           command: |
-            docker commit "$(docker-compose ps --all -q mysql)" "<< parameters.instance >>"
+            container="$(docker-compose ps --all -q mysql)"
+            # docker-compose stop succeeds even when it had to kill MySQL, and
+            # a killed server leaves a data directory that needs crash recovery.
+            exit_code="$(docker inspect -f '{{.State.ExitCode}}' "$container")"
+            if [ "$exit_code" != 0 ]; then
+              echo "MySQL exited with code $exit_code instead of shutting down cleanly." >&2
+              exit 1
+            fi
+            docker commit "$container" "<< parameters.instance >>"
             docker-compose rm -f mysql
           no_output_timeout: 60m
       - run:
@@ -1079,7 +1088,7 @@ workflows:
           name: test-phpunit-super
           db_image: massgov/mysql-sanitized:super
           requires: [build]
-  # Daily rebuild of our sanitized and super-sanitized mysql data images.
+  # Daily rebuild of our sanitized, super-sanitized and trimmed mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
     when:

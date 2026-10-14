@@ -1,17 +1,27 @@
 #!/bin/bash
-# Shows that organization-based editing permissions are enforced both for
-# drush and for requests served by Apache, as on production.
+# Fails unless organization-based editing permissions are enforced both for
+# drush and for requests served by Apache, as on production. MASS_ORG_ACCESS_ENFORCE
+# comes from .ddev/config.yaml and .ddev/docker-compose.org-access.yaml.
 set -euo pipefail
 
 # Single quotes: the variable is expanded inside the web container.
 # shellcheck disable=SC2016
 ddev exec 'echo "MASS_ORG_ACCESS_ENFORCE in shell: ${MASS_ORG_ACCESS_ENFORCE:-<unset>}"'
-ddev drush php:eval 'echo "CLI isEnforcementEnabled: " . var_export(\Drupal::service("mass_org_access.settings")->isEnforcementEnabled(), TRUE) . "\n";'
+cli="$(ddev drush php:eval 'echo var_export(\Drupal::service("mass_org_access.settings")->isEnforcementEnabled(), TRUE);')"
+echo "CLI isEnforcementEnabled: ${cli}"
 
+# Same check as OrgAccessSettings::isEnforcementEnabled(), without Drupal.
 check=docroot/org-access-env-check.php
 trap 'rm -f "$check"' EXIT
 cat > "$check" <<'PHP'
 <?php
-echo "web getenv: " . var_export(getenv("MASS_ORG_ACCESS_ENFORCE"), TRUE) . "\n";
+$env = getenv('MASS_ORG_ACCESS_ENFORCE');
+echo var_export(in_array(strtolower((string) $env), ['1', 'true', 'yes', 'on'], TRUE), TRUE);
 PHP
-ddev exec curl -sS http://web/org-access-env-check.php
+web="$(ddev exec curl -fsS http://web/org-access-env-check.php)"
+echo "Web MASS_ORG_ACCESS_ENFORCE enabled: ${web}"
+
+if [[ "${cli}" != true || "${web}" != true ]]; then
+  echo "Organization access is not enforced, see .ddev/config.yaml." >&2
+  exit 1
+fi

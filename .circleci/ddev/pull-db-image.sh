@@ -7,12 +7,30 @@ set -euo pipefail
 source .ddev/.env
 .ddev/commands/host/ecr-login
 registry="${MASS_DB_AWS_ACCOUNT_ID}.dkr.ecr.${MASS_DB_AWS_REGION}.amazonaws.com"
-if ! time docker pull -q "${registry}/${MASS_DB_IMAGE}"; then
-  # The trimmed image is built by the nightly mysql_rebuild workflow. Until its
-  # first run, and if a run fails to push it, test against the full image.
-  [[ "${MASS_DB_IMAGE}" == *:trimmed ]] || exit 1
-  fallback="${MASS_DB_IMAGE%:trimmed}:latest"
-  echo "${MASS_DB_IMAGE} is not available, using ${fallback}." >&2
-  sed -i "s#^MASS_DB_IMAGE=.*#MASS_DB_IMAGE=${fallback}#" .ddev/.env
-  time docker pull -q "${registry}/${fallback}"
+
+SECONDS=0
+# Keep the error output, drop the image name docker prints on success.
+if ! error="$(docker pull -q "${registry}/${MASS_DB_IMAGE}" 2>&1 >/dev/null)"; then
+  echo "${error}" >&2
+  # :trimmed is built by the nightly mysql_rebuild workflow and could be
+  # missing from the registry, for example after someone deleted the tag. Then
+  # test against the full image. Any other error (network, auth) fails here, so
+  # that the nodes of one run do not end up on different databases.
+  if [[ "${MASS_DB_IMAGE}" != *:trimmed ]] || ! grep -qiE 'manifest unknown|not found' <<<"${error}"; then
+    exit 1
+  fi
+  MASS_DB_IMAGE="${MASS_DB_IMAGE%:trimmed}:latest"
+  echo "The trimmed image is not in the registry, using ${MASS_DB_IMAGE}." >&2
+  sed -i "s#^MASS_DB_IMAGE=.*#MASS_DB_IMAGE=${MASS_DB_IMAGE}#" .ddev/.env
+  docker pull -q "${registry}/${MASS_DB_IMAGE}"
+fi
+echo "Pulled ${MASS_DB_IMAGE} in ${SECONDS} s."
+
+# A failed nightly build leaves the previous image under the tag, so the tests
+# would keep passing on older and older data. Make that visible.
+created="$(docker inspect -f '{{.Created}}' "${registry}/${MASS_DB_IMAGE}")"
+age_days=$(( ($(date +%s) - $(date -d "${created}" +%s)) / 86400 ))
+echo "${MASS_DB_IMAGE} was built ${created}, ${age_days} days ago."
+if (( age_days > 2 )); then
+  echo "WARNING: ${MASS_DB_IMAGE} is ${age_days} days old. Check the mysql_rebuild workflow." >&2
 fi
