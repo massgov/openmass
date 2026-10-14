@@ -8,7 +8,7 @@ ddev exec mkdir -p test-results/dtt
 list="$(mktemp)"
 ddev exec phpunit -c /var/www/html/phpunit.xml.dist --list-test-files --colors=never \
   | sed -n 's/^ - //p' > "${list}"
-# About 130 files today. Fewer means the list format changed and the sed above
+# About 135 files today. Fewer means the list format changed and the sed above
 # stopped matching, or test classes stopped loading, and would otherwise pass
 # without running them.
 count="$(wc -l < "${list}")"

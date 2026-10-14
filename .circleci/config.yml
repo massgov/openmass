@@ -269,7 +269,7 @@ jobs:
     machine:
       image: ubuntu-2404:current
     # A large machine costs a fifth of an xlarge one per minute and runs the
-    # tests only about 20% slower. Six nodes is as fast as eight, because the
+    # tests only about 20% slower. Six nodes are as fast as eight, because the
     # longest test class alone takes almost ten minutes.
     resource_class: large
     working_directory: /home/circleci/project/code
@@ -644,8 +644,9 @@ jobs:
           name: Log in to ECR
           command: |
             aws ecr get-login-password --region "$MYSQL_REBUILD_AWS_REGION" | docker login --username AWS --password-stdin "$MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com"
-            # push-image.sh reuses this login after the role session expired.
-            aws ecr get-authorization-token --region "$MYSQL_REBUILD_AWS_REGION" --query 'authorizationData[0].expiresAt' --output text
+            # push-image.sh reuses this login, possibly after the one-hour role
+            # session has expired. Print when the login itself expires.
+            aws ecr get-authorization-token --region "$MYSQL_REBUILD_AWS_REGION" --query 'authorizationData[0].expiresAt' --output text || true
       - run:
           command: docker-compose exec drupal scripts/ma-refresh-local << parameters.sanitizeOption >>
           no_output_timeout: 30m
@@ -1090,7 +1091,8 @@ workflows:
           name: test-phpunit-super
           db_image: massgov/mysql-sanitized:super
           requires: [build]
-  # Daily rebuild of our sanitized, super-sanitized and trimmed mysql data images.
+  # Daily rebuild of our sanitized, super-sanitized and trimmed mysql data
+  # images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
     when:

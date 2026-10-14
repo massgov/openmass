@@ -7,7 +7,7 @@ set -uo pipefail
 # The file names arrive separated by spaces or newlines.
 mapfile -t files < <(tr ' ' '\n' | sed '/^$/d')
 # A node can get nothing when CircleCI reruns only the failed tests.
-# run-tests.sh checks that the whole suite was listed.
+# run-tests.sh checks that the suite listed at least 120 files.
 if (( ${#files[@]} == 0 )); then
   echo "No test files for this node."
   exit 0

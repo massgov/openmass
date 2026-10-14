@@ -22,16 +22,22 @@ log "Importing with ${workers} clients"
 
 # curl, not wget: wget -nv prints the presigned URL of the unsanitized backup to
 # the public CircleCI log, and wget -q hides why a download failed. curl -sS
-# prints the error without the URL.
+# prints the error without the URL. Unlike wget it has no read timeout, so give
+# up when the download stalls below 1 KB/s for two minutes.
 # Same tables as ma-refresh-local skips.
 # gawk prints each finished table file, xargs loads it and deletes it. The
 # lines before the first table (character set, FOREIGN_KEY_CHECKS=0 and so on)
 # are repeated at the top of every file.
-curl -fsS "${url}" \
+curl -fsSL --speed-limit 1024 --speed-time 120 "${url}" \
   | pigz -dc \
   | grep -v -e '^INSERT INTO `cache_' -e '^INSERT INTO `migrate_map_' -e '^INSERT INTO `config_log' -e '^INSERT INTO `key_value_expire' -e '^INSERT INTO `sessions' \
   | gawk -v dir="${dir}" '
-      function finish() { if (out != "") { close(out); print out; fflush(); } }
+      function finish() {
+        if (out == "") return
+        # A failed final flush (disk full) would hand mysql a cut-off file.
+        if (close(out) != 0) { print "Could not write " out > "/dev/stderr"; exit 1 }
+        print out; fflush()
+      }
       /^-- Table structure for table / {
         finish()
         out = sprintf("%s/%05d.sql", dir, ++n)

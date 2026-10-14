@@ -16,7 +16,7 @@ if ! error="$(docker pull -q "${registry}/${MASS_DB_IMAGE}" 2>&1 >/dev/null)"; t
   # missing from the registry, for example after someone deleted the tag. Then
   # test against the full image. Any other error (network, auth) fails here, so
   # that the nodes of one run do not end up on different databases.
-  if [[ "${MASS_DB_IMAGE}" != *:trimmed ]] || ! grep -qiE 'manifest unknown|not found' <<<"${error}"; then
+  if [[ "${MASS_DB_IMAGE}" != *:trimmed ]] || ! grep -qi 'manifest unknown' <<<"${error}"; then
     exit 1
   fi
   MASS_DB_IMAGE="${MASS_DB_IMAGE%:trimmed}:latest"
@@ -33,7 +33,7 @@ created="$(docker inspect -f '{{.Created}}' "${registry}/${MASS_DB_IMAGE}")"
 age_days=$(( ($(date +%s) - $(date -d "${created}" +%s)) / 86400 ))
 echo "${MASS_DB_IMAGE} was built ${created}, ${age_days} days ago."
 if (( age_days >= 7 )); then
-  echo "${MASS_DB_IMAGE} is ${age_days} days old. Fix the mysql_rebuild workflow." >&2
+  echo "${MASS_DB_IMAGE} is ${age_days} days old. Fix the mysql_rebuild workflow, then run it with the pipeline parameter trigger_workflow=mysql_rebuild; it pushes the shared tags from any branch." >&2
   exit 1
 elif (( age_days >= 2 )); then
   echo "WARNING: ${MASS_DB_IMAGE} is ${age_days} days old. Check the mysql_rebuild workflow." >&2
