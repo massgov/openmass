@@ -14,9 +14,11 @@ if ! error="$(docker pull -q "${registry}/${MASS_DB_IMAGE}" 2>&1 >/dev/null)"; t
   echo "${error}" >&2
   # :trimmed is built by the nightly mysql_rebuild workflow and could be
   # missing from the registry, for example after someone deleted the tag. Then
-  # test against the full image. Any other error (network, auth) fails here, so
-  # that the nodes of one run do not end up on different databases.
-  if [[ "${MASS_DB_IMAGE}" != *:trimmed ]] || ! grep -qi 'manifest unknown' <<<"${error}"; then
+  # test against the full image. Docker with the classic image store reports a
+  # missing tag as "manifest unknown", with the containerd store as ":trimmed: not
+  # found". Any other error (network, auth) fails here, so that the nodes of
+  # one run do not end up on different databases.
+  if [[ "${MASS_DB_IMAGE}" != *:trimmed ]] || ! grep -qiE 'manifest unknown|:trimmed: not found' <<<"${error}"; then
     exit 1
   fi
   MASS_DB_IMAGE="${MASS_DB_IMAGE%:trimmed}:latest"

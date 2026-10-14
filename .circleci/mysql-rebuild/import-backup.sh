@@ -27,28 +27,37 @@ log "Importing with ${workers} clients"
 # Same tables as ma-refresh-local skips.
 # gawk prints each finished table file, xargs loads it and deletes it. The
 # lines before the first table (character set, FOREIGN_KEY_CHECKS=0 and so on)
-# are repeated at the top of every file.
+# are repeated at the top of every file. mysqldump first creates every view as
+# a placeholder next to the tables and defines the real views at the end. That
+# last part goes to views.sql, loaded after all tables, so that a placeholder
+# still loading in parallel cannot replace a real view.
 curl -fsSL --speed-limit 1024 --speed-time 120 "${url}" \
   | pigz -dc \
   | grep -v -e '^INSERT INTO `cache_' -e '^INSERT INTO `migrate_map_' -e '^INSERT INTO `config_log' -e '^INSERT INTO `key_value_expire' -e '^INSERT INTO `sessions' \
   | gawk -v dir="${dir}" '
-      function finish() {
-        if (out == "") return
-        # A failed final flush (disk full) would hand mysql a cut-off file.
-        if (close(out) != 0) { print "Could not write " out > "/dev/stderr"; exit 1 }
-        print out; fflush()
+      function finish() { if (out != "") { close(out); print out; fflush(); } }
+      /^-- Final view structure for view / && !views {
+        finish()
+        views = 1
+        out = dir "/views.sql"
+        printf "%s", header > out
       }
-      /^-- Table structure for table / {
+      /^-- Table structure for table / && !views {
         finish()
         out = sprintf("%s/%05d.sql", dir, ++n)
         printf "%s", header > out
       }
       { if (out == "") header = header $0 "\n"; else print > out }
       END {
+        if (views) { close(out); exit }
         if (n == 0) { out = dir "/00000.sql"; printf "%s", header > out }
         finish()
       }' \
   | xargs -P "${workers}" -I {} sh -c '${MYSQL_CMD} < "$1" && rm "$1"' _ {}
+if [[ -f "${dir}/views.sql" ]]; then
+  ${MYSQL_CMD} < "${dir}/views.sql"
+  rm "${dir}/views.sql"
+fi
 log "Import finished"
 
 rmdir "${dir}"
