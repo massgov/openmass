@@ -21,6 +21,7 @@
             "oomphinc/composer-installers-extender": true,
             "php-http/discovery": true,
             "phpstan/extension-installer": true,
+            "symfony/runtime": true,
             "tbachert/spi": true
         }
     },
@@ -70,12 +71,12 @@
             "type": "package",
             "package": {
                 "name": "drupal/field_tokens",
-                "version": "2.0.0-rc3",
+                "version": "2.0.0",
                 "type": "drupal-module",
                 "source": {
                     "url": "https://git.drupalcode.org/project/field_tokens.git",
                     "type": "git",
-                    "reference": "2.0.0-rc3"
+                    "reference": "2.0.0"
                 }
             }
         },
@@ -175,7 +176,6 @@
         "drupal/auto_entitylabel": "^3.0",
         "drupal/better_exposed_filters": "^7.1",
         "drupal/cache_metrics": "^2",
-        "drupal/ckeditor5_fullscreen": "^1.0",
         "drupal/ckeditor5_paste_filter": "^1.1",
         "drupal/clamav": "2.1.x-dev@dev",
         "drupal/color": "^2.0@alpha",
@@ -183,9 +183,9 @@
         "drupal/conditional_fields": "^4.0@alpha",
         "drupal/config_ignore": "^3.3",
         "drupal/content_language_no_outbound": "1.0.0-rc1",
-        "drupal/core-composer-scaffold": "~11.3.17",
-        "drupal/core-project-message": "~11.3.17",
-        "drupal/core-recommended": "~11.3.17",
+        "drupal/core-composer-scaffold": "~11.4.5",
+        "drupal/core-project-message": "~11.4.5",
+        "drupal/core-recommended": "~11.4.5",
         "drupal/csv_field": "^3.0",
         "drupal/csv_serialization": "^4.0",
         "drupal/datalayer": "^2",
@@ -198,7 +198,7 @@
         "drupal/embed": "^1.7",
         "drupal/entity_browser": "~2.16.0",
         "drupal/entity_embed": "^1.7",
-        "drupal/entity_hierarchy": "^5",
+        "drupal/entity_hierarchy": "^5.0@RC",
         "drupal/entity_reference_revisions": "^1.7",
         "drupal/entity_reference_tree": "*",
         "drupal/entity_usage": "^2.0@beta",
@@ -206,7 +206,7 @@
         "drupal/entityreference_filter": "^2.0@beta",
         "drupal/environment_indicator": "~4.0",
         "drupal/field_group": "^4.0",
-        "drupal/field_tokens": "2.0.0-rc3",
+        "drupal/field_tokens": "2.0.0",
         "drupal/file_browser": "^2.0",
         "drupal/file_mdm_exif": "^3.1",
         "drupal/file_mdm_font": "^3.1",
@@ -308,7 +308,7 @@
         "typhonius/acquia-php-sdk-v2": "^3.8"
     },
     "require-dev": {
-        "drupal/core-dev": "~11.3.17",
+        "drupal/core-dev": "~11.4.5",
         "drupaltest/queue-runner-trait": "dev-master",
         "kint-php/kint": "^5",
         "palantirnet/drupal-rector": "^0.21.1",
@@ -417,7 +417,7 @@
                 "2845144 - User can't reference unpublished content even when they have access to it": "https://www.drupal.org/files/issues/2024-01-09/2845144-84-11.x.patch",
                 "Ensure to have build info on View Page Controller before getting the view title": "patches/DP-24420--View-pages-arguments-title-overrides-not-working--2.patch",
                 "Bubbling of elements' max-age to the page's headers and the page cache (https://www.drupal.org/project/drupal/issues/2352009#comment-14724015)": "https://www.drupal.org/files/issues/2025-04-07/bubble-2352009-170.patch",
-                "Dynamically provide action plugins for every moderation state change (https://www.drupal.org/project/drupal/issues/2797583#comment-14699699)": "https://www.drupal.org/files/issues/2022-09-20/core-provide-moderation-states-as-actions-2797583-207.patch",
+                "Dynamically provide action plugins for every moderation state change (https://www.drupal.org/project/drupal/issues/2797583)": "patches/core/core-provide-moderation-states-as-actions-2797583-mr16528.patch",
                 "PHP Deprecated: strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in docroot/core/lib/Drupal/Core/Mail/Plugin/Mail/PhpMail.php on line 112 (https://www.drupal.org/project/drupal/issues/3328187#comment-15138241)": "https://www.drupal.org/files/issues/2023-07-05/3372667-2_0.patch",
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch",
                 "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
@@ -485,7 +485,6 @@
                 "Form required class missing from horizontal field groups in Claro (https://www.drupal.org/project/field_group/issues/3160987)": "patches/field_group_claro_theme_tabs_required.patch"
             },
             "drupal/field_tokens": {
-                "Fatal errors in entities that does not declare getFieldDefinitions method (https://www.drupal.org/project/field_tokens/issues/2835032)": "https://www.drupal.org/files/issues/2835032-config-entity-support-9.patch",
                 "Avoid nested Fiber crash when rendering formatted field tokens": "patches/field_tokens/field_tokens-avoid-nested-fiber-on-formatted-render.patch"
             },
             "drupal/file_browser": {

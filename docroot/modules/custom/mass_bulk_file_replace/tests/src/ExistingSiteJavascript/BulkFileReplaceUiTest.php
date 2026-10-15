@@ -219,12 +219,21 @@ JS
     $this->assertStringNotContainsString('No files were uploaded', $page_text);
 
     // Primary assertion: file entity updated after batch (avoids fragile status messages).
-    \Drupal::entityTypeManager()->getStorage('media')->resetCache();
-    $media = \Drupal::entityTypeManager()->getStorage('media')->load($mid);
+    // The batch runs in the web process and may rewrite the file URI into the
+    // field's file_directory. Reset both storages so this PHPUnit process does
+    // not keep reading a stale File entity still pointing at the pre-replace URI.
+    $media_storage = \Drupal::entityTypeManager()->getStorage('media');
+    $file_storage = \Drupal::entityTypeManager()->getStorage('file');
+    $media_storage->resetCache([$mid]);
+    $media = $media_storage->load($mid);
     $this->assertNotNull($media);
     $this->assertInstanceOf(MediaInterface::class, $media);
-    $file = $media->get('field_upload_file')->entity;
+    $fid = (int) $media->get('field_upload_file')->target_id;
+    $this->assertGreaterThan(0, $fid);
+    $file_storage->resetCache([$fid]);
+    $file = $file_storage->load($fid);
     $this->assertNotNull($file);
+    $this->assertInstanceOf(File::class, $file);
     $this->assertSame('housing-proposal.pdf', $file->getFilename());
     $real = \Drupal::service('file_system')->realpath($file->getFileUri());
     $this->assertNotFalse($real);
