@@ -1,0 +1,32 @@
+name: Start CircleCI on a new pull request
+
+# CircleCI starts a pipeline on push, not when a pull request opens, and the
+# PHPUnit job runs only for branches with a pull request (require_pr in
+# .circleci/config.yml). So once the pull request exists, start a pipeline for
+# its branch. Needs the repository secret CIRCLECI_TOKEN, a CircleCI personal
+# API token of an account with write access to the project.
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+
+jobs:
+  start-pipeline:
+    # Pull requests from forks get no secrets, and CircleCI does not build
+    # their branches here anyway.
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start a CircleCI pipeline for the branch
+        env:
+          CIRCLECI_TOKEN: ${{ secrets.CIRCLECI_TOKEN }}
+          BRANCH: ${{ github.event.pull_request.head.ref }}
+        run: |
+          if [ -z "$CIRCLECI_TOKEN" ]; then
+            echo "::warning::CIRCLECI_TOKEN is not set. Rerun the CircleCI workflow from failed to run the tests."
+            exit 0
+          fi
+          jq -n --arg branch "$BRANCH" '{branch: $branch}' \
+            | curl -fsS -X POST "https://circleci.com/api/v2/project/gh/${GITHUB_REPOSITORY}/pipeline" \
+                -H "Circle-Token: $CIRCLECI_TOKEN" \
+                -H "Content-Type: application/json" \
+                --data @-
