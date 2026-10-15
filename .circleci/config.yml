@@ -1141,6 +1141,18 @@ workflows:
             tags:
               only: /.*/
 
+  # Daily run of test suite using super sanitized DB
+  build_test_super:
+    when:
+      and:
+        - equal: [ build_test_super, << pipeline.parameters.trigger_workflow >> ]
+    jobs:
+      - build
+      - test:
+          name: test-phpunit-super
+          command: phpunit
+          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
+          requires: [build]
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
