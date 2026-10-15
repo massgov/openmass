@@ -57,8 +57,8 @@ class MassOrgAccessHooks {
   /**
    * Restricts updates to top-level collection terms by Permission Group.
    *
-   * Child collection terms are topics used within collections. Their metadata
-   * is not managed through this organization-owned editing workflow.
+   * Child collection terms are topics used within collections. Editing them
+   * requires a separate permission from editing top-level collections.
    */
   #[Hook('taxonomy_term_access')]
   public function taxonomyTermAccess(TermInterface $term, string $operation, AccountInterface $account): AccessResultInterface {
@@ -69,9 +69,11 @@ class MassOrgAccessHooks {
       return AccessResult::neutral();
     }
     if (!$this->isTopLevelTerm($term)) {
-      return AccessResult::forbidden()
+      return ($account->hasPermission('edit child collection terms')
+        ? AccessResult::neutral()
+        : AccessResult::forbidden())
         ->addCacheableDependency($term)
-        ->cachePerUser();
+        ->cachePerPermissions();
     }
     return $this->checkAccess($term, $operation, $account);
   }

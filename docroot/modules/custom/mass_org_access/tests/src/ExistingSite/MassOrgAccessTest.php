@@ -298,6 +298,44 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     );
   }
 
+  public static function childCollectionEnforcementProvider(): array {
+    return [
+      'enforced' => [TRUE],
+      'disabled' => [FALSE],
+    ];
+  }
+
+  /**
+   * Child topics need both the dedicated and core Collection edit permissions.
+   *
+   * @dataProvider childCollectionEnforcementProvider
+   */
+  public function testChildCollectionTermAccess(bool $enforce): void {
+    \Drupal::state()->set('mass_org_access.enforce', $enforce);
+
+    $vocabulary = Vocabulary::load('collections');
+    $collection = $this->createTerm($vocabulary, [
+      'name' => 'Collection ' . $this->randomMachineName(),
+    ]);
+    $topic = $this->createTerm($vocabulary, [
+      'name' => 'Topic ' . $this->randomMachineName(),
+      'parent' => [['target_id' => $collection->id()]],
+    ]);
+
+    $collection_administrator = $this->createUser();
+    $collection_administrator->addRole('collection_administrator');
+    $collection_administrator->activate();
+    $collection_administrator->save();
+    $permission_only_user = $this->createUser(['edit child collection terms']);
+
+    $this->assertTrue($topic->access('update', $collection_administrator),
+      'Collection Administrators may edit child topics.');
+    $this->assertFalse($topic->access('update', $this->userA),
+      'Editors may not edit child topics.');
+    $this->assertFalse($topic->access('update', $permission_only_user),
+      'The dedicated permission does not replace the core Collection edit permission.');
+  }
+
   /**
    * Collection editors see only the collection metadata they may change.
    */
