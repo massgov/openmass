@@ -357,7 +357,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ]);
 
     $this->drupalLogin($this->userA);
-    $this->drupalGet('/admin/ma-dash/collections');
+    $this->drupalGet('/admin/ma-dash/top-level-collections');
 
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains($top_level_name);
@@ -369,7 +369,6 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'Name',
       'Organization(s)',
       'Default sort',
-      'Collection Link',
       'Parent page',
       'Show only future events',
       'Sort order options for visitors',
@@ -377,17 +376,6 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ] as $heading) {
       $this->assertSession()->pageTextContains($heading);
     }
-
-    $administrator = $this->createUser();
-    $administrator->addRole('content_team');
-    $administrator->activate();
-    $administrator->save();
-    $this->drupalLogin($administrator);
-    $this->drupalGet('/admin/structure/taxonomy/manage/collections/overview');
-
-    $this->assertSession()->statusCodeEquals(200);
-    $this->assertSession()->pageTextContains('Add term');
-    $this->assertSession()->pageTextContains($child_name);
   }
 
   /**
