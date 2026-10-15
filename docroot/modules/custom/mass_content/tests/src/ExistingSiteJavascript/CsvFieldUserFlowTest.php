@@ -4,12 +4,12 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests csv_field real content flow with org pages.
  */
-class CsvFieldUserFlowTest extends ExistingSiteSelenium2DriverTestBase {
+class CsvFieldUserFlowTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Creates an administrator user.

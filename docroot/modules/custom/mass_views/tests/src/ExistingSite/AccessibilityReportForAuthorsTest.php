@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\mass_views\ExistingSite;
 
+use Drupal\editoria11y\Api;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\path_alias\Entity\PathAlias;
 use Drupal\views\Views;
@@ -298,6 +299,7 @@ class AccessibilityReportForAuthorsTest extends MassExistingSiteBase {
    * Inserts an ed11y_page row and tracks its pid for cleanup.
    */
   private function insertEd11yPage(array $fields): int {
+    $fields['path_hash'] = Api::pathHash($fields['page_path'], $fields['page_language']);
     $pid = (int) \Drupal::database()->insert('ed11y_page')
       ->fields($fields)
       ->execute();

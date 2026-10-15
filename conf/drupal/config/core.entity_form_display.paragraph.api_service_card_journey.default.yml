@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.api_service_card_journey.field_api_service_card_idv_level
     - field.field.paragraph.api_service_card_journey.field_api_service_card_j_feature
     - field.field.paragraph.api_service_card_journey.field_api_service_card_j_mc_name
     - field.field.paragraph.api_service_card_journey.field_api_service_card_j_steps
@@ -65,6 +66,7 @@ third_party_settings:
     group_features:
       children:
         - field_api_service_card_j_feature
+        - field_api_service_card_idv_level
       label: Features
       region: content
       parent_name: group_tabs
@@ -83,6 +85,12 @@ targetEntityType: paragraph
 bundle: api_service_card_journey
 mode: default
 content:
+  field_api_service_card_idv_level:
+    type: options_select
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_api_service_card_j_feature:
     type: options_buttons
     weight: 3

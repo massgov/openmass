@@ -854,7 +854,9 @@ function mass_utility_get_issuer_advisory_ajax_callback(array &$form, FormStateI
     $node = $storage->load($nid);
     $name_and_title = $node->getTitle();
 
-    $person_org_id = $node->get('field_person_ref_org')->target_id;
+    // Issuers can be a person or an organization page; only persons have an
+    // organization reference.
+    $person_org_id = $node->hasField('field_person_ref_org') ? $node->get('field_person_ref_org')->target_id : NULL;
     if ($person_org_id) {
       $personOrg = $storage->load($person_org_id);
       // Add ORG if exists.
@@ -867,7 +869,9 @@ function mass_utility_get_issuer_advisory_ajax_callback(array &$form, FormStateI
     return $response;
   }
 
-  return FALSE;
+  // Nothing selected (e.g. the autocomplete was cleared): an empty response
+  // keeps the form as is. Returning FALSE makes core throw a TypeError.
+  return $response;
 }
 
 /**
@@ -899,7 +903,9 @@ function mass_utility_get_issuer_executive_ajax_callback(array &$form, FormState
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $node = $storage->load($nid);
 
-    $person_org_id = $node->get('field_person_ref_org')->target_id;
+    // Issuers can be a person or an organization page; only persons have an
+    // organization reference.
+    $person_org_id = $node->hasField('field_person_ref_org') ? $node->get('field_person_ref_org')->target_id : NULL;
     if ($person_org_id) {
       $personOrg = $storage->load($person_org_id);
       // Add ORG if exists.
@@ -910,7 +916,9 @@ function mass_utility_get_issuer_executive_ajax_callback(array &$form, FormState
     return $response;
   }
 
-  return FALSE;
+  // Nothing selected (e.g. the autocomplete was cleared): an empty response
+  // keeps the form as is. Returning FALSE makes core throw a TypeError.
+  return $response;
 }
 
 /**

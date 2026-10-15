@@ -260,7 +260,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
   /**
    * {@inheritdoc}
    */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $element = $form['new_collection'];
     $value = $this->getValueFromElement($element, $form_state);
     if (!$form_state->isValidationComplete() && $element['#required'] && empty($value)) {
@@ -271,7 +271,7 @@ class ChangeCollections extends ViewsBulkOperationsActionBase implements Contain
   /**
    * Set form_state values based on the selected from the widget.
    */
-  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $element = $form['new_collection'];
     $value = $this->getValueFromElement($element, $form_state);
     $form_state->setValueForElement($element, $value);

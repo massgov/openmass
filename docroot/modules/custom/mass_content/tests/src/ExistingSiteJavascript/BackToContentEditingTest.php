@@ -5,12 +5,12 @@ namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 use Drupal\Tests\paragraphs\FunctionalJavascript\ParagraphsTestBaseTrait;
 use Drupal\file\Entity\File;
 use Drupal\paragraphs\Entity\Paragraph;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Ensures access links for unpublished content are generated properly.
  */
-class BackToContentEditingTest extends ExistingSiteSelenium2DriverTestBase {
+class BackToContentEditingTest extends MassExistingSiteSelenium2DriverTestBase {
   use ParagraphsTestBaseTrait;
 
   /**

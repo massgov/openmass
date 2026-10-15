@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Tests the visibility of the suggested pages block on a guide page.
  */
-class GuideSuggestedPagesVisibilityTest extends ExistingSiteSelenium2DriverTestBase {
+class GuideSuggestedPagesVisibilityTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Tests the visibility of the suggested pages block based on related guides.

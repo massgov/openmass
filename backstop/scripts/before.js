@@ -23,32 +23,14 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
     {'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT}
   );
 
-  let cookies = [
-    {
-      "expirationDate": 1798790400,
-      "path": "/",
-      "name": "im-bypass",
-      "value": "true",
-      "hostOnly": false,
-      "httpOnly": false,
-      "secure": false,
-      "session": false,
-      "sameSite": "Lax"
-    }
-  ];
-  // Override the domain based on what we are testing.
   const url = new URL(scenario.url);
-  cookies = cookies.map(cookie => {
-    if (url.host === 'mass-web') {
-      cookie.domain = "mass-web";
-    }
-    else {
-      cookie.domain = "." + url.host;
-    }
-    return cookie;
-  });
-
-  await browserContext.addCookies(cookies);
+  await browserContext.addCookies([
+    {
+      name: 'im-bypass',
+      value: 'true',
+      url: url.origin,
+    },
+  ]);
 
   async function warmupWithRetries(context, url, maxAttempts = 3, baseDelay = 1000) {
     const headers = {
