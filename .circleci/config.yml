@@ -238,8 +238,17 @@ jobs:
             if [ "$CIRCLE_BRANCH" = develop ] || [ -n "${CIRCLE_PULL_REQUEST:-}" ]; then
               exit 0
             fi
+            # A pipeline started through the API (see
+            # .github/workflows/circleci-on-pull-request.yml) may not have
+            # CIRCLE_PULL_REQUEST, so ask GitHub.
+            open="$(curl -fsS -H "Authorization: Bearer $GITHUB_MASSGOV_BOT_TOKEN" \
+              "https://api.github.com/repos/massgov/openmass/pulls?state=open&head=massgov:${CIRCLE_BRANCH}" \
+              | jq length)"
+            if [ "$open" -gt 0 ]; then
+              exit 0
+            fi
             echo "No pull request for $CIRCLE_BRANCH yet, so the tests are skipped."
-            echo "Open a pull request, then rerun this workflow from failed."
+            echo "Opening a pull request starts them."
             exit 1
 
   danger:
@@ -976,13 +985,8 @@ workflows:
           filters:
             branches:
               only: master
-      - test:
-          name: test-phpunit
-          command: phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: master
+      # No PHPUnit run here: master only receives release and hotfix branches,
+      # whose workflows already ran the tests on the same code.
       - hold - Release manager only:
           type: approval
           requires:
@@ -1137,18 +1141,6 @@ workflows:
             tags:
               only: /.*/
 
-  # Daily run of test suite using super sanitized DB
-  build_test_super:
-    when:
-      and:
-        - equal: [ build_test_super, << pipeline.parameters.trigger_workflow >> ]
-    jobs:
-      - build
-      - test:
-          name: test-phpunit-super
-          command: phpunit
-          instance: $MYSQL_REBUILD_AWS_ACCOUNT_ID.dkr.ecr.$MYSQL_REBUILD_AWS_REGION.amazonaws.com/massgov/mysql-sanitized:super
-          requires: [build]
   # Daily rebuild of our sanitized and super-sanitized mysql data images.
   # The cron time needs to be updated every Fall/Spring for daylight saving time.
   mysql_rebuild:
