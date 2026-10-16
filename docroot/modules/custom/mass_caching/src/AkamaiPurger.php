@@ -19,20 +19,46 @@ class AkamaiPurger extends BaseAkamaiPurger {
    * {@inheritdoc}
    */
   public function invalidate(array $invalidations) {
-    // Keep each invalidation associated with the URL it requests.
     $invalidations_by_url = $this->groupInvalidationsByUrl($invalidations);
-    // Send the URLs remaining after subscribers and validation alter the list.
-    $purge_urls = $this->preparePurgeUrls(array_keys($invalidations_by_url));
+    $purge_urls_by_source = [];
+    $combined_purge_urls = [];
 
-    // URLs removed by subscribers or validation never reach a request chunk.
-    foreach (array_diff(array_keys($invalidations_by_url), $purge_urls) as $url) {
-      $this->recordFailedPurgeAttempts($invalidations_by_url[$url], $this->logger(), 'URL');
+    // Dispatch each source URL separately so event replacements and additions
+    // remain associated with the invalidations that requested them.
+    foreach (array_keys($invalidations_by_url) as $url) {
+      $purge_urls_by_source[$url] = $this->preparePurgeUrls($url);
+      foreach ($purge_urls_by_source[$url] as $purge_url) {
+        $combined_purge_urls[$purge_url] = $purge_url;
+      }
     }
 
+    $purge_results = $this->sendPurgeRequests(array_values($combined_purge_urls));
+    $this->recordInvalidationResults($invalidations_by_url, $purge_urls_by_source, $purge_results);
+  }
+
+  /**
+   * Records each invalidation's result from the URLs produced for it.
+   */
+  private function recordInvalidationResults(array $invalidations_by_url, array $purge_urls_by_source, array $purge_results): void {
+    $successful_urls = array_keys($purge_results, TRUE, TRUE);
+    foreach ($invalidations_by_url as $url => $url_invalidations) {
+      if (!$purge_urls_by_source[$url] || array_diff($purge_urls_by_source[$url], $successful_urls)) {
+        $this->recordFailedPurgeAttempts($url_invalidations, $this->logger(), 'URL');
+        continue;
+      }
+      foreach ($url_invalidations as $invalidation) {
+        $invalidation->setState(InvalidationInterface::SUCCEEDED);
+      }
+    }
+  }
+
+  /**
+   * Sends URLs in chunks and records each URL's request result.
+   */
+  private function sendPurgeRequests(array $combined_purge_urls): array {
+    $purge_results = [];
     // Limit each Akamai request to six URLs.
-    foreach (array_chunk($purge_urls, 6) as $chunk_urls) {
-      // Keep this request's result tied to its matching invalidations.
-      $chunk_invalidations = $this->getInvalidationsForChunk($chunk_urls, $invalidations_by_url);
+    foreach (array_chunk($combined_purge_urls, 6) as $chunk_urls) {
       try {
         $succeeded = $this->purgeUrls($chunk_urls);
       }
@@ -40,15 +66,11 @@ class AkamaiPurger extends BaseAkamaiPurger {
         $this->logger()->error('Akamai URL purge request failed: @message', ['@message' => $e->getMessage()]);
         $succeeded = FALSE;
       }
-      if ($succeeded) {
-        foreach ($chunk_invalidations as $invalidation) {
-          $invalidation->setState(InvalidationInterface::SUCCEEDED);
-        }
-        continue;
+      foreach ($chunk_urls as $url) {
+        $purge_results[$url] = $succeeded;
       }
-
-      $this->recordFailedPurgeAttempts($chunk_invalidations, $this->logger(), 'URL');
     }
+    return $purge_results;
   }
 
   /**
@@ -83,10 +105,10 @@ class AkamaiPurger extends BaseAkamaiPurger {
   }
 
   /**
-   * Allows subscribers to alter URLs and removes invalid values.
+   * Allows subscribers to alter one source URL and removes invalid values.
    */
-  private function preparePurgeUrls(array $urls): array {
-    $event = new AkamaiPurgeEvents($urls);
+  private function preparePurgeUrls(string $url): array {
+    $event = new AkamaiPurgeEvents([$url]);
     $this->eventDispatcher->dispatch($event, AkamaiPurgeEvents::PURGE_CREATION);
 
     $urls = array_unique(array_filter($event->data));
@@ -97,17 +119,6 @@ class AkamaiPurger extends BaseAkamaiPurger {
       }
     }
     return array_values($urls);
-  }
-
-  /**
-   * Gets the invalidations represented by a request chunk.
-   */
-  private function getInvalidationsForChunk(array $chunk, array $invalidations_by_url): array {
-    $invalidations = [];
-    foreach ($chunk as $url) {
-      array_push($invalidations, ...($invalidations_by_url[$url] ?? []));
-    }
-    return $invalidations;
   }
 
   /**

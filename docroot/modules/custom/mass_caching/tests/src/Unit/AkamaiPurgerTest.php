@@ -129,6 +129,84 @@ class AkamaiPurgerTest extends UnitTestCase {
   }
 
   /**
+   * Tests that a rewritten URL completes its source invalidation.
+   */
+  public function testRewrittenUrlSucceeds(): void {
+    $source = 'https://www.mass.gov/node/1';
+    $rewritten = 'https://www.mass.gov/rewritten';
+    $url_assembler = $this->createMock(UnroutedUrlAssemblerInterface::class);
+    $url_assembler->method('assemble')->willReturn($source);
+    $container = new ContainerBuilder();
+    $container->set('unrouted_url_assembler', $url_assembler);
+    \Drupal::setContainer($container);
+
+    $client = $this->getMockBuilder('Drupal\akamai\Plugin\Client\AkamaiClientV3')
+      ->disableOriginalConstructor()
+      ->onlyMethods(['purgeRequest'])
+      ->getMock();
+    $client->expects($this->once())->method('purgeRequest')->with([$rewritten])->willReturn(TRUE);
+
+    $dispatcher = new EventDispatcher();
+    $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use ($rewritten): void {
+      $event->data = [$rewritten];
+    });
+    $purger = $this->getMockBuilder(AkamaiPurger::class)
+      ->disableOriginalConstructor()
+      ->onlyMethods([])
+      ->getMock();
+    $this->setPurgerProperty($purger, 'client', $client);
+    $this->setPurgerProperty($purger, 'eventDispatcher', $dispatcher);
+    $purger->setLogger($this->createMock(LoggerInterface::class));
+
+    $invalidation = $this->createUrlInvalidation(1, $source);
+    $purger->invalidate([$invalidation]);
+
+    $this->assertSame(InvalidationInterface::SUCCEEDED, $invalidation->getState());
+    $this->assertNull($invalidation->getProperty('attempts'));
+  }
+
+  /**
+   * Tests that all URLs added for one invalidation must be purged.
+   */
+  public function testAddedUrlFailureCountsOnce(): void {
+    $source = 'https://www.mass.gov/node/1';
+    $url_assembler = $this->createMock(UnroutedUrlAssemblerInterface::class);
+    $url_assembler->method('assemble')->willReturn($source);
+    $container = new ContainerBuilder();
+    $container->set('unrouted_url_assembler', $url_assembler);
+    \Drupal::setContainer($container);
+
+    $extra_urls = [];
+    for ($id = 1; $id <= 6; $id++) {
+      $extra_urls[] = "https://www.mass.gov/extra/$id";
+    }
+    $client = $this->getMockBuilder('Drupal\akamai\Plugin\Client\AkamaiClientV3')
+      ->disableOriginalConstructor()
+      ->onlyMethods(['purgeRequest'])
+      ->getMock();
+    $client->expects($this->exactly(2))->method('purgeRequest')
+      ->willReturnOnConsecutiveCalls(TRUE, FALSE);
+
+    $dispatcher = new EventDispatcher();
+    $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use ($source, $extra_urls): void {
+      $event->data = [$source, ...$extra_urls];
+    });
+    $purger = $this->getMockBuilder(AkamaiPurger::class)
+      ->disableOriginalConstructor()
+      ->onlyMethods([])
+      ->getMock();
+    $this->setPurgerProperty($purger, 'client', $client);
+    $this->setPurgerProperty($purger, 'eventDispatcher', $dispatcher);
+    $purger->setLogger($this->createMock(LoggerInterface::class));
+
+    $invalidation = $this->createUrlInvalidation(1, $source);
+    $purger->invalidate([$invalidation]);
+
+    $this->assertSame(InvalidationInterface::FAILED, $invalidation->getState());
+    $this->assertSame(1, $invalidation->getProperty('attempts'));
+  }
+
+  /**
    * Tests that a URL removed before sending still gets a retry state.
    */
   public function testRemovedUrlRecordsFailedAttempt(): void {
@@ -147,7 +225,7 @@ class AkamaiPurgerTest extends UnitTestCase {
 
     $dispatcher = new EventDispatcher();
     $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use ($urls): void {
-      $event->data = [$urls[0]];
+      $event->data = $event->data[0] === $urls[0] ? [$urls[0]] : [];
     });
     $purger = $this->getMockBuilder(AkamaiPurger::class)
       ->disableOriginalConstructor()
