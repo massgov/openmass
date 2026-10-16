@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Drupal\Tests\mass_caching\Unit;
 
 use Drupal\akamai\Helper\CacheTagFormatter;
-use Drupal\Core\State\StateInterface;
 use Drupal\mass_caching\AkamaiPurger;
 use Drupal\mass_caching\AkamaiTagPurger;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\TagInvalidation;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -25,19 +25,10 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 class AkamaiTagPurgerTest extends UnitTestCase {
 
   /**
-   * Tests that the custom purgers are swapped into both Akamai definitions.
+   * Tests that both Akamai purgers use their custom classes when enabled.
    */
-  public function testPurgerDefinitionsAreSwapped(): void {
-    $state = $this->createMock(StateInterface::class);
-    $state->expects($this->once())
-      ->method('get')
-      ->with('mass_caching.purger', FALSE)
-      ->willReturn(TRUE);
-
-    $container = new ContainerBuilder();
-    $container->set('state', $state);
-    \Drupal::setContainer($container);
-
+  #[DataProvider('akamaiEnvironmentProvider')]
+  public function testPurgerDefinitionsAreSwapped(string $environment): void {
     if (!function_exists('mass_caching_purge_purgers_alter')) {
       require_once DRUPAL_ROOT . '/modules/custom/mass_caching/mass_caching.module';
     }
@@ -46,12 +37,17 @@ class AkamaiTagPurgerTest extends UnitTestCase {
       'akamai' => ['class' => 'OriginalUrlPurger'],
       'akamai_tag' => ['class' => 'OriginalTagPurger'],
     ];
+    $original_environment = getenv('AH_SITE_ENVIRONMENT');
     $original_purgers = getenv('MASS_PURGERS');
-    putenv('MASS_PURGERS=akamai,akamai_tag');
+    putenv('AH_SITE_ENVIRONMENT=' . $environment);
+    putenv('MASS_PURGERS');
     try {
       mass_caching_purge_purgers_alter($definitions);
     }
     finally {
+      putenv($original_environment === FALSE
+        ? 'AH_SITE_ENVIRONMENT'
+        : 'AH_SITE_ENVIRONMENT=' . $original_environment);
       putenv($original_purgers === FALSE
         ? 'MASS_PURGERS'
         : 'MASS_PURGERS=' . $original_purgers);
@@ -59,6 +55,16 @@ class AkamaiTagPurgerTest extends UnitTestCase {
 
     $this->assertSame(AkamaiPurger::class, $definitions['akamai']['class']);
     $this->assertSame(AkamaiTagPurger::class, $definitions['akamai_tag']['class']);
+  }
+
+  /**
+   * Provides environments where Akamai purging is enabled by default.
+   */
+  public static function akamaiEnvironmentProvider(): array {
+    return [
+      'production' => ['prod'],
+      'test' => ['test'],
+    ];
   }
 
   /**

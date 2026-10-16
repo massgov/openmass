@@ -14,24 +14,12 @@ use Drupal\redirect\Entity\Redirect;
  * Alters the Acquia, Akamai URL, and Akamai tag purger definitions.
  *
  * Enables purgers according to the Acquia environment or local overrides,
- * disables unsupported purgers, and optionally substitutes the custom Akamai
- * purger implementation.
+ * disables unsupported purgers, and uses the custom Akamai purgers.
  *
  * @param array $definitions
  *   All plugin definitions.
  */
 function mass_caching_purge_purgers_alter(array &$definitions): void {
-  if (\Drupal::state()->get('mass_caching.purger', FALSE)) {
-    // For now, we enable this purger via State. When disabled, the standard
-    // Akamai purger is active.
-    if (isset($definitions['akamai'])) {
-      $definitions['akamai']['class'] = AkamaiPurger::class;
-    }
-    if (isset($definitions['akamai_tag'])) {
-      $definitions['akamai_tag']['class'] = AkamaiTagPurger::class;
-    }
-  }
-
   $enabled = PurgerSelection::enabledPurgers(getenv('AH_SITE_ENVIRONMENT'), getenv('MASS_PURGERS'));
   foreach (PurgerSelection::PURGERS as $name) {
     if (!in_array($name, $enabled, TRUE)) {
@@ -39,6 +27,13 @@ function mass_caching_purge_purgers_alter(array &$definitions): void {
       // Keep disabled purgers out of capacity calculations and type discovery.
       unset($definitions[$name]);
     }
+  }
+
+  if (isset($definitions['akamai'])) {
+    $definitions['akamai']['class'] = AkamaiPurger::class;
+  }
+  if (isset($definitions['akamai_tag'])) {
+    $definitions['akamai_tag']['class'] = AkamaiTagPurger::class;
   }
 }
 

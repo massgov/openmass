@@ -2,11 +2,11 @@
 
 namespace Drupal\Tests\mass_caching\Unit;
 
-use Drupal\Core\State\StateInterface;
+use Drupal\mass_caching\AkamaiPurger;
+use Drupal\mass_caching\AkamaiTagPurger;
 use Drupal\mass_caching\PurgerSelection;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
-use Symfony\Component\DependencyInjection\ContainerBuilder;
 
 /**
  * Tests the environment-specific purger definitions.
@@ -50,12 +50,6 @@ class PurgerDefinitionsTest extends UnitTestCase {
     putenv('AH_SITE_ENVIRONMENT');
     putenv('MASS_PURGERS');
 
-    $state = $this->createMock(StateInterface::class);
-    $state->method('get')->willReturn(FALSE);
-    $container = new ContainerBuilder();
-    $container->set('state', $state);
-    \Drupal::setContainer($container);
-
     if (!function_exists('mass_caching_purge_purgers_alter')) {
       require_once DRUPAL_ROOT . '/modules/custom/mass_caching/mass_caching.module';
     }
@@ -69,14 +63,24 @@ class PurgerDefinitionsTest extends UnitTestCase {
       $definitions = $this->definitions();
       mass_caching_purge_purgers_alter($definitions);
       $this->assertSame(['url', 'path'], $definitions['akamai']['types']);
+      $this->assertSame(AkamaiPurger::class, $definitions['akamai']['class']);
       $this->assertArrayNotHasKey('akamai_tag', $definitions);
       $this->assertArrayNotHasKey('acquia_purge', $definitions);
 
       putenv('MASS_PURGERS');
+      putenv('AH_SITE_ENVIRONMENT=dev');
+      $definitions = $this->definitions();
+      mass_caching_purge_purgers_alter($definitions);
+      $this->assertArrayNotHasKey('akamai', $definitions);
+      $this->assertArrayNotHasKey('akamai_tag', $definitions);
+
       putenv('AH_SITE_ENVIRONMENT=prod');
       $definitions = $this->definitions();
       mass_caching_purge_purgers_alter($definitions);
-      $this->assertSame($this->definitions(), $definitions);
+      $expected = $this->definitions();
+      $expected['akamai']['class'] = AkamaiPurger::class;
+      $expected['akamai_tag']['class'] = AkamaiTagPurger::class;
+      $this->assertSame($expected, $definitions);
     }
     finally {
       putenv($original_environment === FALSE
@@ -93,8 +97,8 @@ class PurgerDefinitionsTest extends UnitTestCase {
    */
   private function definitions(): array {
     return [
-      'akamai' => ['types' => ['url', 'path']],
-      'akamai_tag' => ['types' => ['tag']],
+      'akamai' => ['types' => ['url', 'path'], 'class' => 'UpstreamUrlPurger'],
+      'akamai_tag' => ['types' => ['tag'], 'class' => 'UpstreamTagPurger'],
       'acquia_purge' => ['types' => ['url', 'tag', 'everything']],
       'other' => ['types' => ['url']],
     ];
