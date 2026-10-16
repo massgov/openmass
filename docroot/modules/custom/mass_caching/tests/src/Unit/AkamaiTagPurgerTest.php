@@ -10,6 +10,8 @@ use Drupal\mass_caching\AkamaiTagPurger;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\TagInvalidation;
 use Drupal\Tests\UnitTestCase;
+use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Psr7\Request;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
@@ -70,7 +72,8 @@ class AkamaiTagPurgerTest extends UnitTestCase {
   /**
    * Tests that repeated failures are logged and removed from the queue.
    */
-  public function testRepeatedFailuresAreAbandoned(): void {
+  #[DataProvider('purgeFailureProvider')]
+  public function testRepeatedFailuresAreAbandoned(bool $connection_failure): void {
     $container = new ContainerBuilder();
     $container->set('akamai.helper.cachetagformatter', new CacheTagFormatter());
     \Drupal::setContainer($container);
@@ -82,19 +85,20 @@ class AkamaiTagPurgerTest extends UnitTestCase {
     $client->expects($this->exactly(AkamaiTagPurger::MAX_ATTEMPTS))
       ->method('purgeTags')
       ->with(['node_123'])
-      ->willReturn(FALSE);
+      ->willReturnCallback(static function () use ($connection_failure): bool {
+        if ($connection_failure) {
+          throw new ConnectException('Connection timed out', new Request('POST', 'https://example.invalid'));
+        }
+        return FALSE;
+      });
 
+    $errors = [];
     $logger = $this->createMock(LoggerInterface::class);
-    $logger->expects($this->once())
+    $logger->expects($this->exactly($connection_failure ? AkamaiTagPurger::MAX_ATTEMPTS + 1 : 1))
       ->method('error')
-      ->with(
-        'Akamai @type purge failed after @attempts attempts for %item. Removing the invalidation from the queue.',
-        [
-          '@type' => 'cache tag',
-          '@attempts' => AkamaiTagPurger::MAX_ATTEMPTS,
-          '%item' => 'node:123',
-        ]
-      );
+      ->willReturnCallback(static function (string $message, array $context) use (&$errors): void {
+        $errors[] = [$message, $context];
+      });
 
     $purger = $this->getMockBuilder(AkamaiTagPurger::class)
       ->disableOriginalConstructor()
@@ -121,6 +125,30 @@ class AkamaiTagPurgerTest extends UnitTestCase {
         : InvalidationInterface::FAILED;
       $this->assertSame($expected_state, $invalidation->getState());
     }
+
+    $expected_errors = $connection_failure ? array_fill(0, AkamaiTagPurger::MAX_ATTEMPTS, [
+      'Akamai cache tag purge request failed: @message',
+      ['@message' => 'Connection timed out'],
+    ]) : [];
+    $expected_errors[] = [
+      'Akamai @type purge failed after @attempts attempts for %item. Removing the invalidation from the queue.',
+      [
+        '@type' => 'cache tag',
+        '@attempts' => AkamaiTagPurger::MAX_ATTEMPTS,
+        '%item' => 'node:123',
+      ],
+    ];
+    $this->assertSame($expected_errors, $errors);
+  }
+
+  /**
+   * Provides API failures and transport exceptions.
+   */
+  public static function purgeFailureProvider(): array {
+    return [
+      'API failure' => [FALSE],
+      'connection timeout' => [TRUE],
+    ];
   }
 
   /**
