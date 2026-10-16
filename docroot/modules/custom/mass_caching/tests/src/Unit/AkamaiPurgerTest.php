@@ -6,7 +6,9 @@ namespace Drupal\Tests\mass_caching\Unit;
 
 use Drupal\Core\Utility\UnroutedUrlAssemblerInterface;
 use Drupal\akamai\Event\AkamaiPurgeEvents;
+use Drupal\akamai\Helper\CacheTagFormatter;
 use Drupal\mass_caching\AkamaiPurger;
+use Drupal\mass_caching\EventSubscriber\AkamaiHeaderCreationSubscriber;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\PathInvalidation;
 use Drupal\purge\Plugin\Purge\Invalidation\UrlInvalidation;
@@ -163,6 +165,60 @@ class AkamaiPurgerTest extends UnitTestCase {
 
     $this->assertSame(InvalidationInterface::SUCCEEDED, $invalidation->getState());
     $this->assertNull($invalidation->getProperty('attempts'));
+  }
+
+  /**
+   * Tests that path payloads are not hashed and remain relative for Akamai.
+   */
+  public function testPathPurgeIsNotHashed(): void {
+    $path = 'about';
+    $url = 'https://www.mass.gov/node/456';
+    $url_assembler = $this->createMock(UnroutedUrlAssemblerInterface::class);
+    $url_assembler->method('assemble')->willReturn($url);
+    $container = new ContainerBuilder();
+    $container->set('unrouted_url_assembler', $url_assembler);
+    \Drupal::setContainer($container);
+
+    $client = $this->getMockBuilder('Drupal\\akamai\\Plugin\\Client\\AkamaiClientV3')
+      ->disableOriginalConstructor()
+      ->onlyMethods(['purgeRequest'])
+      ->getMock();
+    $client->expects($this->once())
+      ->method('purgeRequest')
+      ->with([$path, $url])
+      ->willReturn(TRUE);
+
+    $dispatcher = new EventDispatcher();
+    $logger = $this->createMock(LoggerInterface::class);
+    $events = [];
+    $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use (&$events): void {
+      $events[] = $event;
+    });
+    $dispatcher->addSubscriber(new AkamaiHeaderCreationSubscriber(new CacheTagFormatter(), $logger));
+    $purger = $this->getMockBuilder(AkamaiPurger::class)
+      ->disableOriginalConstructor()
+      ->onlyMethods([])
+      ->getMock();
+    $this->setPurgerProperty($purger, 'client', $client);
+    $this->setPurgerProperty($purger, 'eventDispatcher', $dispatcher);
+    $purger->setLogger($logger);
+
+    $path_invalidation = new PathInvalidation([], 'path', [
+      'label' => 'Path',
+      'expression_required' => TRUE,
+      'expression_can_be_empty' => TRUE,
+      'expression_must_be_string' => TRUE,
+    ], 1, $path);
+    $path_invalidation->setStateContext('akamai');
+    $url_invalidation = $this->createUrlInvalidation(2, $url);
+
+    $purger->invalidate([$path_invalidation, $url_invalidation]);
+
+    $this->assertCount(2, $events);
+    $this->assertSame(['/' . $path], $events[0]->data);
+    $this->assertSame([$url], $events[1]->data);
+    $this->assertSame(InvalidationInterface::SUCCEEDED, $path_invalidation->getState());
+    $this->assertSame(InvalidationInterface::SUCCEEDED, $url_invalidation->getState());
   }
 
   /**

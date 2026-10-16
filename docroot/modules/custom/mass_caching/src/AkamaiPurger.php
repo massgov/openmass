@@ -25,8 +25,8 @@ class AkamaiPurger extends BaseAkamaiPurger {
 
     // Dispatch each source URL separately so event replacements and additions
     // remain associated with the invalidations that requested them.
-    foreach (array_keys($invalidations_by_url) as $url) {
-      $purge_urls_by_source[$url] = $this->preparePurgeUrls($url);
+    foreach ($invalidations_by_url as $url => $url_invalidations) {
+      $purge_urls_by_source[$url] = $this->preparePurgeUrls($url, $url_invalidations[0]->getPluginId() === 'path');
       foreach ($purge_urls_by_source[$url] as $purge_url) {
         $combined_purge_urls[$purge_url] = $purge_url;
       }
@@ -107,15 +107,25 @@ class AkamaiPurger extends BaseAkamaiPurger {
   /**
    * Allows subscribers to alter one source URL and removes invalid values.
    */
-  private function preparePurgeUrls(string $url): array {
-    $event = new AkamaiPurgeEvents([$url]);
+  private function preparePurgeUrls(string $url, bool $is_path): array {
+    if ($url === '') {
+      return [];
+    }
+
+    // A leading slash lets the shared purge-event subscriber recognize paths
+    // instead of hashing them as tags. Restore the original path for Akamai.
+    $event_url = $is_path ? '/' . ltrim($url, '/') : $url;
+    $event = new AkamaiPurgeEvents([$event_url]);
     $this->eventDispatcher->dispatch($event, AkamaiPurgeEvents::PURGE_CREATION);
 
     $urls = array_unique(array_filter($event->data));
-    foreach ($urls as $key => $url) {
-      if (!is_string($url)) {
-        $this->logger()->warning('Skipping the purge of a non-string: ' . var_export($url, TRUE));
+    foreach ($urls as $key => $purge_url) {
+      if (!is_string($purge_url)) {
+        $this->logger()->warning('Skipping the purge of a non-string: ' . var_export($purge_url, TRUE));
         unset($urls[$key]);
+      }
+      elseif ($is_path && $purge_url === $event_url) {
+        $urls[$key] = $url;
       }
     }
     return array_values($urls);
