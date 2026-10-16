@@ -15,6 +15,7 @@ use Drupal\purge\Plugin\Purge\Invalidation\PathInvalidation;
 use Drupal\purge\Plugin\Purge\Invalidation\UrlInvalidation;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Log\LoggerInterface;
@@ -167,6 +168,51 @@ class AkamaiPurgerTest extends UnitTestCase {
     $this->assertSame([$url], $events[1]->data);
     $this->assertSame(InvalidationInterface::SUCCEEDED, $path_invalidation->getState());
     $this->assertSame(InvalidationInterface::SUCCEEDED, $url_invalidation->getState());
+  }
+
+  /**
+   * Tests mixed batches dispatch once per source and update all duplicates.
+   */
+  #[DataProvider('duplicateSourceResults')]
+  public function testDuplicateSourcesInMixedBatch(bool $succeeded): void {
+    $path = 'about';
+    $url = 'https://www.mass.gov/about';
+    $client = $this->createClient();
+    $client->expects($this->once())
+      ->method('purgeRequest')
+      ->with([$path, $url])
+      ->willReturn($succeeded);
+
+    $event_payloads = [];
+    $dispatcher = new EventDispatcher();
+    $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use (&$event_payloads): void {
+      $event_payloads[] = $event->data;
+    });
+    $purger = $this->createPurger($client, $dispatcher);
+    $invalidations = [
+      $this->createPathInvalidation(1, $path),
+      $this->createUrlInvalidation(2, $url),
+      $this->createUrlInvalidation(3, $url),
+      $this->createPathInvalidation(4, $path),
+    ];
+
+    $purger->invalidate($invalidations);
+
+    $this->assertSame([['/' . $path], [$url]], $event_payloads);
+    foreach ($invalidations as $invalidation) {
+      $this->assertSame($succeeded ? InvalidationInterface::SUCCEEDED : InvalidationInterface::FAILED, $invalidation->getState());
+      $this->assertSame($succeeded ? NULL : 1, $invalidation->getProperty('attempts'));
+    }
+  }
+
+  /**
+   * Provides request outcomes for duplicate source invalidations.
+   */
+  public static function duplicateSourceResults(): array {
+    return [
+      'successful request' => [TRUE],
+      'failed request' => [FALSE],
+    ];
   }
 
   /**

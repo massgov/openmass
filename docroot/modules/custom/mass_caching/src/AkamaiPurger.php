@@ -19,34 +19,34 @@ class AkamaiPurger extends BaseAkamaiPurger {
    * {@inheritdoc}
    */
   public function invalidate(array $invalidations) {
-    $invalidations_by_url = $this->groupInvalidationsByUrl($invalidations);
+    $invalidation_groups = $this->groupInvalidationsBySource($invalidations);
     $purge_urls_by_source = [];
     $combined_purge_urls = [];
 
-    // Dispatch each source URL separately so event replacements and additions
+    // Dispatch each source path or URL separately so replacements and additions
     // remain associated with the invalidations that requested them.
-    foreach ($invalidations_by_url as $url => $url_invalidations) {
-      $purge_urls_by_source[$url] = $this->preparePurgeUrls($url, $url_invalidations[0]->getPluginId() === 'path');
-      foreach ($purge_urls_by_source[$url] as $purge_url) {
+    foreach ($invalidation_groups as $source_key => $group) {
+      $purge_urls_by_source[$source_key] = $this->preparePurgeUrls($group['target'], $group['type'] === 'path');
+      foreach ($purge_urls_by_source[$source_key] as $purge_url) {
         $combined_purge_urls[$purge_url] = $purge_url;
       }
     }
 
     $purge_results = $this->sendPurgeRequests(array_values($combined_purge_urls));
-    $this->recordInvalidationResults($invalidations_by_url, $purge_urls_by_source, $purge_results);
+    $this->recordInvalidationResults($invalidation_groups, $purge_urls_by_source, $purge_results);
   }
 
   /**
    * Records each invalidation's result from the URLs produced for it.
    */
-  private function recordInvalidationResults(array $invalidations_by_url, array $purge_urls_by_source, array $purge_results): void {
+  private function recordInvalidationResults(array $invalidation_groups, array $purge_urls_by_source, array $purge_results): void {
     $successful_urls = array_keys($purge_results, TRUE, TRUE);
-    foreach ($invalidations_by_url as $url => $url_invalidations) {
-      if (!$purge_urls_by_source[$url] || array_diff($purge_urls_by_source[$url], $successful_urls)) {
-        $this->recordFailedPurgeAttempts($url_invalidations, $this->logger(), 'URL');
+    foreach ($invalidation_groups as $source_key => $group) {
+      if (!$purge_urls_by_source[$source_key] || array_diff($purge_urls_by_source[$source_key], $successful_urls)) {
+        $this->recordFailedPurgeAttempts($group['invalidations'], $this->logger(), 'URL');
         continue;
       }
-      foreach ($url_invalidations as $invalidation) {
+      foreach ($group['invalidations'] as $invalidation) {
         $invalidation->setState(InvalidationInterface::SUCCEEDED);
       }
     }
@@ -74,26 +74,42 @@ class AkamaiPurger extends BaseAkamaiPurger {
   }
 
   /**
-   * Groups invalidations by the URL sent to Akamai.
+   * Groups invalidations by plugin type and target path or URL.
+   *
+   * Each group carries its type explicitly, so preparing its purge payload
+   * never depends on inspecting a representative invalidation.
+   *
+   * @return array
+   *   Groups keyed by type and target, each containing the type, target,
+   *   and matching invalidations.
    */
-  private function groupInvalidationsByUrl(array $invalidations): array {
-    $invalidations_by_url = [];
+  private function groupInvalidationsBySource(array $invalidations): array {
+    $groups = [];
     foreach ($invalidations as $invalidation) {
       $invalidation->setState(InvalidationInterface::PROCESSING);
-      if (!in_array($invalidation->getPluginId(), ['path', 'url'], TRUE)) {
+      $type = $invalidation->getPluginId();
+      if (!in_array($type, ['path', 'url'], TRUE)) {
         $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
         continue;
       }
-      $url = $this->getInvalidationUrl($invalidation);
-      $invalidations_by_url[$url][] = $invalidation;
+      $target = $this->getInvalidationTarget($invalidation);
+      $source_key = $type . ':' . $target;
+      if (!isset($groups[$source_key])) {
+        $groups[$source_key] = [
+          'type' => $type,
+          'target' => $target,
+          'invalidations' => [],
+        ];
+      }
+      $groups[$source_key]['invalidations'][] = $invalidation;
     }
-    return $invalidations_by_url;
+    return $groups;
   }
 
   /**
-   * Returns the URL sent to Akamai for an invalidation.
+   * Returns the target path or URL sent to Akamai for an invalidation.
    */
-  private function getInvalidationUrl(InvalidationInterface $invalidation): string {
+  private function getInvalidationTarget(InvalidationInterface $invalidation): string {
     if ($invalidation->getPluginId() === 'path') {
       return $this->normalizePath($invalidation->getExpression());
     }
@@ -105,16 +121,16 @@ class AkamaiPurger extends BaseAkamaiPurger {
   }
 
   /**
-   * Allows subscribers to alter one source URL and removes invalid values.
+   * Alters one source path or URL via subscribers and removes invalid values.
    */
-  private function preparePurgeUrls(string $url, bool $is_path): array {
-    if ($url === '') {
+  private function preparePurgeUrls(string $target, bool $is_path): array {
+    if ($target === '') {
       return [];
     }
 
     // A leading slash lets the shared purge-event subscriber recognize paths
     // instead of hashing them as tags. Restore the original path for Akamai.
-    $event_url = $is_path ? '/' . ltrim($url, '/') : $url;
+    $event_url = $is_path ? '/' . ltrim($target, '/') : $target;
     $event = new AkamaiPurgeEvents([$event_url]);
     $this->eventDispatcher->dispatch($event, AkamaiPurgeEvents::PURGE_CREATION);
 
@@ -125,7 +141,7 @@ class AkamaiPurger extends BaseAkamaiPurger {
         unset($urls[$key]);
       }
       elseif ($is_path && $purge_url === $event_url) {
-        $urls[$key] = $url;
+        $urls[$key] = $target;
       }
     }
     return array_values($urls);
