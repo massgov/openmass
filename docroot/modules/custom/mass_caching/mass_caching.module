@@ -5,6 +5,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\file\FileInterface;
 use Drupal\mass_caching\AkamaiPurger;
 use Drupal\mass_caching\AkamaiTagPurger;
+use Drupal\mass_caching\PurgerSelection;
 use Drupal\media\MediaInterface;
 use Drupal\path_alias\PathAliasInterface;
 use Drupal\redirect\Entity\Redirect;
@@ -31,34 +32,9 @@ function mass_caching_purge_purgers_alter(array &$definitions): void {
     }
   }
 
-  $enabled = [
-    'akamai' => FALSE,
-    'akamai_tag' => FALSE,
-    'acquia_purge' => FALSE,
-  ];
-
-  $env = getenv('AH_SITE_ENVIRONMENT');
-  if ($env) {
-    // We are in an Acquia env.
-    $enabled['acquia_purge'] = TRUE;
-    if (in_array($env, ['test', 'prod'], TRUE)) {
-      $enabled['akamai'] = TRUE;
-      $enabled['akamai_tag'] = TRUE;
-    }
-  }
-
-  if ($purgers = getenv('MASS_PURGERS')) {
-    // Force the specified purgers on. Used for local testing.
-    foreach (explode(',', $purgers) as $purger) {
-      $purger = trim($purger);
-      if (isset($enabled[$purger])) {
-        $enabled[$purger] = TRUE;
-      }
-    }
-  }
-
-  foreach ($enabled as $name => $is_enabled) {
-    if (!$is_enabled) {
+  $enabled = PurgerSelection::enabledPurgers(getenv('AH_SITE_ENVIRONMENT'), getenv('MASS_PURGERS'));
+  foreach (PurgerSelection::PURGERS as $name) {
+    if (!in_array($name, $enabled, TRUE)) {
       // Purge ignores configured purgers whose plugin definitions are absent.
       // Keep disabled purgers out of capacity calculations and type discovery.
       unset($definitions[$name]);
