@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\mass_caching;
 
+use Drupal\akamai\Plugin\Purge\Purger\AkamaiTagPurger as BaseAkamaiTagPurger;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 
 /**
@@ -11,17 +12,9 @@ use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
  *
  * This purger class gets swapped in via mass_caching_purge_purgers_alter().
  */
-class AkamaiTagPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiTagPurger {
+class AkamaiTagPurger extends BaseAkamaiTagPurger {
 
-  /**
-   * The maximum number of failed attempts before abandoning an invalidation.
-   */
-  public const MAX_ATTEMPTS = 3;
-
-  /**
-   * The invalidation property used to persist the attempt count.
-   */
-  public const ATTEMPTS_PROPERTY = 'attempts';
+  use AkamaiPurgeRetryTrait;
 
   /**
    * {@inheritdoc}
@@ -29,22 +22,18 @@ class AkamaiTagPurger extends \Drupal\akamai\Plugin\Purge\Purger\AkamaiTagPurger
   public function invalidate(array $invalidations) {
     parent::invalidate($invalidations);
 
+    $failed_invalidations = [];
     foreach ($invalidations as $invalidation) {
-      if ($invalidation->getState() !== InvalidationInterface::FAILED) {
-        continue;
-      }
-
-      $attempts = (int) $invalidation->getProperty(self::ATTEMPTS_PROPERTY) + 1;
-      $invalidation->setProperty(self::ATTEMPTS_PROPERTY, $attempts);
-
-      if ($attempts >= self::MAX_ATTEMPTS) {
-        $this->logger->error('Akamai tag purge failed after @attempts attempts for cache tag %tag. Removing the invalidation from the queue.', [
-          '@attempts' => $attempts,
-          '%tag' => $invalidation->getExpression(),
-        ]);
-        $invalidation->setState(InvalidationInterface::SUCCEEDED);
+      if ($invalidation->getState() === InvalidationInterface::FAILED) {
+        $failed_invalidations[] = $invalidation;
       }
     }
+
+    $this->recordFailedPurgeAttempts(
+      $failed_invalidations,
+      $this->logger,
+      'cache tag'
+    );
   }
 
 }

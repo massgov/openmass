@@ -46,7 +46,16 @@ class AkamaiTagPurgerTest extends UnitTestCase {
       'akamai' => ['class' => 'OriginalUrlPurger'],
       'akamai_tag' => ['class' => 'OriginalTagPurger'],
     ];
-    mass_caching_purge_purgers_alter($definitions);
+    $original_purgers = getenv('MASS_PURGERS');
+    putenv('MASS_PURGERS=akamai,akamai_tag');
+    try {
+      mass_caching_purge_purgers_alter($definitions);
+    }
+    finally {
+      putenv($original_purgers === FALSE
+        ? 'MASS_PURGERS'
+        : 'MASS_PURGERS=' . $original_purgers);
+    }
 
     $this->assertSame(AkamaiPurger::class, $definitions['akamai']['class']);
     $this->assertSame(AkamaiTagPurger::class, $definitions['akamai_tag']['class']);
@@ -73,10 +82,11 @@ class AkamaiTagPurgerTest extends UnitTestCase {
     $logger->expects($this->once())
       ->method('error')
       ->with(
-        'Akamai tag purge failed after @attempts attempts for cache tag %tag. Removing the invalidation from the queue.',
+        'Akamai @type purge failed after @attempts attempts for %item. Removing the invalidation from the queue.',
         [
+          '@type' => 'cache tag',
           '@attempts' => AkamaiTagPurger::MAX_ATTEMPTS,
-          '%tag' => 'node:123',
+          '%item' => 'node:123',
         ]
       );
 
@@ -99,7 +109,7 @@ class AkamaiTagPurgerTest extends UnitTestCase {
     for ($attempt = 1; $attempt <= AkamaiTagPurger::MAX_ATTEMPTS; $attempt++) {
       $purger->invalidate([$invalidation]);
 
-      $this->assertSame($attempt, $invalidation->getProperty(AkamaiTagPurger::ATTEMPTS_PROPERTY));
+      $this->assertSame($attempt, $invalidation->getProperty('attempts'));
       $expected_state = $attempt === AkamaiTagPurger::MAX_ATTEMPTS
         ? InvalidationInterface::SUCCEEDED
         : InvalidationInterface::FAILED;
