@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Drupal\mass_admin_audit_trail\Hook;
 
+use Drupal\admin_audit_trail\Hook\AdminAuditTrailHooks as ContribAdminAuditTrailHooks;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Query\Delete;
-use Drupal\Core\Extension\ProceduralCall;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Hook\Attribute\Hook;
 use Drupal\Core\Hook\Attribute\RemoveHook;
@@ -61,7 +61,7 @@ class MassAdminAuditTrailHooks {
    * Applies the audit trail retention policy during cron.
    */
   #[Hook('cron')]
-  #[RemoveHook('cron', ProceduralCall::class, 'admin_audit_trail_cron')]
+  #[RemoveHook('cron', ContribAdminAuditTrailHooks::class, 'cron')]
   public function cron(): void {
     $this->applyRetentionPolicy();
   }
