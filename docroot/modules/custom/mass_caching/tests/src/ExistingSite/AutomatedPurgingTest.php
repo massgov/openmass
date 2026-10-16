@@ -21,27 +21,6 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
   private $purgerOverrideBeforeSetUp;
 
   /**
-   * Tests that an unknown purger override cannot overwrite local variables.
-   */
-  public function testUnknownPurgerOverrideIsIgnored(): void {
-    $definitions = ['sentinel' => []];
-    $expected = $definitions;
-    $purger_override_before_test = getenv('MASS_PURGERS');
-
-    putenv('MASS_PURGERS=definitions');
-    try {
-      mass_caching_purge_purgers_alter($definitions);
-    }
-    finally {
-      putenv($purger_override_before_test === FALSE
-        ? 'MASS_PURGERS'
-        : 'MASS_PURGERS=' . $purger_override_before_test);
-    }
-
-    $this->assertSame($expected, $definitions);
-  }
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {

@@ -7,12 +7,12 @@ use Drupal\mass_caching\AkamaiTagPurger;
 use Drupal\mass_caching\PurgerSelection;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
 
 /**
  * Tests the environment-specific purger definitions.
- *
- * @group mass_caching
  */
+#[Group('mass_caching')]
 class PurgerDefinitionsTest extends UnitTestCase {
 
   /**
@@ -58,6 +58,12 @@ class PurgerDefinitionsTest extends UnitTestCase {
       $definitions = $this->definitions();
       mass_caching_purge_purgers_alter($definitions);
       $this->assertSame(['other' => ['types' => ['url']]], $definitions);
+
+      // An unknown override must not overwrite the hook's local variables.
+      putenv('MASS_PURGERS=definitions');
+      $definitions = ['sentinel' => []];
+      mass_caching_purge_purgers_alter($definitions);
+      $this->assertSame(['sentinel' => []], $definitions);
 
       putenv('MASS_PURGERS=akamai');
       $definitions = $this->definitions();
