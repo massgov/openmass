@@ -70,11 +70,6 @@ class SendgridTemplateSubscriber implements EventSubscriberInterface {
     $email->setTemplateId($template_id);
     $email->addDynamicTemplateDatas($template_data);
 
-    $asm_group_id = $config->get('asm_group_id');
-    if (is_numeric($asm_group_id) && (int) $asm_group_id > 0) {
-      $email->setAsm((int) $asm_group_id);
-    }
-
     $email->setClickTracking(FALSE, FALSE);
     $email->setOpenTracking(FALSE);
   }

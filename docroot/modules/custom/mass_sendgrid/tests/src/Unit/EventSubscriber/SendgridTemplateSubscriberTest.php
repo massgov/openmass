@@ -32,7 +32,7 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
    */
   public function testApplyTemplate(): void {
     $subscriber = new SendgridTemplateSubscriber(
-      $this->createConfigFactory('d-1234567890', 42),
+      $this->createConfigFactory('d-1234567890'),
     );
     $email = $this->createEmail();
 
@@ -43,10 +43,10 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
       'subject' => 'Test subject',
       'content' => '<p>Test body</p>',
     ], $email->getDynamicTemplateDatas());
-    $this->assertSame(42, $email->getAsm()->getGroupId()->getGroupId());
 
     $payload = json_decode(json_encode($email, JSON_THROW_ON_ERROR), TRUE, 512, JSON_THROW_ON_ERROR);
     $this->assertSame('d-1234567890', $payload['template_id']);
+    $this->assertArrayNotHasKey('asm', $payload);
     $this->assertSame([
       'subject' => 'Test subject',
       'content' => '<p>Test body</p>',
@@ -117,11 +117,10 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
   /**
    * Creates a config factory that returns the requested template ID.
    */
-  private function createConfigFactory(string $template_id, int $asm_group_id = 0): ConfigFactoryInterface {
+  private function createConfigFactory(string $template_id): ConfigFactoryInterface {
     $sendgrid_config = $this->createMock(ImmutableConfig::class);
     $sendgrid_config->method('get')->willReturnMap([
       ['template_id', $template_id],
-      ['asm_group_id', $asm_group_id],
       ['from_email', 'configured-sender@example.com'],
     ]);
     $site_config = $this->createMock(ImmutableConfig::class);
