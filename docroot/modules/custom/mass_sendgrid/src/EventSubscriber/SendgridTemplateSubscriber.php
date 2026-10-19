@@ -44,13 +44,14 @@ class SendgridTemplateSubscriber implements EventSubscriberInterface {
     }
 
     $site_config = $this->configFactory->get('system.site');
-    $reply_to = $site_config->get('mail');
-    if (!is_string($reply_to) || $reply_to === '') {
-      throw new \LogicException('The system.site mail configuration value is required.');
-    }
-
     $email->setFrom($from_email, $site_config->get('name'));
-    $email->setReplyTo($reply_to);
+    if (!$email->getReplyTo()) {
+      $reply_to = $site_config->get('mail');
+      if (!is_string($reply_to) || $reply_to === '') {
+        throw new \LogicException('The system.site mail configuration value is required.');
+      }
+      $email->setReplyTo($reply_to);
+    }
 
     // The HTML has already passed through the configured Drupal text format
     // and must not be escaped before template expansion.

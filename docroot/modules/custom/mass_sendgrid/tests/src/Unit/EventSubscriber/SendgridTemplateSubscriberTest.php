@@ -64,11 +64,28 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
     ], $payload['personalizations'][0]['custom_args']);
     $this->assertSame('configured-sender@example.com', $payload['from']['email']);
     $this->assertSame('Mass.gov', $payload['from']['name']);
-    $this->assertSame('DigitalSupport@mass.gov', $payload['reply_to']['email']);
+    $this->assertSame('reply@example.com', $payload['reply_to']['email']);
     $tracking = $email->getTrackingSettings();
     $this->assertFalse($tracking->getClickTracking()->getEnable());
     $this->assertFalse($tracking->getClickTracking()->getEnableText());
     $this->assertFalse($tracking->getOpenTracking()->getEnable());
+  }
+
+  /**
+   * Tests the site address is used when the caller did not set Reply-To.
+   */
+  public function testDefaultReplyTo(): void {
+    $subscriber = new SendgridTemplateSubscriber(
+      $this->createConfigFactory('d-1234567890'),
+    );
+    $email = new Mail();
+    $email->setSubject('Test subject');
+    $email->addTo('recipient@example.com');
+    $email->addContent('text/html', '<p>Test body</p>');
+
+    $subscriber->applyTemplate($this->createEvent($email));
+
+    $this->assertSame('DigitalSupport@mass.gov', $email->getReplyTo()->getEmail());
   }
 
   /**
