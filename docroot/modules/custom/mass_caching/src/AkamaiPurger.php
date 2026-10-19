@@ -23,17 +23,17 @@ class AkamaiPurger extends BaseAkamaiPurger {
     $urls_to_clear = [];
     foreach ($invalidations as $key => $invalidation) {
       $invalidation->setState(InvalidationInterface::PROCESSING);
-      $type = $invalidation->getPluginId();
-      if (!in_array($type, ['path', 'url'], TRUE)) {
+      $invalidation_type = $invalidation->getPluginId();
+      if (!in_array($invalidation_type, ['path', 'url'], TRUE)) {
         $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
         continue;
       }
-      $target = $type === 'path'
+      $target = $invalidation_type === 'path'
         ? $this->normalizePath($invalidation->getExpression())
         : $invalidation->getUrl()->toString();
       $targets[$key] = $target;
       // A leading slash prevents relative paths from being hashed as tags.
-      $urls_to_clear[$key] = $type === 'path' && $target !== '' ? '/' . ltrim($target, '/') : $target;
+      $urls_to_clear[$key] = $invalidation_type === 'path' && $target !== '' ? '/' . ltrim($target, '/') : $target;
     }
 
     $event = new AkamaiPurgeEvents($urls_to_clear);
