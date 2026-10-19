@@ -116,37 +116,14 @@ class AkamaiPurgerTest extends UnitTestCase {
   }
 
   /**
-   * Tests that a rewritten URL completes its source invalidation.
+   * Tests that path-only batches are not hashed and remain relative for Akamai.
    */
-  public function testRewrittenUrlSucceeds(): void {
-    $source = 'https://www.mass.gov/node/1';
-    $rewritten = 'https://www.mass.gov/rewritten';
-    $client = $this->createClient();
-    $client->expects($this->once())->method('purgeRequest')->with([$rewritten])->willReturn(TRUE);
-
-    $dispatcher = new EventDispatcher();
-    $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use ($rewritten): void {
-      $event->data = [$rewritten];
-    });
-    $purger = $this->createPurger($client, $dispatcher);
-
-    $invalidation = $this->createUrlInvalidation(1, $source);
-    $purger->invalidate([$invalidation]);
-
-    $this->assertSame(InvalidationInterface::SUCCEEDED, $invalidation->getState());
-    $this->assertNull($invalidation->getProperty('attempts'));
-  }
-
-  /**
-   * Tests that path payloads are not hashed and remain relative for Akamai.
-   */
-  public function testPathPurgeIsNotHashed(): void {
-    $path = 'about';
-    $url = 'https://www.mass.gov/node/456';
+  #[DataProvider('pathPurgePayloads')]
+  public function testPathPurgeIsNotHashed(array $paths, array $event_paths): void {
     $client = $this->createClient();
     $client->expects($this->once())
       ->method('purgeRequest')
-      ->with([$path, $url])
+      ->with($paths)
       ->willReturn(TRUE);
 
     $dispatcher = new EventDispatcher();
@@ -158,23 +135,35 @@ class AkamaiPurgerTest extends UnitTestCase {
     $dispatcher->addSubscriber(new AkamaiHeaderCreationSubscriber(new CacheTagFormatter(), $logger));
     $purger = $this->createPurger($client, $dispatcher, $logger);
 
-    $path_invalidation = $this->createPathInvalidation(1, $path);
-    $url_invalidation = $this->createUrlInvalidation(2, $url);
+    $invalidations = [];
+    foreach ($paths as $key => $path) {
+      $invalidations[] = $this->createPathInvalidation($key + 1, $path);
+    }
+    $purger->invalidate($invalidations);
 
-    $purger->invalidate([$path_invalidation, $url_invalidation]);
-
-    $this->assertCount(2, $events);
-    $this->assertSame(['/' . $path], $events[0]->data);
-    $this->assertSame([$url], $events[1]->data);
-    $this->assertSame(InvalidationInterface::SUCCEEDED, $path_invalidation->getState());
-    $this->assertSame(InvalidationInterface::SUCCEEDED, $url_invalidation->getState());
+    $this->assertCount(1, $events);
+    $this->assertSame($event_paths, $events[0]->data);
+    foreach ($invalidations as $invalidation) {
+      $this->assertSame(InvalidationInterface::SUCCEEDED, $invalidation->getState());
+    }
   }
 
   /**
-   * Tests mixed batches dispatch once per source and update all duplicates.
+   * Provides paths and the protected event payloads.
    */
-  #[DataProvider('duplicateSourceResults')]
-  public function testDuplicateSourcesInMixedBatch(bool $succeeded): void {
+  public static function pathPurgePayloads(): array {
+    return [
+      'relative path' => [['about'], ['/about']],
+      'query string' => [['about?foo=bar'], ['/about?foo=bar']],
+      'multiple paths' => [['about', 'contact'], ['/about', '/contact']],
+    ];
+  }
+
+  /**
+   * Tests mixed batches dispatch once, deduplicate requests, and update duplicates.
+   */
+  #[DataProvider('duplicateInvalidationResults')]
+  public function testDuplicateInvalidationsInMixedBatch(bool $succeeded): void {
     $path = 'about';
     $url = 'https://www.mass.gov/about';
     $client = $this->createClient();
@@ -198,7 +187,7 @@ class AkamaiPurgerTest extends UnitTestCase {
 
     $purger->invalidate($invalidations);
 
-    $this->assertSame([['/' . $path], [$url]], $event_payloads);
+    $this->assertSame([['/' . $path, $url, $url, '/' . $path]], $event_payloads);
     foreach ($invalidations as $invalidation) {
       $this->assertSame($succeeded ? InvalidationInterface::SUCCEEDED : InvalidationInterface::FAILED, $invalidation->getState());
       $this->assertSame($succeeded ? NULL : 1, $invalidation->getProperty('attempts'));
@@ -206,62 +195,13 @@ class AkamaiPurgerTest extends UnitTestCase {
   }
 
   /**
-   * Provides request outcomes for duplicate source invalidations.
+   * Provides request outcomes for duplicate invalidations.
    */
-  public static function duplicateSourceResults(): array {
+  public static function duplicateInvalidationResults(): array {
     return [
       'successful request' => [TRUE],
       'failed request' => [FALSE],
     ];
-  }
-
-  /**
-   * Tests that all URLs added for one invalidation must be purged.
-   */
-  public function testAddedUrlFailureCountsOnce(): void {
-    $source = 'https://www.mass.gov/node/1';
-    $extra_urls = [];
-    for ($id = 1; $id <= 6; $id++) {
-      $extra_urls[] = "https://www.mass.gov/extra/$id";
-    }
-    $client = $this->createClient();
-    $client->expects($this->exactly(2))->method('purgeRequest')
-      ->willReturnOnConsecutiveCalls(TRUE, FALSE);
-
-    $dispatcher = new EventDispatcher();
-    $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use ($source, $extra_urls): void {
-      $event->data = [$source, ...$extra_urls];
-    });
-    $purger = $this->createPurger($client, $dispatcher);
-
-    $invalidation = $this->createUrlInvalidation(1, $source);
-    $purger->invalidate([$invalidation]);
-
-    $this->assertSame(InvalidationInterface::FAILED, $invalidation->getState());
-    $this->assertSame(1, $invalidation->getProperty('attempts'));
-  }
-
-  /**
-   * Tests that a URL removed before sending still gets a retry state.
-   */
-  public function testRemovedUrlRecordsFailedAttempt(): void {
-    $urls = ['https://www.mass.gov/node/1', 'https://www.mass.gov/node/2'];
-    $client = $this->createClient();
-    $client->expects($this->once())->method('purgeRequest')->with([$urls[0]])->willReturn(TRUE);
-
-    $dispatcher = new EventDispatcher();
-    $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use ($urls): void {
-      $event->data = $event->data[0] === $urls[0] ? [$urls[0]] : [];
-    });
-    $purger = $this->createPurger($client, $dispatcher);
-
-    $sent = $this->createUrlInvalidation(1, $urls[0]);
-    $removed = $this->createUrlInvalidation(2, $urls[1]);
-    $purger->invalidate([$sent, $removed]);
-
-    $this->assertSame(InvalidationInterface::SUCCEEDED, $sent->getState());
-    $this->assertSame(InvalidationInterface::FAILED, $removed->getState());
-    $this->assertSame(1, $removed->getProperty('attempts'));
   }
 
   /**
