@@ -10,12 +10,6 @@ reply-to address, and one SendGrid Dynamic Template for all messages.
 - `MASS_SENDGRID_TEMPLATE_ID`: the Dynamic Template ID, including its `d-`
   prefix.
 
-## Transactional delivery
-
-Drupal does not assign these messages to an ASM unsubscribe group. The shared
-template must not contain ASM unsubscribe or preferences links: opting out of
-one message must not suppress unrelated system notifications.
-
 ## Dynamic template
 
 The template receives the rendered Drupal email as `content` and its plain-text
