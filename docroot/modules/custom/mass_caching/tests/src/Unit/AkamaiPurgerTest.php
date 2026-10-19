@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Drupal\Tests\mass_caching\Unit;
 
+use ColinODell\PsrTestLogger\TestLogger;
 use Drupal\Core\Utility\UnroutedUrlAssemblerInterface;
 use Drupal\akamai\Event\AkamaiPurgeEvents;
 use Drupal\akamai\Helper\CacheTagFormatter;
@@ -12,6 +13,7 @@ use Drupal\mass_caching\AkamaiPurger;
 use Drupal\mass_caching\EventSubscriber\AkamaiHeaderCreationSubscriber;
 use Drupal\purge\Plugin\Purge\Invalidation\InvalidationInterface;
 use Drupal\purge\Plugin\Purge\Invalidation\PathInvalidation;
+use Drupal\purge\Plugin\Purge\Invalidation\TagInvalidation;
 use Drupal\purge\Plugin\Purge\Invalidation\UrlInvalidation;
 use Drupal\Tests\UnitTestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -45,26 +47,21 @@ class AkamaiPurgerTest extends UnitTestCase {
   /**
    * Tests that repeated request failures are logged and abandoned.
    */
-  public function testRepeatedFailuresAreAbandoned(): void {
+  #[DataProvider('purgeFailureProvider')]
+  public function testRepeatedFailuresAreAbandoned(bool $request_exception): void {
     $url = 'https://www.mass.gov/node/123';
     $client = $this->createClient();
     $client->expects($this->exactly(AkamaiPurger::MAX_ATTEMPTS))
       ->method('purgeRequest')
       ->with([$url])
-      ->willReturn(FALSE);
+      ->willReturnCallback(static function () use ($request_exception): bool {
+        if ($request_exception) {
+          throw new \RuntimeException('Connection lost');
+        }
+        return FALSE;
+      });
 
-    $logger = $this->createMock(LoggerInterface::class);
-    $logger->expects($this->once())
-      ->method('error')
-      ->with(
-        'Akamai @type purge failed after @attempts attempts for %item. Removing the invalidation from the queue.',
-        [
-          '@type' => 'URL',
-          '@attempts' => AkamaiPurger::MAX_ATTEMPTS,
-          '%item' => $url,
-        ]
-      );
-
+    $logger = new TestLogger();
     $purger = $this->createPurger($client, logger: $logger);
 
     $invalidation = $this->createUrlInvalidation(1, $url);
@@ -78,6 +75,30 @@ class AkamaiPurgerTest extends UnitTestCase {
         : InvalidationInterface::FAILED;
       $this->assertSame($expected_state, $invalidation->getState());
     }
+
+    $this->assertTrue($logger->hasError([
+      'message' => 'Akamai @type purge failed after @attempts attempts for %item. Removing the invalidation from the queue.',
+      'context' => [
+        '@type' => 'URL',
+        '@attempts' => AkamaiPurger::MAX_ATTEMPTS,
+        '%item' => $url,
+      ],
+    ]));
+    $this->assertSame($request_exception, $logger->hasError([
+      'message' => 'Akamai URL purge request failed: @message',
+      'context' => ['@message' => 'Connection lost'],
+    ]));
+    $this->assertCount($request_exception ? AkamaiPurger::MAX_ATTEMPTS + 1 : 1, $logger->records);
+  }
+
+  /**
+   * Provides unsuccessful responses and request exceptions.
+   */
+  public static function purgeFailureProvider(): array {
+    return [
+      'unsuccessful response' => [FALSE],
+      'request exception' => [TRUE],
+    ];
   }
 
   /**
@@ -160,7 +181,7 @@ class AkamaiPurgerTest extends UnitTestCase {
   }
 
   /**
-   * Tests mixed batches dispatch once, deduplicate requests, and update duplicates.
+   * Tests mixed batches dispatch once and handle duplicate invalidations.
    */
   #[DataProvider('duplicateInvalidationResults')]
   public function testDuplicateInvalidationsInMixedBatch(bool $succeeded): void {
@@ -205,6 +226,34 @@ class AkamaiPurgerTest extends UnitTestCase {
   }
 
   /**
+   * Tests that unsupported types do not prevent later invalidations.
+   */
+  public function testUnsupportedTypeIsSkipped(): void {
+    $url = 'https://www.mass.gov/about';
+    $client = $this->createClient();
+    $client->expects($this->once())
+      ->method('purgeRequest')
+      ->with([$url])
+      ->willReturn(TRUE);
+    $purger = $this->createPurger($client);
+
+    $unsupported = new TagInvalidation([], 'tag', [
+      'label' => 'Tag',
+      'expression_required' => TRUE,
+      'expression_can_be_empty' => FALSE,
+      'expression_must_be_string' => TRUE,
+    ], 1, 'node:123');
+    $unsupported->setStateContext('akamai');
+    $supported = $this->createUrlInvalidation(2, $url);
+
+    $purger->invalidate([3 => $unsupported, 7 => $supported]);
+
+    $this->assertSame(InvalidationInterface::NOT_SUPPORTED, $unsupported->getState());
+    $this->assertNull($unsupported->getProperty('attempts'));
+    $this->assertSame(InvalidationInterface::SUCCEEDED, $supported->getState());
+  }
+
+  /**
    * Tests that an empty path cannot remain in the processing state.
    */
   public function testEmptyPathRecordsFailedAttempt(): void {
@@ -222,7 +271,7 @@ class AkamaiPurgerTest extends UnitTestCase {
   /**
    * Tests that request exceptions do not stop later chunks.
    */
-  public function testRequestExceptionRecordsFailedAttempt(): void {
+  public function testRequestExceptionDoesNotStopLaterChunks(): void {
     $invalidations = [];
     for ($id = 1; $id <= 7; $id++) {
       $invalidations[] = $this->createUrlInvalidation($id, "https://www.mass.gov/node/$id");

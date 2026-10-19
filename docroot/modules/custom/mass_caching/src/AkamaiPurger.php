@@ -24,13 +24,19 @@ class AkamaiPurger extends BaseAkamaiPurger {
     foreach ($invalidations as $key => $invalidation) {
       $invalidation->setState(InvalidationInterface::PROCESSING);
       $invalidation_type = $invalidation->getPluginId();
-      if (!in_array($invalidation_type, ['path', 'url'], TRUE)) {
-        $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
-        continue;
+      switch ($invalidation_type) {
+        case 'path':
+          $target = $this->normalizePath($invalidation->getExpression());
+          break;
+
+        case 'url':
+          $target = $invalidation->getUrl()->toString();
+          break;
+
+        default:
+          $invalidation->setState(InvalidationInterface::NOT_SUPPORTED);
+          continue 2;
       }
-      $target = $invalidation_type === 'path'
-        ? $this->normalizePath($invalidation->getExpression())
-        : $invalidation->getUrl()->toString();
       $targets[$key] = $target;
       // A leading slash prevents relative paths from being hashed as tags.
       $urls_to_clear[$key] = $invalidation_type === 'path' && $target !== '' ? '/' . ltrim($target, '/') : $target;
@@ -52,7 +58,26 @@ class AkamaiPurger extends BaseAkamaiPurger {
     }
 
     $purge_urls = array_values(array_unique(array_filter($purge_urls)));
-    $purge_results = $this->sendPurgeRequests($purge_urls);
+
+    // Mass: Go right to purgeRequest(), bypassing unwanted checks in
+    // purgeUrls().
+    $method = new \ReflectionMethod($this->client, 'purgeRequest');
+
+    // Chunk the urls in order to avoid timeouts due to edgeworker.
+    $purge_results = [];
+    foreach (array_chunk($purge_urls, 6) as $chunk) {
+      try {
+        $response = $method->invoke($this->client, $chunk);
+      }
+      catch (\Throwable $e) {
+        $this->logger()->error('Akamai URL purge request failed: @message', ['@message' => $e->getMessage()]);
+        $response = FALSE;
+      }
+      foreach ($chunk as $url) {
+        $purge_results[$url] = (bool) $response;
+      }
+    }
+
     foreach ($targets as $key => $target) {
       if ($purge_results[$target] ?? FALSE) {
         $invalidations[$key]->setState(InvalidationInterface::SUCCEEDED);
@@ -61,36 +86,6 @@ class AkamaiPurger extends BaseAkamaiPurger {
         $this->recordFailedPurgeAttempts([$invalidations[$key]], $this->logger(), 'URL');
       }
     }
-  }
-
-  /**
-   * Sends URLs in chunks and records each URL's request result.
-   */
-  private function sendPurgeRequests(array $urls): array {
-    $purge_results = [];
-    // Limit each Akamai request to six URLs.
-    foreach (array_chunk($urls, 6) as $chunk_urls) {
-      try {
-        $succeeded = $this->purgeUrls($chunk_urls);
-      }
-      catch (\Throwable $e) {
-        $this->logger()->error('Akamai URL purge request failed: @message', ['@message' => $e->getMessage()]);
-        $succeeded = FALSE;
-      }
-      foreach ($chunk_urls as $url) {
-        $purge_results[$url] = $succeeded;
-      }
-    }
-    return $purge_results;
-  }
-
-  /**
-   * Sends one URL chunk to Akamai.
-   */
-  private function purgeUrls(array $urls): bool {
-    // Bypass the unwanted checks in AkamaiClientBase::purgeUrls().
-    $method = new \ReflectionMethod($this->client, 'purgeRequest');
-    return (bool) $method->invoke($this->client, $urls);
   }
 
 }
