@@ -54,7 +54,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       }
 
       if (isset($cc_mails)) {
-        $params['headers']['cc'] = implode(',', $cc_mails);
+        $params['headers']['Cc'] = implode(',', $cc_mails);
       }
       $url = Url::fromRoute('entity.node.canonical', ['node' => $nid])->setAbsolute()->toString();
 
