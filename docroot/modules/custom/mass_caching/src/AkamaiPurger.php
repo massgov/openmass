@@ -27,10 +27,13 @@ class AkamaiPurger extends BaseAkamaiPurger {
       switch ($invalidation_type) {
         case 'path':
           $target = $this->normalizePath($invalidation->getExpression());
+          // A leading slash prevents relative paths from being hashed as tags.
+          $urls_to_clear[$key] = $target !== '' ? '/' . ltrim($target, '/') : $target;
           break;
 
         case 'url':
           $target = $invalidation->getUrl()->toString();
+          $urls_to_clear[$key] = $target;
           break;
 
         default:
@@ -38,26 +41,23 @@ class AkamaiPurger extends BaseAkamaiPurger {
           continue 2;
       }
       $targets[$key] = $target;
-      // A leading slash prevents relative paths from being hashed as tags.
-      $urls_to_clear[$key] = $invalidation_type === 'path' && $target !== '' ? '/' . ltrim($target, '/') : $target;
     }
 
     $event = new AkamaiPurgeEvents($urls_to_clear);
     $this->eventDispatcher->dispatch($event, AkamaiPurgeEvents::PURGE_CREATION);
-    $purge_urls = [];
     foreach ($event->data as $key => $url) {
       if (!is_string($url)) {
         $this->logger()->warning('Skipping the purge of a non-string: ' . var_export($url, TRUE));
+        unset($event->data[$key]);
         continue;
       }
       // Restore unchanged event entries to the original Akamai targets.
       if (isset($targets[$key]) && $url === $urls_to_clear[$key]) {
-        $url = $targets[$key];
+        $event->data[$key] = $targets[$key];
       }
-      $purge_urls[] = $url;
     }
 
-    $purge_urls = array_values(array_unique(array_filter($purge_urls)));
+    $urls_to_clear = array_values(array_unique(array_filter($event->data)));
 
     // Mass: Go right to purgeRequest(), bypassing unwanted checks in
     // purgeUrls().
@@ -65,7 +65,7 @@ class AkamaiPurger extends BaseAkamaiPurger {
 
     // Chunk the urls in order to avoid timeouts due to edgeworker.
     $purge_results = [];
-    foreach (array_chunk($purge_urls, 6) as $chunk) {
+    foreach (array_chunk($urls_to_clear, 6) as $chunk) {
       try {
         $response = $method->invoke($this->client, $chunk);
       }

@@ -151,7 +151,7 @@ class AkamaiPurgerTest extends UnitTestCase {
     $logger = $this->createMock(LoggerInterface::class);
     $events = [];
     $dispatcher->addListener(AkamaiPurgeEvents::PURGE_CREATION, static function (AkamaiPurgeEvents $event) use (&$events): void {
-      $events[] = $event;
+      $events[] = $event->data;
     });
     $dispatcher->addSubscriber(new AkamaiHeaderCreationSubscriber(new CacheTagFormatter(), $logger));
     $purger = $this->createPurger($client, $dispatcher, $logger);
@@ -163,7 +163,7 @@ class AkamaiPurgerTest extends UnitTestCase {
     $purger->invalidate($invalidations);
 
     $this->assertCount(1, $events);
-    $this->assertSame($event_paths, $events[0]->data);
+    $this->assertSame($event_paths, $events[0]);
     foreach ($invalidations as $invalidation) {
       $this->assertSame(InvalidationInterface::SUCCEEDED, $invalidation->getState());
     }
