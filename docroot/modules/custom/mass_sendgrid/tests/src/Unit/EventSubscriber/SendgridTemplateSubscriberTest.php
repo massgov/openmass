@@ -9,6 +9,7 @@ use Drupal\Core\Config\ImmutableConfig;
 use Drupal\mass_sendgrid\EventSubscriber\SendgridTemplateSubscriber;
 use Drupal\sendgrid\Event\SendgridSendEvent;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Log\NullLogger;
 use SendGrid\Mail\Mail;
 
@@ -37,12 +38,6 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
     $email = $this->createEmail();
 
     $subscriber->applyTemplate($this->createEvent($email));
-
-    $this->assertSame('d-1234567890', $email->getTemplateId()->getTemplateId());
-    $this->assertSame([
-      'subject' => 'Test subject',
-      'content' => '<p>Test body</p>',
-    ], $email->getDynamicTemplateDatas());
 
     $payload = json_decode(json_encode($email, JSON_THROW_ON_ERROR), TRUE, 512, JSON_THROW_ON_ERROR);
     $this->assertSame('d-1234567890', $payload['template_id']);
@@ -89,11 +84,12 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
   }
 
   /**
-   * Tests that an empty template ID cannot accidentally be used for a send.
+   * Tests that invalid template IDs cannot accidentally be used for a send.
    */
-  public function testEmptyTemplateIdFails(): void {
+  #[DataProvider('invalidTemplateIdProvider')]
+  public function testInvalidTemplateIdFails(string $template_id): void {
     $subscriber = new SendgridTemplateSubscriber(
-      $this->createConfigFactory(''),
+      $this->createConfigFactory($template_id),
     );
 
     $this->expectException(\LogicException::class);
@@ -102,40 +98,29 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
   }
 
   /**
-   * Tests that a legacy template ID cannot accidentally be used for a send.
+   * Provides invalid template IDs.
    */
-  public function testLegacyTemplateIdFails(): void {
-    $subscriber = new SendgridTemplateSubscriber(
-      $this->createConfigFactory('legacy-template-id'),
-    );
-
-    $this->expectException(\LogicException::class);
-    $this->expectExceptionMessage('MASS_SENDGRID_TEMPLATE_ID');
-    $subscriber->applyTemplate($this->createEvent($this->createEmail()));
+  public static function invalidTemplateIdProvider(): array {
+    return [
+      'empty' => [''],
+      'legacy' => ['legacy-template-id'],
+    ];
   }
 
   /**
    * Creates a config factory that returns the requested template ID.
    */
   private function createConfigFactory(string $template_id): ConfigFactoryInterface {
-    $sendgrid_config = $this->createMock(ImmutableConfig::class);
-    $sendgrid_config->method('get')->willReturnMap([
-      ['template_id', $template_id],
-      ['from_email', 'configured-sender@example.com'],
+    return $this->getConfigFactoryStub([
+      'mass_sendgrid.settings' => [
+        'template_id' => $template_id,
+        'from_email' => 'configured-sender@example.com',
+      ],
+      'system.site' => [
+        'mail' => 'DigitalSupport@mass.gov',
+        'name' => 'Mass.gov',
+      ],
     ]);
-    $site_config = $this->createMock(ImmutableConfig::class);
-    $site_config->method('get')->willReturnMap([
-      ['mail', 'DigitalSupport@mass.gov'],
-      ['name', 'Mass.gov'],
-    ]);
-
-    $config_factory = $this->createMock(ConfigFactoryInterface::class);
-    $config_factory->method('get')->willReturnMap([
-      ['mass_sendgrid.settings', $sendgrid_config],
-      ['system.site', $site_config],
-    ]);
-
-    return $config_factory;
   }
 
   /**
