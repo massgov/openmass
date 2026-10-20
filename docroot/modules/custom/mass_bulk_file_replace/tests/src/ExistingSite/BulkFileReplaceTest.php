@@ -170,13 +170,23 @@ class BulkFileReplaceTest extends MassExistingSiteBase {
 
     $this->assertMismatchTempstoreUnset($uid);
 
-    $reloaded = \Drupal::entityTypeManager()->getStorage('media')->load($mid);
+    $media_storage = \Drupal::entityTypeManager()->getStorage('media');
+    $file_storage = \Drupal::entityTypeManager()->getStorage('file');
+    $media_storage->resetCache([$mid]);
+    $reloaded = $media_storage->load($mid);
     $this->assertNotNull($reloaded);
     $this->assertInstanceOf(MediaInterface::class, $reloaded);
-    $file = $reloaded->get('field_upload_file')->entity;
+    $fid = (int) $reloaded->get('field_upload_file')->target_id;
+    $this->assertGreaterThan(0, $fid);
+    $file_storage->resetCache([$fid]);
+    $file = $file_storage->load($fid);
     $this->assertNotNull($file);
+    $this->assertInstanceOf(File::class, $file);
     $this->assertSame('housing-proposal.pdf', $file->getFilename());
     $this->assertSame('verified_accessible', (string) $reloaded->get('field_accessibility_self_rpt')->value);
+    $real = \Drupal::service('file_system')->realpath($file->getFileUri());
+    $this->assertNotFalse($real);
+    $this->assertStringContainsString('new-content', (string) file_get_contents($real));
   }
 
   /**
