@@ -10,14 +10,13 @@ use Drupal\Core\Url;
 trait AuthTrait {
 
   /**
-   * Logs out through the OpenID Connect confirmation form.
+   * Logs a test user out through OpenID Connect.
+   *
+   * openid_connect replaces user.logout with a controller that ends the Drupal
+   * session. There is no confirm form on that route.
    */
   protected function drupalLogout(): void {
-    $destination = Url::fromRoute('user.page')->toString();
-    $this->drupalGet(Url::fromRoute('openid_connect.logout.confirm', options: [
-      'query' => ['destination' => $destination],
-    ]));
-    $this->submitForm([], 'op', 'openid-connect-user-logout');
+    $this->drupalGet(Url::fromRoute('openid_connect.logout'));
     $this->drupalResetSession();
   }
 

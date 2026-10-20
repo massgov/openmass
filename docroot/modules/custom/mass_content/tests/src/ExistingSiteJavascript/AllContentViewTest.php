@@ -49,6 +49,19 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       10000,
       "document.querySelector('.view.view-content .views-view-table tbody tr') !== null || document.querySelector('.view.view-content .view-empty') !== null"
     );
+    // Views AJAX replaces the form. A node found before that request is stale
+    // in current Chrome.
+    $this->refreshView();
+  }
+
+  /**
+   * Points at the All Content view after the latest AJAX replacement.
+   */
+  private function refreshView(): void {
+    $view = $this->getCurrentPage()->find('css', '.view.view-content');
+    if ($view) {
+      $this->view = $view;
+    }
   }
 
   /**
@@ -248,7 +261,12 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
    * Resets a view exposed form.
    */
   private function reset() {
-    $this->view->hasButton('Reset') ? $this->view->pressButton('Reset') : NULL;
+    $this->refreshView();
+    if ($this->view->hasButton('Reset')) {
+      $this->view->pressButton('Reset');
+      $this->waitForViewResults();
+    }
+    $this->refreshView();
     $this->view->pressButton('Apply');
     $this->waitForViewResults();
   }
@@ -337,6 +355,9 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       ),
       'The batch should finish and return to All Content.'
     );
+    // The location updates before Mink drops the batch page element. Reload so
+    // the text assertions read the All Content document.
+    $this->getSession()->reload();
     $this->assertSession()->pageTextNotContains('An error has occurred');
     $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
   }
