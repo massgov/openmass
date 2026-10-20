@@ -231,10 +231,16 @@ class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     $this->assertTrue($this->assertSession()->waitForText("Updated parent for {$child2['title']}"));
     $this->htmlOutput();
 
-    // Reload and ensure it has no children.
+    // Reload and ensure it has no children. The reload returns before Chrome
+    // replaces the document, so read the page through a wait that retries a
+    // stale element.
     $this->getSession()->reload();
-    $this->assertSession()->pageTextNotContains($child1['title']);
-    $this->assertSession()->pageTextNotContains($child2['title']);
+    $text = $this->getSession()->getPage()->waitFor(15, function ($page) {
+      return $page->getText();
+    });
+    $this->assertIsString($text, 'The move-children page should be readable after reload.');
+    $this->assertStringNotContainsString($child1['title'], $text);
+    $this->assertStringNotContainsString($child2['title'], $text);
 
     // Check children on new parent.
     $this->drupalGet('node/' . $parent2Node->id() . '/move-children');
