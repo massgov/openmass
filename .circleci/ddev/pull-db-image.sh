@@ -12,16 +12,16 @@ SECONDS=0
 # Keep the error output, drop the image name docker prints on success.
 if ! error="$(docker pull -q "${registry}/${MASS_DB_IMAGE}" 2>&1 >/dev/null)"; then
   echo "${error}" >&2
-  # :trimmed is built by the nightly mysql_rebuild workflow and could be
+  # :trimmed.arm is built by the nightly mysql_rebuild workflow and could be
   # missing from the registry, for example after someone deleted the tag. Then
   # test against the full image. Docker with the classic image store reports a
-  # missing tag as "manifest unknown", with the containerd store as ":trimmed: not
-  # found". Any other error (network, auth) fails here, so that the nodes of
-  # one run do not end up on different databases.
-  if [[ "${MASS_DB_IMAGE}" != *:trimmed ]] || ! grep -qiE 'manifest unknown|:trimmed: not found' <<<"${error}"; then
+  # missing tag as "manifest unknown", with the containerd store as
+  # ":trimmed.arm: not found". Any other error (network, auth) fails here, so
+  # that the nodes of one run do not end up on different databases.
+  if [[ "${MASS_DB_IMAGE}" != *:trimmed* ]] || ! grep -qiE 'manifest unknown|:trimmed[.a-z]*: not found' <<<"${error}"; then
     exit 1
   fi
-  MASS_DB_IMAGE="${MASS_DB_IMAGE%:trimmed}:latest"
+  MASS_DB_IMAGE="${MASS_DB_IMAGE/:trimmed/:latest}"
   echo "The trimmed image is not in the registry, using ${MASS_DB_IMAGE}." >&2
   sed -i "s#^MASS_DB_IMAGE=.*#MASS_DB_IMAGE=${MASS_DB_IMAGE}#" .ddev/.env
   docker pull -q "${registry}/${MASS_DB_IMAGE}"
