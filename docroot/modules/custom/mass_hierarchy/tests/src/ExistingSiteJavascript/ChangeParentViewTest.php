@@ -204,6 +204,9 @@ class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     $button = $this->getCurrentPage()->findButton('Change parent');
     $this->assertNotNull($button, 'The "Change parent" button was not found.');
     $button->click();
+    // The bulk configuration form arrives after the click. Current Chrome
+    // returns from the click before "New parent" is in the document.
+    $this->assertNotNull($this->assertSession()->waitForField('New parent'));
 
     // Select a wrong parent (incompatible bundle).
     // "Title (nid)" is the value entity autocomplete submits. A bare title
@@ -214,11 +217,13 @@ class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     // The bulk form is replaced by AJAX. Reading the page immediately uses
     // the old document, which current Chrome reports as a stale element.
     $this->assertTrue($this->assertSession()->waitForText('1 error has been found'));
+    $this->assertNotNull($this->assertSession()->waitForField('New parent'));
 
     // Select a wrong parent (descendant).
     $this->getCurrentPage()->fillField('New parent', $childOfChild1Node->label() . ' (' . $childOfChild1Node->id() . ')');
     $this->getCurrentPage()->pressButton('Change parent');
     $this->assertTrue($this->assertSession()->waitForText('The new parent is a descendant of'));
+    $this->assertNotNull($this->assertSession()->waitForField('New parent'));
 
     // Select a correct parent.
     $this->getCurrentPage()->fillField('New parent', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
