@@ -211,12 +211,14 @@ class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     // before that request finishes.
     $this->getCurrentPage()->fillField('New parent', $parent3Node->label() . ' (' . $parent3Node->id() . ')');
     $this->getCurrentPage()->pressButton('Change parent');
-    $this->assertSession()->pageTextContains('1 error has been found');
+    // The bulk form is replaced by AJAX. Reading the page immediately uses
+    // the old document, which current Chrome reports as a stale element.
+    $this->assertTrue($this->assertSession()->waitForText('1 error has been found'));
 
     // Select a wrong parent (descendant).
     $this->getCurrentPage()->fillField('New parent', $childOfChild1Node->label() . ' (' . $childOfChild1Node->id() . ')');
     $this->getCurrentPage()->pressButton('Change parent');
-    $this->assertSession()->pageTextContains('The new parent is a descendant of');
+    $this->assertTrue($this->assertSession()->waitForText('The new parent is a descendant of'));
 
     // Select a correct parent.
     $this->getCurrentPage()->fillField('New parent', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
@@ -225,11 +227,9 @@ class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     $button = $this->getCurrentPage()->findButton('Change parent');
     $this->assertNotNull($button, 'The "Change parent" button was not found.');
     $button->click();
-    $this->getSession()->wait(3000);
+    $this->assertTrue($this->assertSession()->waitForText("Updated parent for {$child1['title']}"));
+    $this->assertTrue($this->assertSession()->waitForText("Updated parent for {$child2['title']}"));
     $this->htmlOutput();
-    // Check done message.
-    $this->assertSession()->pageTextContains("Updated parent for {$child1['title']}");
-    $this->assertSession()->pageTextContains("Updated parent for {$child2['title']}");
 
     // Reload and ensure it has no children.
     $this->getSession()->reload();
