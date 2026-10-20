@@ -10,22 +10,24 @@ use Drupal\Core\Url;
 trait AuthTrait {
 
   /**
-   * Logs a test user out through the core confirm form.
+   * Logs a test user out of the Mink browser.
    *
-   * openid_connect replaces user.logout with a redirect controller. A GET of
-   * that route ends the PHP session but the test browser keeps the old
-   * session cookie, so the next login still acts as the previous user.
-   * user.logout.confirm is unchanged and submitting it clears the cookie.
+   * openid_connect replaces user.logout with a redirect that ends the PHP
+   * session without clearing the test client's cookie, so the next login
+   * still acts as the previous user. user.logout.confirm does clear the
+   * cookie when that form is in the response. CircleCI sometimes returns a
+   * page that has another submit button and no confirm form, and requiring
+   * the form then aborts the next login. Drop the Mink cookies either way.
    */
   protected function drupalLogout(): void {
     $destination = Url::fromRoute('user.page')->toString();
     $this->drupalGet(Url::fromRoute('user.logout.confirm', options: [
       'query' => ['destination' => $destination],
     ]));
-    // Submit by button name. The local login form is not on the page this
-    // site shows after logout, so the username and password fields are not
-    // a usable confirmation.
-    $this->submitForm([], 'op', 'user-logout-confirm');
+    if ($this->getSession()->getPage()->find('css', '#user-logout-confirm')) {
+      $this->submitForm([], 'op', 'user-logout-confirm');
+    }
+    $this->getSession()->reset();
     $this->drupalResetSession();
   }
 
