@@ -37,7 +37,11 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       return;
     }
     $randomRow = $rows[\random_int(0, count($rows) - 1)];
-    $text = $randomRow->getText();
+    // Chrome's rendered text drops leading and repeated spaces. Node labels
+    // in the sanitized database can still carry them, so compare both sides
+    // with the same whitespace.
+    $text = preg_replace('/\s+/u', ' ', $randomRow->getText()) ?? '';
+    $value = preg_replace('/\s+/u', ' ', trim((string) $value)) ?? '';
     $this->assertStringContainsString($value, $text);
   }
 
