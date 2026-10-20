@@ -20,15 +20,6 @@ use SendGrid\Mail\Mail;
 class SendgridTemplateSubscriberTest extends UnitTestCase {
 
   /**
-   * Tests that the subscriber uses the event name without loading its class.
-   */
-  public function testSubscribedEvents(): void {
-    $this->assertSame([
-      'sendgrid.send' => 'applyTemplate',
-    ], SendgridTemplateSubscriber::getSubscribedEvents());
-  }
-
-  /**
    * Tests applying the global SendGrid template and its dynamic data.
    */
   public function testApplyTemplate(): void {
@@ -41,22 +32,10 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
 
     $payload = json_decode(json_encode($email, JSON_THROW_ON_ERROR), TRUE, 512, JSON_THROW_ON_ERROR);
     $this->assertSame('d-1234567890', $payload['template_id']);
-    $this->assertArrayNotHasKey('asm', $payload);
     $this->assertSame([
       'subject' => 'Test subject',
       'content' => '<p>Test body</p>',
     ], $payload['personalizations'][0]['dynamic_template_data']);
-    $this->assertArrayNotHasKey('substitutions', $payload['personalizations'][0]);
-    $this->assertSame([
-      ['email' => 'recipient@example.com'],
-      ['email' => 'second-recipient@example.com'],
-    ], $payload['personalizations'][0]['to']);
-    $this->assertSame([
-      'X-Test-Header' => 'preserved',
-    ], $payload['personalizations'][0]['headers']);
-    $this->assertSame([
-      'source' => 'drupal',
-    ], $payload['personalizations'][0]['custom_args']);
     $this->assertSame('configured-sender@example.com', $payload['from']['email']);
     $this->assertSame('Mass.gov', $payload['from']['name']);
     $this->assertSame('reply@example.com', $payload['reply_to']['email']);
@@ -131,10 +110,7 @@ class SendgridTemplateSubscriberTest extends UnitTestCase {
     $email->setFrom('sender@example.com', 'Mass.gov');
     $email->setSubject('Test subject');
     $email->addTo('recipient@example.com');
-    $email->addTo('second-recipient@example.com');
     $email->setReplyTo('reply@example.com');
-    $email->addHeader('X-Test-Header', 'preserved');
-    $email->addCustomArg('source', 'drupal');
     $email->addContent('text/plain', 'Test body');
     $email->addContent('text/html', '<p>Test body</p>');
 

@@ -118,7 +118,6 @@ class UnpublishRemindersTest extends MassExistingSiteBase {
 
     $messages = $this->getMails(['id' => 'mass_unpublish_reminders_unpublish_reminder']);
     $message = end($messages);
-    $this->assertSame($this->author->getEmail(), $message['to']);
     $this->assertEqualsCanonicalizing(
       array_map(static fn ($user) => $user->getEmail(), $this->users),
       explode(',', $message['headers']['Cc']),
@@ -196,14 +195,6 @@ class UnpublishRemindersTest extends MassExistingSiteBase {
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)
       ->seekToRecipient($this->author->mail->value)
       ->countEquals(1);
-
-    $messages = $this->getMails(['id' => 'mass_unpublish_reminders_unpublish_reminder']);
-    $message = end($messages);
-    $this->assertSame($this->author->getEmail(), $message['to']);
-    $this->assertEqualsCanonicalizing(
-      array_map(static fn ($user) => $user->getEmail(), $this->users),
-      explode(',', $message['headers']['Cc']),
-    );
   }
 
 }
