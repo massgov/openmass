@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.person.body
     - field.field.node.person.field_contact
     - field.field.node.person.field_contact_source
+    - field.field.node.person.field_content_organization
     - field.field.node.person.field_medium_image
     - field.field.node.person.field_metatags
     - field.field.node.person.field_organizations
@@ -27,6 +28,7 @@ dependencies:
     - field.field.node.person.field_ref_single_address
     - field.field.node.person.field_reusable_label
     - field.field.node.person.field_short_bio
+    - field.field.node.person.field_sme_content_owner
     - field.field.node.person.field_social_links
     - image.style.thumbnail
     - node.type.person
@@ -35,6 +37,7 @@ dependencies:
     - conditional_fields
     - content_moderation
     - entity_hierarchy
+    - entity_reference_tree
     - field_group
     - image
     - link
@@ -122,13 +125,15 @@ third_party_settings:
         required_fields: true
     group_page_info:
       children:
+        - field_content_organization
         - field_metatags
         - simple_sitemap
         - url_redirects
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_node_edit_form
       weight: 6
       format_type: tab
@@ -189,6 +194,28 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_content_organization:
+    type: entity_reference_tree
+    weight: 0
+    region: content
+    settings:
+      theme: default
+      worker: true
+      disable_animation: false
+      force_text: false
+      dots: 0
+      size: 60
+      placeholder: ''
+      match_operator: CONTAINS
+      match_limit: 10
+      dialog_title: 'Browse organizations'
+      auto_check_ancestors: true
+      auto_check_descendants: false
+      auto_uncheck_ancestors: false
+      auto_uncheck_descendants: true
+      label: 'Browse organizations'
+      autocomplete_maxlength: 1024
+    third_party_settings: {  }
   field_medium_image:
     type: image_image
     weight: 10
@@ -217,7 +244,7 @@ content:
             selector: ''
   field_metatags:
     type: metatag_firehose
-    weight: 1
+    weight: 2
     region: content
     settings:
       sidebar: false
@@ -471,6 +498,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 1
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_social_links:
     type: link_default
     weight: 34
@@ -504,20 +541,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 4
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -552,7 +589,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

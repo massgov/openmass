@@ -123,6 +123,19 @@ function mass_admin_theme_preprocess_paragraph__service_news(array &$variables) 
 }
 
 /**
+ * Implements hook_preprocess_HOOK().
+ *
+ * @see @organisms/by-author/process-stepper.twig
+ */
+function mass_admin_theme_preprocess_paragraph__numbered_steps(&$variables) {
+  $paragraph = $variables['paragraph'];
+
+  if ($paragraph instanceof \Drupal\paragraphs\ParagraphInterface) {
+    $variables['processStepperSteps'] = Organisms::prepareNumberedSteps($paragraph);
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function mass_admin_theme_form_entity_embed_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {

@@ -12,7 +12,7 @@ use weitzman\DrupalTestTraits\ConfigTrait;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 
 /**
- * Class EntityUsageTest.
+ * Tests Mass Entity Usage tracking behavior.
  */
 class EntityUsageTest extends MassExistingSiteBase {
 
@@ -79,6 +79,46 @@ class EntityUsageTest extends MassExistingSiteBase {
   private function assertUsageRows($entity, $usage_expected) {
     $usage_actual = $this->countUsageRows($entity);
     $this->assertEquals($usage_expected, $usage_actual, 'Usage is ' . $usage_actual . ' instead of ' . $usage_expected);
+  }
+
+  /**
+   * Counts raw entity_usage rows for a target entity.
+   */
+  private function countUsageRecords($entity) {
+    return (int) \Drupal::database()
+      ->select('entity_usage', 'eu')
+      ->condition('target_type', $entity->getEntityTypeId())
+      ->condition('target_id', $entity->id())
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+  }
+
+  /**
+   * Creates a published document media item backed by the fixture file.
+   */
+  private function createDocumentMedia() {
+    $destination = 'public://' . uniqid('entity-usage-', TRUE) . '.txt';
+    $file = File::create([
+      'uri' => $destination,
+    ]);
+    $file->setPermanent();
+    $file->save();
+    $src = 'modules/custom/mass_entity_usage/tests/fixtures/file-001.txt';
+
+    /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+    $file_system = \Drupal::service('file_system');
+    $file_system->copy($src, $destination, TRUE);
+
+    return $this->createMedia([
+      'title' => 'Llama',
+      'bundle' => 'document',
+      'field_upload_file' => [
+        'target_id' => $file->id(),
+      ],
+      'status' => 1,
+      'moderation_state' => MassModeration::PUBLISHED,
+    ]);
   }
 
   /**
@@ -339,6 +379,28 @@ class EntityUsageTest extends MassExistingSiteBase {
     $this->createOrganizationWithNestedParagraphs($topic_page_link, MassModeration::UNPUBLISHED);
     $this->processEntityUsageQueues();
     $this->assertUsageRows($topic_page_node, 0);
+  }
+
+  /**
+   * Removes stale paragraph usage when the default node revision updates.
+   */
+  public function testDetachedParagraphUsageIsDeletedFromTable() {
+    $media = $this->createDocumentMedia();
+    $media_download_link = '<a href="' . $media->toUrl()->toString() . '/download">Download</a>';
+    $org_node = $this->createOrganizationWithNestedParagraphs($media_download_link, MassModeration::PUBLISHED);
+
+    $this->processEntityUsageQueues();
+    $this->assertUsageRows($media, 1);
+    $this->assertSame(1, $this->countUsageRecords($media));
+
+    $org_node = Node::load($org_node->id());
+    $org_node->set('field_organization_sections', []);
+    $org_node->set('moderation_state', MassModeration::PUBLISHED);
+    $org_node->setNewRevision(TRUE);
+    $org_node->save();
+
+    $this->assertSame(0, $this->countUsageRecords($media));
+    $this->assertUsageRows($media, 0);
   }
 
   /**

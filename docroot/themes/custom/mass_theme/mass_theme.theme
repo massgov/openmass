@@ -30,6 +30,7 @@ use Drupal\mayflower\Prepare\Schemas;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\paragraphs\ParagraphInterface;
 use Drupal\schema_metatag\SchemaMetatagManager;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DomCrawler\Crawler;
@@ -1637,6 +1638,7 @@ function mass_theme_preprocess_node_info_details(&$variables) {
  */
 function mass_theme_preprocess_node_error_page(&$variables) {
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+  $variables['sealWhiteImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-white.png');
 }
 
 /**
@@ -4602,6 +4604,7 @@ function mass_theme_preprocess_page(&$variables) {
   }
   $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
   $variables['sealBlackImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-black.png');
+  $variables['sealWhiteImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-white.png');
 
   if ($route_name === 'view.collection_all.page_all') {
     $cache_tags = [];
@@ -6387,19 +6390,6 @@ function mass_theme_preprocess_views_view__press_listing(&$variables) {
  */
 function mass_theme_preprocess_events_page(&$variables) {
   $variables['events'] = Helper::prepareEvents($variables['events']);
-
-  $total_pages = ceil(count($variables['events']) / 10);
-  $pages = [];
-  foreach (range(1, $total_pages) as $page) {
-    $pages[] = [
-      'active' => FALSE,
-      'text' => $page,
-    ];
-  }
-  if ($pages) {
-    $pages[0]['active'] = TRUE;
-  }
-  $variables['pages'] = $pages;
 }
 
 /**
@@ -7564,5 +7554,22 @@ function mass_theme_preprocess_paragraph__service_section(array &$variables) {
     $variables['service_components'] = $grouper->groupRenderItems($items);
     // 3) Prevent Drupal from auto-rendering the old regions.
     unset($variables['content']['regions']['content']);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ *
+ * @see @organisms/by-author/process-stepper.twig
+ */
+function mass_theme_preprocess_paragraph__numbered_steps(&$variables) {
+  $paragraph = $variables['paragraph'];
+
+  if ($paragraph instanceof ParagraphInterface) {
+    $cache_tags = [];
+    $variables['processStepperSteps'] = Organisms::prepareNumberedSteps($paragraph, [], $cache_tags);
+    if (!empty($cache_tags)) {
+      $variables['#cache']['tags'] = Cache::mergeTags($variables['#cache']['tags'] ?? [], $cache_tags);
+    }
   }
 }

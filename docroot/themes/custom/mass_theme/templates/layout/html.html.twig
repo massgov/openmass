@@ -189,6 +189,10 @@
                 return;
               }
 
+              if (target.closest('select, option, input, label')) {
+                return;
+              }
+
               event.preventDefault();
               event.stopPropagation();
               event.stopImmediatePropagation();

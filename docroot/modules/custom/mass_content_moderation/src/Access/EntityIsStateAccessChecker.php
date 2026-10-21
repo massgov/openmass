@@ -11,7 +11,8 @@ use Symfony\Component\Routing\Route;
 class EntityIsStateAccessChecker implements AccessInterface {
 
   public function access(Route $route, ContentEntityInterface $node): AccessResultInterface {
-    return AccessResult::allowedIf($node->get('moderation_state')->getString() == $route->getRequirement('_entity_is_state'));
+    return AccessResult::allowedIf($node->get('moderation_state')->getString() == $route->getRequirement('_entity_is_state'))
+      ->addCacheableDependency($node);
   }
 
 }

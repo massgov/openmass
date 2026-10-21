@@ -52,17 +52,17 @@ class RedirectLinkNormalizationManager {
    */
   public function normalizeEntity(ContentEntityInterface $entity, bool $save = TRUE, bool $dryRun = FALSE): array {
     if ($entity instanceof Paragraph && Helper::isParagraphOrphan($entity)) {
-      return ['changed' => FALSE, 'skipped' => TRUE, 'changes' => []];
+      return ['changed' => FALSE, 'skipped' => TRUE, 'changes' => [], 'skips' => []];
     }
     if (!$this->hasNormalizableFields($entity)) {
-      return ['changed' => FALSE, 'skipped' => FALSE, 'changes' => []];
+      return ['changed' => FALSE, 'skipped' => FALSE, 'changes' => [], 'skips' => []];
     }
 
     $apply = !$dryRun;
     $result = $this->collectFieldNormalizations($entity, $apply);
 
     if (!$result['changed']) {
-      return ['changed' => FALSE, 'skipped' => FALSE, 'changes' => []];
+      return ['changed' => FALSE, 'skipped' => FALSE, 'changes' => [], 'skips' => $result['skips']];
     }
 
     if ($dryRun) {
@@ -70,6 +70,7 @@ class RedirectLinkNormalizationManager {
         'changed' => TRUE,
         'skipped' => FALSE,
         'changes' => $result['changes'],
+        'skips' => $result['skips'],
       ];
     }
 
@@ -78,6 +79,7 @@ class RedirectLinkNormalizationManager {
         'changed' => TRUE,
         'skipped' => FALSE,
         'changes' => $result['changes'],
+        'skips' => $result['skips'],
       ];
     }
 
@@ -93,6 +95,7 @@ class RedirectLinkNormalizationManager {
       'changed' => TRUE,
       'skipped' => FALSE,
       'changes' => $result['changes'],
+      'skips' => $result['skips'],
     ];
   }
 
@@ -274,6 +277,19 @@ class RedirectLinkNormalizationManager {
   private function collectFieldNormalizations(ContentEntityInterface $entity, bool $apply): array {
     $changed = FALSE;
     $changes = [];
+    $skips = [];
+    $collectSkips = function (array $processed, string $fieldName, int $delta, string $kind) use (&$skips): void {
+      foreach ($processed['skips'] ?? [] as $skip) {
+        $skips[] = [
+          'field' => $fieldName,
+          'delta' => $delta,
+          'kind' => $kind,
+          'before' => (string) ($skip['before'] ?? ''),
+          'after' => (string) ($skip['after'] ?? ''),
+          'reason' => (string) ($skip['reason'] ?? ''),
+        ];
+      }
+    };
 
     foreach ($entity->getFields() as $fieldName => $field) {
       $fieldType = $field->getFieldDefinition()->getType();
@@ -284,6 +300,7 @@ class RedirectLinkNormalizationManager {
           }
           $before = (string) $item->value;
           $processed = $this->resolver->normalizeRedirectLinksInText($before);
+          $collectSkips($processed, (string) $fieldName, (int) $delta, 'text');
           if (!$processed['changed']) {
             continue;
           }
@@ -307,6 +324,7 @@ class RedirectLinkNormalizationManager {
           }
           $before = (string) $item->uri;
           $processed = $this->resolver->normalizeRedirectLinkUri($before);
+          $collectSkips($processed, (string) $fieldName, (int) $delta, 'link');
           if (!$processed['changed']) {
             continue;
           }
@@ -334,6 +352,7 @@ class RedirectLinkNormalizationManager {
             continue;
           }
           $processed = $this->resolver->normalizeEntityReferenceTarget($targetType, $beforeId);
+          $collectSkips($processed, (string) $fieldName, (int) $delta, 'entity_reference');
           if (!$processed['changed']) {
             continue;
           }
@@ -353,7 +372,7 @@ class RedirectLinkNormalizationManager {
       }
     }
 
-    return ['changed' => $changed, 'changes' => $changes];
+    return ['changed' => $changed, 'changes' => $changes, 'skips' => $skips];
   }
 
   /**

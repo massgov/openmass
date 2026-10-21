@@ -242,8 +242,9 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    */
   public function testTopicPageEditForm($data) {
 
-    // Create user.
-    $user = $this->createUser();
+    // Create user. Bypass mass_org_access to keep the test focused on
+    // topic_page restriction behavior independent of org assignment.
+    $user = $this->createUser(['bypass org access']);
     $user->addRole($data['role']);
     // Content administrators also require permissions from the editor role.
     if ($data['role'] == 'content_team') {
@@ -342,7 +343,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
    */
   public function testTopicPageOrganizationFieldAccess(array $role_data) {
     // Create user.
-    $user = $this->createUser();
+    $user = $this->createUser(['bypass org access']);
     $role = $role_data['role'];
 
     $user->addRole($role);
@@ -398,7 +399,7 @@ class TopicPageRestrictionTest extends MassExistingSiteBase {
   public function testTopicPageOrganizationFieldControlsVisibility(array $role_data) {
     // Create user.
     $role = $role_data['role'];
-    $user = $this->createUser();
+    $user = $this->createUser(['bypass org access']);
     $user->addRole($role);
     $user->activate();
     $user->save();

@@ -1,29 +1,265 @@
 
 
+## [0.496.1] - October 15, 2026
+
+### Security
+  - DP-49234: Update Drupal core to 11.3.19
+
+
+
+## [0.496.0] - October 6, 2026
+
+### Changed
+  - DP-48821: Changed local and CI Backstop runs to run directly on DDEV and CircleCI images rather than use BackstopJS docker image due to image staleness that was causing failures.
+  - DP-49005: Enforce organization-based editing permissions in local DDEV and in CircleCI tests through MASS_ORG_ACCESS_ENFORCE, matching Acquia and Tugboat; mass_org_access tests no longer depend on the environment variable.
+  - DP-49017: Updated Admin Audit Trail and enabled new CLI option.
+
+### Security
+  - DP-48959: Updates Editoria11y from 3.0.5 to 3.0.9, a security release. The update adds a unique key to the accessibility page table and drops the duplicate rows it finds, and rewrites the alert listing filter and the CSV export links in the exported views.
+
+### Fixed
+  - DP-49042: Fixed mysql_rebuild external database commands.
+  - DP-49113: Addressed cron issue that reapplied limits on Admin Audit Trail retention.
+
+
+
+## [0.495.0] - September 29, 2026
+
+### Changed
+  - DP-41516: Accessibility fixes related to high contrast modes.
+  - DP-48741: Announce the document title before file type and size so screen readers hear the link name first.
+
+### Fixed
+  - DP-48604: Paginate organization event listing pages so large archives no longer 500.
+  - DP-49003: Choosing an organization as the Issuer on executive orders and advisories no longer fails with an AJAX error, which had blocked saving those pages.
+  - DP-48999: Organization-based access no longer blocks editing of content types that have no Permission Groups field (API service cards, basic pages, sitewide alerts, videos and others), which had become admin-only once enforcement was turned on.
+
+### Removed
+  - DP-48966: Remove IAL1 form the Service card idv level options.
+
+
+
+## [0.494.0] - September 22, 2026
+
+### Changed
+  - DP-48482: Updated PHP version to 8.4, along with updates and patches to modules for compatibility.
+  - DP-48482: Upgraded Flag, Referenced Blocked Users, and OpenID Connect major versions
+  - DP-48482: OpenID Connect now handles /user/logout for SSO logout
+  - DP-48482: Changed Flag unwatch email URLs for Flag 5 compatibility. Unwatch links in emails sent before this release will return 404
+  - DP-48546: Override the audit trail row limit with time-based retention rules displayed on the report.
+  - DP-48764: Update the AI module to 1.4.9.
+
+### Added
+  - DP-48520: Add IDV level to API service cards.
+
+### Security
+  - DP-48764: Update Entity Browser to 2.16.0 and Key Auth to 2.2.4 to address Drupal security advisories.
+  - DP-48764: Update highlight.js Input Filter to 1.2.0 and Video Embed Field to 3.1.0.
+  - DP-48764: Update Drupal core to 11.3.17
+
+
+
+## [0.493.0] - September 15, 2026
+
+### Changed
+  - DP-48467: Replace the old Mayflower Brand Banner with the new MDS State Banner component.
+
+### Added
+  - DP-48740: Add Portuguese language to Drupal site.
+  - DP-48740: Add Portuguese to content and document view language filters.
+  - DP-48740: Show Portuguese instead of Portuguese, International on public translation links.
+
+
+
+## [0.492.0] - September 8, 2026
+
+### Changed
+  - DP-47485: Reduced permissions for Content Administrator role.
+
+### Added
+  - DP-48650: Added s-maxage to document downloads.
+
+### Fixed
+  - DP-48112: Accessibility report for authors now shows current Editoria11y issue counts, ignores stale scans from old page URLs, and no longer double-counts issues when filtering by organization. The content Organization filter also accepts multiple organizations without SQL errors. The “doesn’t equal” operator is now the exact complement of “equals.”
+  - DP-48428: Stop redirect normalization from rewriting published media download aliases like /doc/{slug}/download when a stale redirect points elsewhere.
+
+
+
+## [0.491.0] - September 1, 2026
+
+### Changed
+  - DP-45698: Serve media download links as binary instead of redirect.
+
+### Fixed
+  - DP-47588: Fix the error that stopped bulk actions from being applied to the rows selected in All Content.
+  - DP-47588: Apply a label typed during a bulk edit to every selected page instead of only the first ten.
+  - DP-48597: Fixed post-release Backstop jobs.
+
+
+
+## [0.490.0] - August 25, 2026
+
+### Changed
+  - DP-47839: Changed docker image repo from Docker Hub to AWS.
+  - DP-47935: Increased max for detecting and logging when edge cache tag limit is exceeded.
+
+### Added
+  - DP-48212: Enhance Editoria11y Dismissal Report
+
+### Fixed
+  - DP-48501: Fixes intermittent 500 errors on the All Content page by stopping the media view from claiming a local task that core already provides.
+
+
+
+## [0.489.0] - August 18, 2026
+
+### Fixed
+  - DP-36234: Trash purge command now matches trashed items per entity type and current workflow record, deletes oldest first, validates its options, re-checks trash state before each delete, and reports a run summary.
+  - DP-45938: Restrict Map fields on Organization and Service pages to Location content.
+  - DP-46813: Keep document media names in sync with field_title so authors no longer see old titles.
+
+### Changed
+  - DP-39502: Changed page analytics dashboard from looker to powerbi.
+  - DP-47937: Mosaic featured item images are now decorative. Authors no longer see an alt text input for mosaic images, help text explains the images must not carry content beyond the link text, mosaic images always render with an empty alt attribute, and Editoria11y no longer flags mosaic image links.
+  - DP-48235: Make the Permission Groups field read-only on non-organization pages — hide the "Browse organizations" launcher and rewrite the help text to say the field is managed automatically.
+
+### Security
+  - DP-46097: Match the CORS allowlist on /api/v1 endpoints against the exact origin host, so lookalike hostnames no longer get an Access-Control-Allow-Origin header.
+  - DP-46097: Restrict the HTTP host headers the site answers to with trusted_host_patterns.
+  - DP-46097: Send Referrer-Policy and X-Content-Type-Options response headers.
+  - DP-46097: Update npm dependencies flagged by Dependabot.
+
+### Added
+  - DP-47937: Added the ma:mosaic-alt-report drush command that lists mosaic images with stored alt text, so authors using images in a non-decorative way can be notified.
+
+
+
+## [0.488.0] - August 4, 2026
+
+### Added
+  - DP-47917: Permission group validation report for admins.
+  - DP-48073: Numbered Steps Component Help Text
+
+### Fixed
+  - DP-47963: Content Performance report exports no longer time out for large result sets.
+  - DP-47987: Added check for whether file is a directory before attemping file move.
+  - DP-48153: Tableau Connected Apps visualizations now load one at a time, so concurrent embed sessions no longer fall back to the Tableau sign-in form.
+  - DP-48291: Permission report queries fixed, minor view changes.
+
+
+
+## [0.487.0] - July 21, 2026
+
+### Security
+  - DP-48141: Updated packages.
+
+### Fixed
+  - DP-38034: Update Mandrill Email Timezone from UTC to EST for Scheduled Unpublished Alerts.
+  - DP-46833: Fix false warning that the Events component is missing on associated service pages after publishing an event.
+  - DP-47869: Fix Guide Page Linkit autocomplete by using a CSS-only Mayflower library for Message box editor previews.
+  - DP-48069: Redirect normalization no longer rewrites links or entity references to unpublished pages or documents.
+
+### Added
+  - DP-46465: Add confirmation to entity usage regenerate so that it will confirm before starting a new run.
+  - DP-46465: Add regression tests for the usage-regenerate decision tree and the batch worker resume logic.
+
+
+
+## [0.486.0] - July 14, 2026
+
+### Fixed
+  - DP-47774: Investigate 500 error caused by redirect normalization job.
+  - DP-47923: Remove breadcrumb text from See all news and announcements link accessible name.
+  - DP-47970: Editoria11y no longer flags Related Organizations logos as missing alt text.
+  - DP-47847: Fixed usages reported for detached paragraphs.
+  - DP-47638: Fixed Google Translate modal translation of disclaimer and button text.
+  - DP-47763: Editoria11y Incorrectly Flags Heading Level Skip on Pages Using Glossary Component.
+  - DP-47818: Style issue with error in CMS.
+  - DP-47906: Use publish and event dates when sorting news and event items in automatic lists.
+
+### Changed
+  - DP-47265: Reduce spacing after pre-media on info details page.
+  - DP-48017: Updated editoria11y accessibility csv report to eliminate duplicate node ids
+
+### Added
+  - DP-47686: Added some additional filters to editoria11y dismissal report
+  - DP-47148: Enable and configure the Admin Audit Trail module.
+
+
+
+## [0.485.1] - July 1, 2026
+
+### Fixed
+  - DP-46854: Fixed issue causing Url purges to be marked as still processing.
+
+
+## [0.485.0] - June 30, 2026
+
+### Added
+  - DP-46819: Added stepper component.
+  - DP-46854: Added Akamai cache tag invalidation.
+
+### Fixed
+  - DP-47668: CSV table search box is right-aligned when no results are displayed.
+  - DP-47759: Editoria11y incorrectly flags news and announcements arrow icon as a manual check.
+
+### Security
+  - DP-47903: Drupal core, Ai and Paragraphs update.
+
+
+
+## [0.484.0] - June 24, 2026
+
+### Fixed
+  - DP-41032: Pin mayflower artifact to add vertical spacing for Highlight and callout components in rich text.
+  - DP-47635: Resolve inline message warning message icon color contrast issue and match font styles to design.
+  - DP-47707: Stop collection_all View from spamming the watchdog log.
+
+### Added
+  - DP-43727: Tests for Bulk document import enhancements to validation/verification.
+  - DP-45788: Create mass_org_access module — restricts node/media UPDATE and DELETE to users within their assigned organization via hook_node_access/hook_media_access.
+  - DP-46788: Add user profile Default organizations and Default labels fields; pre-fill new node and document forms from profile defaults; deploy hook migrates default orgs from permission groups for active users.
+  - DP-47685: Added last revised by field to editoria11y csv export.
+
+### Changed
+  - DP-44915: Added views for viewing accessibility information by top-level organization.
+  - DP-44915: Upgraded Editoria11y to the latest version.
+  - DP-44915: Added last revised by to editoria11y report.
+  - DP-47028: Clean calculation logic for Related Organizations to avoid log noise.
+  - DP-47145: Add Toolbar (Hidden, Bottom, Top), Data details and Share options settings to the Tableau embed paragraph for "Connected Apps" embeds, so these are no longer hardcoded. Toolbar defaults to hidden.
+  - DP-47675: Require image in the image paragraph for header image.
+
+
+## [0.483.1] - June 18, 2026
+
+### Security
+- DP-47680: Drupal core update 11.3.12.
+
+
 ## [0.483.0] - June 16, 2026
 
 ### Added
   - DP-46864: Adds a Message box toolbar button to Basic HTML CKEditor for informational and alert inline messages rendered with Mayflower inline-message.
-  
+
 ### Fixed
   - DP-47109: Fix JS error with mobile translate component.
-  
+
 
 
 ## [0.482.0] - June 9, 2026
 
 ### Added
   - DP-43633: Warn authors when unpublishing or trashing a document that has published pages linking here.
-  
+
 ### Changed
   - DP-45831: Update internal links on mass.gov that are redirects.
   - DP-46121: Include the nearest microsite name in the HTML meta title for pages within a microsite.
   - DP-46592: CSV Table / Datatables changes - round 3.
-  
+
 ### Fixed
   - DP-47343: Prevent ordered list numbers from being clipped for leading-zero styles and lists with a start attribute, including on info-details pages.
   - DP-47348: Remove green decorative underline from H3 and H4 in the rich text editor so editor preview matches the published page.
-  
+
 
 
 ## [0.481.0] - June 2, 2026
@@ -32,15 +268,15 @@
   - DP-44689: Use the info icon and standard callout spacing for the decision tree disclaimer.
   - DP-46912: Enable item count selection in all content and advanced content reports.
   - DP-46922: Small updates to purge oversized header logger.
-  
+
 ### Fixed
   - DP-45426: Fixed bullet list alignment issues.
   - DP-47000: Fix csv export for all documents to respect value of accessibility status filter
   - DP-47095: Restrict user approval fields to users with administer users permission and normalize editor profile form spacing after the fields are hidden.
-  
+
 ### Added
   - DP-45952: Added top down org hierarchy view report.
-  
+
 
 
 ## [0.480.1] - May 20, 2026

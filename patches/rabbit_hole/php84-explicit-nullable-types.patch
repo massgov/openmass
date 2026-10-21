@@ -1,0 +1,120 @@
+diff --git a/src/BehaviorInvoker.php b/src/BehaviorInvoker.php
+--- a/src/BehaviorInvoker.php
++++ b/src/BehaviorInvoker.php
+@@ -74,7 +74,7 @@ class BehaviorInvoker implements BehaviorInvokerInterface {
+    * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+    *   The module handler.
+    */
+-  public function __construct(BehaviorSettingsManager $rabbit_hole_behavior_settings_manager, RabbitHoleBehaviorPluginManager $plugin_manager_rabbit_hole_behavior_plugin, RabbitHoleEntityPluginManager $plugin_manager_rabbit_hole_entity_plugin, EntityExtender $entity_extender, AccountProxyInterface $current_user, ModuleHandlerInterface $module_handler = NULL) {
++  public function __construct(BehaviorSettingsManager $rabbit_hole_behavior_settings_manager, RabbitHoleBehaviorPluginManager $plugin_manager_rabbit_hole_behavior_plugin, RabbitHoleEntityPluginManager $plugin_manager_rabbit_hole_entity_plugin, EntityExtender $entity_extender, AccountProxyInterface $current_user, ?ModuleHandlerInterface $module_handler = NULL) {
+     $this->rhBehaviorSettingsManager = $rabbit_hole_behavior_settings_manager;
+     $this->rhBehaviorPluginManager = $plugin_manager_rabbit_hole_behavior_plugin;
+     $this->rhEntityPluginManager = $plugin_manager_rabbit_hole_entity_plugin;
+@@ -122,7 +122,7 @@ class BehaviorInvoker implements BehaviorInvokerInterface {
+   /**
+    * {@inheritdoc}
+    */
+-  public function processEntity(ContentEntityInterface $entity, Response $current_response = NULL) {
++  public function processEntity(ContentEntityInterface $entity, ?Response $current_response = NULL) {
+     $plugin = $this->getBehaviorPlugin($entity);
+ 
+     if ($plugin === NULL) {
+diff --git a/src/BehaviorInvokerInterface.php b/src/BehaviorInvokerInterface.php
+--- a/src/BehaviorInvokerInterface.php
++++ b/src/BehaviorInvokerInterface.php
+@@ -52,7 +52,7 @@ interface BehaviorInvokerInterface {
+    * @throws \Drupal\Component\Plugin\Exception\PluginException
+    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+    */
+-  public function processEntity(ContentEntityInterface $entity, Response $current_response = NULL);
++  public function processEntity(ContentEntityInterface $entity, ?Response $current_response = NULL);
+ 
+   /**
+    * Load a list of entity IDs supported by rabbit hole given available plugins.
+diff --git a/src/FormManglerService.php b/src/FormManglerService.php
+--- a/src/FormManglerService.php
++++ b/src/FormManglerService.php
+@@ -480,9 +480,9 @@ class FormManglerService {
+     array &$form,
+     FormStateInterface $form_state,
+     $form_id,
+-    EntityInterface $entity = NULL,
++    ?EntityInterface $entity = NULL,
+     $entity_is_bundle = FALSE,
+-    ImmutableConfig $bundle_settings = NULL
++    ?ImmutableConfig $bundle_settings = NULL
+   ) {
+ 
+     foreach ($this->rhBehaviorPluginManager->getDefinitions() as $id => $def) {
+diff --git a/src/Plugin/RabbitHoleBehaviorPlugin/AccessDenied.php b/src/Plugin/RabbitHoleBehaviorPlugin/AccessDenied.php
+--- a/src/Plugin/RabbitHoleBehaviorPlugin/AccessDenied.php
++++ b/src/Plugin/RabbitHoleBehaviorPlugin/AccessDenied.php
+@@ -20,7 +20,7 @@ class AccessDenied extends RabbitHoleBehaviorPluginBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function performAction(EntityInterface $entity, Response $current_response = NULL) {
++  public function performAction(EntityInterface $entity, ?Response $current_response = NULL) {
+     throw new AccessDeniedHttpException();
+   }
+ 
+diff --git a/src/Plugin/RabbitHoleBehaviorPlugin/PageNotFound.php b/src/Plugin/RabbitHoleBehaviorPlugin/PageNotFound.php
+--- a/src/Plugin/RabbitHoleBehaviorPlugin/PageNotFound.php
++++ b/src/Plugin/RabbitHoleBehaviorPlugin/PageNotFound.php
+@@ -20,7 +20,7 @@ class PageNotFound extends RabbitHoleBehaviorPluginBase {
+   /**
+    * {@inheritdoc}
+    */
+-  public function performAction(EntityInterface $entity, Response $current_response = NULL) {
++  public function performAction(EntityInterface $entity, ?Response $current_response = NULL) {
+     throw new NotFoundHttpException();
+   }
+ 
+diff --git a/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php b/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php
+--- a/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php
++++ b/src/Plugin/RabbitHoleBehaviorPlugin/PageRedirect.php
+@@ -114,7 +114,7 @@ class PageRedirect extends RabbitHoleBehaviorPluginBase implements ContainerFact
+   /**
+    * {@inheritdoc}
+    */
+-  public function performAction(EntityInterface $entity, Response $current_response = NULL) {
++  public function performAction(EntityInterface $entity, ?Response $current_response = NULL) {
+     $target = $this->getActionTarget($entity);
+     $response_code = $this->getActionResponseCode($entity);
+ 
+@@ -254,9 +254,9 @@ class PageRedirect extends RabbitHoleBehaviorPluginBase implements ContainerFact
+     array &$form,
+     FormStateInterface $form_state,
+     $form_id,
+-    EntityInterface $entity = NULL,
++    ?EntityInterface $entity = NULL,
+     $entity_is_bundle = FALSE,
+-    ImmutableConfig $bundle_settings = NULL
++    ?ImmutableConfig $bundle_settings = NULL
+   ) {
+ 
+     $redirect = NULL;
+diff --git a/src/Plugin/RabbitHoleBehaviorPluginBase.php b/src/Plugin/RabbitHoleBehaviorPluginBase.php
+--- a/src/Plugin/RabbitHoleBehaviorPluginBase.php
++++ b/src/Plugin/RabbitHoleBehaviorPluginBase.php
+@@ -25,7 +25,7 @@ abstract class RabbitHoleBehaviorPluginBase extends PluginBase implements RabbitH
+   /**
+    * {@inheritdoc}
+    */
+-  public function settingsForm(array &$form, FormStateInterface $form_state, $form_id, EntityInterface $entity = NULL, $entity_is_bundle = FALSE, ImmutableConfig $bundle_settings = NULL) {
++  public function settingsForm(array &$form, FormStateInterface $form_state, $form_id, ?EntityInterface $entity = NULL, $entity_is_bundle = FALSE, ?ImmutableConfig $bundle_settings = NULL) {
+     // Present no settings form.
+   }
+ 
+diff --git a/src/Plugin/RabbitHoleBehaviorPluginInterface.php b/src/Plugin/RabbitHoleBehaviorPluginInterface.php
+--- a/src/Plugin/RabbitHoleBehaviorPluginInterface.php
++++ b/src/Plugin/RabbitHoleBehaviorPluginInterface.php
+@@ -41,7 +41,7 @@ interface RabbitHoleBehaviorPluginInterface extends PluginInspectionInterface {
+    *   The behavior settings for the bundle of the entity (or the entity itself,
+    *   if it is a bundle).
+    */
+-  public function settingsForm(array &$form, FormStateInterface $form_state, $form_id, EntityInterface $entity = NULL, $entity_is_bundle = FALSE, ImmutableConfig $bundle_settings = NULL);
++  public function settingsForm(array &$form, FormStateInterface $form_state, $form_id, ?EntityInterface $entity = NULL, $entity_is_bundle = FALSE, ?ImmutableConfig $bundle_settings = NULL);
+ 
+   /**
+    * Handle submission of the settings form for this plugin.

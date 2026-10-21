@@ -2,8 +2,6 @@
 
 namespace Drupal\mass_views\Plugin\views\exposed_form;
 
-use Drupal\views\Plugin\views\exposed_form\InputRequired;
-
 /**
  * Provides an exposed form with required input from the request.
  *
@@ -15,7 +13,7 @@ use Drupal\views\Plugin\views\exposed_form\InputRequired;
  *   help = @Translation("An exposed form that only renders a view if request contains parameters.")
  * )
  */
-class InputRequiredFromRequest extends InputRequired {
+class InputRequiredFromRequest extends MassInputRequired {
 
   /**
    * {@inheritdoc}

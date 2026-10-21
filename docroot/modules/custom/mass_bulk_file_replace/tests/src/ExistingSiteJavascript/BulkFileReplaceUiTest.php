@@ -11,7 +11,7 @@ use Drupal\media\MediaInterface;
 use Drupal\Tests\mass_bulk_file_replace\Traits\BulkFileReplaceTestTrait;
 use Drupal\user\Entity\User;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Browser tests for bulk file replace upload and mismatch verification UI.
@@ -21,7 +21,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  *
  * @group existing-site
  */
-class BulkFileReplaceUiTest extends ExistingSiteSelenium2DriverTestBase {
+class BulkFileReplaceUiTest extends MassExistingSiteSelenium2DriverTestBase {
 
   use BulkFileReplaceTestTrait;
   use MediaCreationTrait;

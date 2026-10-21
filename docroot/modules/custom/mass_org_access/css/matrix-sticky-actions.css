@@ -1,0 +1,18 @@
+/**
+ * @file
+ * Sticky top action bar on the org mapping matrix form.
+ *
+ * The top copy of the action buttons stays pinned below the admin toolbar
+ * while the (long) matrix is scrolled. The offset variable is maintained
+ * by core's drupal.displace, so the bar clears the toolbar at any width.
+ */
+
+.oog-matrix-actions-top {
+  position: sticky;
+  z-index: 100;
+  top: var(--drupal-displace-offset-top, 0);
+  margin: 0 0 1em;
+  padding: 0.75em 0;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+}

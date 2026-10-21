@@ -215,6 +215,9 @@ class ReplaceMismatchForm extends FormBase {
           $fs = \Drupal::service('file_system');
           $directory = $fs->dirname($current_uri);
           $new_uri_same_dir = $directory . '/' . $cleaned_filename;
+          if (static::skipDirectoryFileMove($file, $fs, 'bulk replace filename normalization')) {
+            return;
+          }
           // Rename within the same directory first.
           $moved_same_dir = \Drupal::service('file.repository')->move($file, $new_uri_same_dir, FileExists::Rename);
           if ($moved_same_dir) {
@@ -238,6 +241,9 @@ class ReplaceMismatchForm extends FormBase {
           $file_system = \Drupal::service('file_system');
           if (!$file_system->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
             \Drupal::logger('mass_bulk_file_replace')->error('Failed to prepare directory: @dest', ['@dest' => $destination]);
+            return;
+          }
+          if (static::skipDirectoryFileMove($file, $file_system, 'bulk replace destination')) {
             return;
           }
           $moved_file = \Drupal::service('file.repository')->move($file, $destination);

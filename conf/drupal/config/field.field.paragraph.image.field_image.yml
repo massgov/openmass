@@ -6,14 +6,21 @@ dependencies:
     - field.storage.paragraph.field_image
     - paragraphs.paragraphs_type.image
   module:
+    - content_translation
     - image
+third_party_settings:
+  content_translation:
+    translation_sync:
+      alt: alt
+      title: title
+      file: '0'
 id: paragraph.image.field_image
 field_name: field_image
 entity_type: paragraph
 bundle: image
 label: Image
 description: 'Add an image below header on the right.'
-required: false
+required: true
 translatable: true
 default_value: {  }
 default_value_callback: ''

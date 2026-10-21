@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+## Description: Run BackstopJS visual regression tests
+## Usage: backstop [reference|test|approve] [BackstopJS options]
+## Example: ddev backstop test --target=local --list=all
+## ExecRaw: true
+## MutagenSync: true
+
+set -euo pipefail
+
+project_root="${DDEV_APPROOT:-/var/www/html}"
+backstop_bin="${project_root}/node_modules/.bin/backstop"
+playwright_bin="${project_root}/node_modules/.bin/playwright"
+
+export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/mnt/ddev-global-cache/ms-playwright}"
+
+if [[ ! -x "${backstop_bin}" || ! -x "${playwright_bin}" ]]; then
+  echo "BackstopJS is not installed. Run 'ddev yarn install --frozen-lockfile' first." >&2
+  exit 1
+fi
+
+# This is a no-op when the matching Chromium build is already cached.
+"${playwright_bin}" install chromium
+
+cd "${project_root}/backstop"
+exec "${backstop_bin}" --config=backstop.js "$@"

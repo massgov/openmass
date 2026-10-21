@@ -1,0 +1,78 @@
+uuid: 39cd9801-6e98-4464-811c-d4ed096cd086
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.numbered_step.field_next_step_details
+    - field.field.paragraph.numbered_step.field_next_step_link
+    - field.field.paragraph.numbered_step.field_next_step_title
+    - field.field.paragraph.numbered_step.field_step_documents
+    - paragraphs.paragraphs_type.numbered_step
+  module:
+    - link
+    - mass_validation
+    - maxlength
+    - paragraphs
+    - text
+id: paragraph.numbered_step.default
+targetEntityType: paragraph
+bundle: numbered_step
+mode: default
+content:
+  field_next_step_details:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_next_step_link:
+    type: link_default
+    weight: 3
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 30
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
+      mass_validation:
+        internal_link_content_type_blacklist: {  }
+  field_next_step_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings:
+      maxlength:
+        maxlength_js: 100
+        maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
+        maxlength_js_enforce: true
+  field_step_documents:
+    type: paragraphs
+    weight: 2
+    region: content
+    settings:
+      title: Paragraph
+      title_plural: Paragraphs
+      edit_mode: open
+      closed_mode: summary
+      autocollapse: none
+      closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: _none
+      features:
+        add_above: '0'
+        collapse_edit_all: collapse_edit_all
+        convert: '0'
+        duplicate: duplicate
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true

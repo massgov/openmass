@@ -6,12 +6,12 @@ namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Verifies editors can set blocked/active users in media Authored by field.
  */
-class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
+class BlockedAuthorsMediaEditTest extends MassExistingSiteSelenium2DriverTestBase {
 
   use MediaCreationTrait;
 
@@ -29,7 +29,7 @@ class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
     $active_author->activate();
     $active_author->save();
 
-    $editor = $this->createUser([], 'editor_user_' . $this->randomMachineName(6));
+    $editor = $this->createUser(['bypass org access'], 'editor_user_' . $this->randomMachineName(6));
     $editor->addRole('editor');
     $editor->save();
 

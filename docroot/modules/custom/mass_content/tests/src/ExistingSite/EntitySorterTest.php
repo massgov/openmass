@@ -35,7 +35,7 @@ class EntitySorterTest extends MassExistingSiteBase {
 
     $this->entitySorter = new EntitySorter();
     $this->entitiesForSorting = $this->createEntitiesForSorting();
-    $this->expectedIndexesAsc = [1, 7, 8, 11, 5, 3, 4, 9, 12, 6, 10, 2, 13];
+    $this->expectedIndexesAsc = [1, 14, 15, 7, 8, 11, 5, 3, 4, 9, 12, 6, 10, 2, 13];
   }
 
   /**
@@ -80,6 +80,22 @@ class EntitySorterTest extends MassExistingSiteBase {
       'title' => $this->generateTitle(__FUNCTION__ . ' - ' . $date),
       'type' => $type,
       'field_date_published' => $date,
+      'status' => 1,
+    ]);
+    return $this->wrapEntity($entity);
+  }
+
+  /**
+   * Creates an event node with a specified field_event_date value.
+   */
+  private function createEventWithFieldEventDate($date) {
+    $entity = $this->createNode([
+      'title' => $this->generateTitle(__FUNCTION__ . ' - ' . $date),
+      'type' => 'event',
+      'field_event_date' => [
+        'value' => $date . 'T00:00:00',
+        'end_value' => $date . 'T00:00:00',
+      ],
       'status' => 1,
     ]);
     return $this->wrapEntity($entity);
@@ -161,6 +177,8 @@ class EntitySorterTest extends MassExistingSiteBase {
     $entities[] = $this->createNodeWithFieldDatePublished('binder', '2012-02-12');
     $entities[] = $this->createNodeWithFieldDatePublished('decision', '2017-04-13');
     $entities[] = $this->createNodeWithFieldDatePublished('rules', '2099-04-01');
+    $entities[] = $this->createNodeWithFieldDatePublished('news', '2005-01-01');
+    $entities[] = $this->createEventWithFieldEventDate('2008-01-01');
 
     return $entities;
   }
@@ -193,11 +211,12 @@ class EntitySorterTest extends MassExistingSiteBase {
     $this->entitiesForSorting[] = $this->createMediaWithFieldStartDate($same_date);
     $this->entitiesForSorting[] = $this->createNodeWithSpecificCreatedValue('curated_list', $same_date);
     $this->entitiesForSorting[] = $this->createNodeWithFieldDatePublished('advisory', $same_date);
+    $expected_indexes = $this->getIndexesFromEntities($this->entitiesForSorting);
 
     $this->entitySorter->sortEntities($this->entitiesForSorting, 'asc');
     $indexes = $this->getIndexesFromEntities($this->entitiesForSorting);
 
-    $this->assertEquals($indexes, [14, 15, 16], "Order is not preserved when dates are equal");
+    $this->assertEquals($indexes, $expected_indexes, "Order is not preserved when dates are equal");
   }
 
 }

@@ -8,6 +8,10 @@ use Drupal\Driver\Exception\Exception;
 /**
  * Transfers data from taxonomy field to new Organization reference field.
  *
+ * @deprecated The source field `field_contributing_organization`
+ * no longer exists; this worker is dead code retained for historical reference.
+ * See mass_org_access/FIELD_STATE_ORGANIZATION_USAGE.md.
+ *
  * @QueueWorker(
  *   id = "mass_utility_doc_organization_transfer",
  *   title = @Translation("Transfers old organization fields to new one."),

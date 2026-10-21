@@ -2,6 +2,9 @@
 
 namespace Drupal\mass_bulk_file_replace;
 
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\file\FileInterface;
+
 trait FilenameMediaMatchTrait {
 
   /**
@@ -53,6 +56,24 @@ trait FilenameMediaMatchTrait {
     return $uploaded_base !== ''
       && $existing_base !== ''
       && str_starts_with($uploaded_base, $existing_base);
+  }
+
+  /**
+   * Checks whether a file move should be skipped because the source is a directory.
+   */
+  protected static function skipDirectoryFileMove(FileInterface $file, FileSystemInterface $file_system, string $context): bool {
+    $uri = $file->getFileUri();
+    $realpath = $file_system->realpath($uri);
+    if ($realpath !== FALSE && is_dir($realpath)) {
+      \Drupal::logger('mass_bulk_file_replace')->warning('Skipped @context move for file entity @fid because @uri resolves to a directory.', [
+        '@context' => $context,
+        '@fid' => $file->id(),
+        '@uri' => $uri,
+      ]);
+      return TRUE;
+    }
+
+    return FALSE;
   }
 
 }

@@ -68,8 +68,13 @@ class UsageTrackingBlocker {
     // Load the paragraph revision.
     $paragraph = $this->entityTypeManager->getStorage('paragraph')
       ->loadByProperties(['revision_id' => $vid]);
+    $paragraph = current($paragraph);
+    if (!$paragraph || Helper::isParagraphOrphan($paragraph)) {
+      return FALSE;
+    }
+
     // Get the parent node of the paragraph.
-    $parent_node = Helper::getParentNode(current($paragraph));
+    $parent_node = Helper::getParentNode($paragraph);
     if (is_null($parent_node)) {
       return FALSE;
     }

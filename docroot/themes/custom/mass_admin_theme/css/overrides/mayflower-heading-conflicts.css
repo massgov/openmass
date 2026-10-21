@@ -1,0 +1,19 @@
+/**
+ * Prevent Mayflower global heading colors from overriding dark admin UI surfaces.
+ *
+ * Mayflower sets h2 { color: var(--mf-c-font-heading) }, which overrides
+ * inherited foreground colors on Claro message boxes and dialog title bars when
+ * mayflower/global loads on admin pages (layout paragraphs, CKEditor, etc.).
+ */
+
+.messages h2,
+.messages .messages__title {
+  color: var(--messages-fg-color);
+}
+
+.ui-dialog .ui-dialog-titlebar,
+.ui-dialog .ui-dialog-titlebar .ui-dialog-title,
+.ui-dialog .ui-dialog-titlebar h1,
+.ui-dialog .ui-dialog-titlebar h2 {
+  color: var(--jui-dialog-title-color, #fff);
+}

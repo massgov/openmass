@@ -1,0 +1,55 @@
+/**
+ * Owner Groups widget — read-only display rendered alongside a hidden
+ * autocomplete input. PHP form_alter hides the source widget via the
+ * .oog-readonly-source-hidden class and renders a sibling #type=item
+ * element (Drupal's form-element template auto-renders the <label> and
+ * <div class="description">), so styling stays consistent with the
+ * rest of the form.
+ */
+
+.oog-readonly-source-hidden {
+  display: none;
+}
+
+/**
+ * Release 1: the Permission Groups field is hidden from authors/editors on
+ * every bundle except the Organization page. The field stays in the form so
+ * its value still derives from Organization(s) and saves — it is only hidden
+ * from view. Drop this wrapper in Release 2 to restore visibility.
+ */
+.oog-hidden-from-author {
+  display: none;
+}
+
+/**
+ * Inline self-lockout confirmation shown on save. The frontend
+ * .messages--warning style is dark navy and reads as an unrelated panel on
+ * the editing UI, so people miss it. Render it light (white background, dark
+ * text) like a normal message, keeping the warning gold accent border.
+ */
+.oog-lockout-confirm.messages--warning {
+  background-color: #fff;
+  color: #1a1a1a;
+}
+
+.oog-lockout-confirm p {
+  margin: 0 0 0.5em;
+}
+
+.oog-lockout-confirm label {
+  font-weight: bold;
+}
+
+.oog-readonly-display {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 0.5em 0.75em;
+  min-height: 5em;
+}
+
+.oog-readonly-display ul {
+  margin: 0;
+  padding-left: 1.2em;
+  line-height: 1.5;
+}

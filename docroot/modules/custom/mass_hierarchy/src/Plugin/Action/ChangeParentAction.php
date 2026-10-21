@@ -100,7 +100,7 @@ class ChangeParentAction extends ViewsBulkOperationsActionBase {
   /**
    * {@inheritdoc}
    */
-  public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
+  public function validateConfigurationForm(array &$form, FormStateInterface $form_state): void {
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');
     /** @var \Drupal\entity_hierarchy\Storage\QueryBuilderFactory $query_builder_factory */
     $query_builder_factory = \Drupal::service('entity_hierarchy.query_builder_factory');

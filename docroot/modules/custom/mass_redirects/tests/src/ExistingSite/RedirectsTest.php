@@ -31,7 +31,7 @@ class RedirectsTest extends MassExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
 
-    $user1 = $this->createUser();
+    $user1 = $this->createUser(['bypass org access']);
     $user1->addRole('editor');
     $user1->activate();
     $user1->save();
@@ -65,7 +65,7 @@ class RedirectsTest extends MassExistingSiteBase {
   }
 
   /**
-   * Check that the our tab shows only on Trashed nodes, and works as designed.
+   * Check that the Redirects tab shows only on trashed nodes.
    */
   public function testRedirects() {
     $session = $this->getSession();
@@ -79,7 +79,8 @@ class RedirectsTest extends MassExistingSiteBase {
     $this->orgNode->setUnpublished()->set(MassModeration::FIELD_NAME, MassModeration::TRASH)->save();
     // Reload to get new state.
     $this->orgNode = Node::load($this->orgNode->id());
-    $state = $this->orgNode->getModerationState()->getString();
+    $this->assertSame(MassModeration::TRASH, $this->orgNode->getModerationState()->getString());
+    $url = $this->orgNode->toUrl('redirects')->toString();
     $session->visit($url);
     $this->assertEquals(200, $session->getStatusCode());
     $this->getCurrentPage()->fillField('target', $this->orgNodeTarget->label() . ' (' . $this->orgNodeTarget->id() . ')');
