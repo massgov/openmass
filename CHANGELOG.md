@@ -1,5 +1,12 @@
 
 
+## [0.496.1] - October 15, 2026
+
+### Security
+  - DP-49234: Update Drupal core to 11.3.19
+
+
+
 ## [0.496.0] - October 6, 2026
 
 ### Changed
