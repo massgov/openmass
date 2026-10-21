@@ -1,0 +1,7 @@
+# Refresh PHP packages even when the DDEV base image predates the security release.
+RUN apt-get update && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --only-upgrade --no-install-recommends -o Dpkg::Options::="--force-confold" \
+      php8.4-cli php8.4-common php8.4-fpm php8.4-opcache && \
+    php8.4 -r 'exit(version_compare(PHP_VERSION, "8.4.27", ">=") ? 0 : 1);' && \
+    php-fpm8.4 -v | grep -E '^PHP 8\.4\.' && \
+    rm -rf /var/lib/apt/lists/*

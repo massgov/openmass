@@ -53,6 +53,7 @@ services:
     commands:
       # Commands that set up the basic preview infrastructure
       init:
+        - php "${TUGBOAT_ROOT}/scripts/check-php-security.php"
         - apt-get update
         - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
         - sudo apt update
@@ -99,6 +100,7 @@ services:
       # skipping the init step, because the results of that step will
       # already be present.
       update:
+        - php "${TUGBOAT_ROOT}/scripts/check-php-security.php"
         - composer install --optimize-autoloader --no-cache
         - yarn install
         - curl -f -o ${TUGBOAT_ROOT}/drush/sites/self.site.yml -L https://$GITHUB_MASSGOV_BOT_TOKEN@raw.githubusercontent.com/massgov/massgov-internal-docs/master/self.site.yml
@@ -119,6 +121,7 @@ services:
       # and update steps, because the results of those are inherited
       # from the base preview.
       build:
+        - php "${TUGBOAT_ROOT}/scripts/check-php-security.php"
         # Hopefully more robust when these dirs are created from scratch.
         - rm -rf vendor docroot/modules/contrib docroot/libraries
         - composer install --no-interaction --optimize-autoloader --no-cache
