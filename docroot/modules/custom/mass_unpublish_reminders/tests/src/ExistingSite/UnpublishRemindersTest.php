@@ -3,6 +3,8 @@
 namespace Drupal\Tests\mass_unpublish_reminders\ExistingSite;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\Queue\SuspendQueueException;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\scheduled_transitions\Entity\ScheduledTransition;
 use Drupal\taxonomy\Entity\Vocabulary;
@@ -113,6 +115,48 @@ class UnpublishRemindersTest extends MassExistingSiteBase {
       ->seekToModule(static::MASS_UNPUBLISH_MODULENAME)
       ->seekToRecipient($this->author->mail->value)
       ->countEquals(1);
+
+    $messages = $this->getMails(['id' => 'mass_unpublish_reminders_unpublish_reminder']);
+    $message = end($messages);
+    $this->assertEqualsCanonicalizing(
+      array_map(static fn ($user) => $user->getEmail(), $this->users),
+      explode(',', $message['headers']['Cc']),
+    );
+  }
+
+  /**
+   * Tests that a failed mail result suspends reminder processing.
+   */
+  public function testFailedReminderSuspendsQueue(): void {
+    $node = $this->createNode([
+      'type' => 'alert',
+      'title' => 'Failed reminder',
+      'uid' => $this->author->id(),
+      'moderation_state' => 'published',
+    ]);
+    $this->assertNotEmpty(mass_scheduled_transitions_load_by_host_entity($node, FALSE, MassModeration::UNPUBLISHED));
+
+    $mail_manager = $this->createMock(MailManagerInterface::class);
+    $mail_manager->expects($this->once())
+      ->method('mail')
+      ->with('mass_unpublish_reminders', 'unpublish_reminder', $this->author->getEmail(), 'en', $this->isType('array'), NULL, TRUE)
+      ->willReturn(['result' => FALSE]);
+    $original_mail_manager = $this->container->get('plugin.manager.mail');
+    $this->container->set('plugin.manager.mail', $mail_manager);
+
+    try {
+      $this->expectException(SuspendQueueException::class);
+      $this->expectExceptionMessage('Unable to send mass_unpublish_reminder email');
+      $this->container->get('plugin.manager.queue_worker')
+        ->createInstance('mass_unpublish_reminders_queue')
+        ->processItem($node->id());
+    }
+    finally {
+      $this->container->set('plugin.manager.mail', $original_mail_manager);
+      $this->container->get('database')->delete('mass_unpublish_reminders')
+        ->condition('nid', $node->id())
+        ->execute();
+    }
   }
 
   /**
