@@ -65,7 +65,7 @@ class RedirectsTest extends MassExistingSiteBase {
   }
 
   /**
-   * Check that the Redirects tab shows only on trashed nodes.
+   * Check that the Redirects tab shows on trashed nodes.
    */
   public function testRedirects() {
     $session = $this->getSession();
@@ -102,6 +102,60 @@ class RedirectsTest extends MassExistingSiteBase {
     $this->drupalGet($path);
     $this->assertSession()->addressEquals($this->orgNode->toUrl()->toString());
     $this->assertEquals(200, $session->getStatusCode());
+  }
+
+  /**
+   * Unpublished pages can redirect, then reclaim their URL on republish.
+   */
+  public function testUnpublishedRedirectAndRepublish(): void {
+    $page = $this->createNode([
+      'type' => 'service_page',
+      'title' => $this->randomMachineName(),
+      'field_service_lede' => 'Redirect test page.',
+      'field_organizations' => [$this->orgNode],
+      'field_primary_parent' => [['target_id' => $this->orgNode->id()]],
+      'status' => 1,
+      MassModeration::FIELD_NAME => MassModeration::PUBLISHED,
+    ]);
+    $originalUrl = $page->toUrl()->toString();
+    $this->drupalGet($page->toUrl('edit-form', ['path_processing' => FALSE]));
+    $this->getCurrentPage()->selectFieldOption('moderation_state[0][state]', MassModeration::UNPUBLISHED);
+    $this->getCurrentPage()->pressButton('Save');
+    $this->assertSession()->pageTextContains('Redirect this unpublished page');
+    $this->assertSession()->elementAttributeContains('css', '.messages--warning a', 'href', '/node/' . $page->id() . '/redirects');
+    $page = Node::load($page->id());
+    $this->assertSame(MassModeration::UNPUBLISHED, $page->getModerationState()->getString());
+
+    $this->drupalGet($page->toUrl('redirects', ['path_processing' => FALSE]));
+    $this->assertSession()->statusCodeEquals(200);
+    $this->getCurrentPage()->fillField('target', $this->orgNodeTarget->label() . ' (' . $this->orgNodeTarget->id() . ')');
+    $this->getCurrentPage()->pressButton('Add redirect');
+
+    $source = ltrim($originalUrl, '/');
+    $redirects = \Drupal::entityTypeManager()->getStorage('redirect')->loadByProperties(['redirect_source__path' => $source]);
+    $this->assertNotEmpty($redirects, 'The original page URL should redirect while unpublished.');
+    $this->assertSame('internal:/node/' . $this->orgNodeTarget->id(), reset($redirects)->getRedirect()['uri']);
+    $this->drupalGet($originalUrl);
+    $this->assertSession()->addressEquals($this->orgNodeTarget->toUrl()->toString());
+
+    $this->drupalGet($page->toUrl('edit-form', ['path_processing' => FALSE]));
+    $this->getCurrentPage()->selectFieldOption('moderation_state[0][state]', MassModeration::PUBLISHED);
+    $this->getCurrentPage()->pressButton('Save');
+
+    $page = Node::load($page->id());
+    $this->assertSame(MassModeration::PUBLISHED, $page->getModerationState()->getString());
+    $redirects = \Drupal::entityTypeManager()->getStorage('redirect')->loadByProperties(['redirect_source__path' => $source]);
+    $this->assertEmpty($redirects, 'Republishing should remove the redirect that shadows the restored URL.');
+    $this->drupalGet($originalUrl);
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->addressEquals($originalUrl);
+
+    $this->drupalGet($page->toUrl('edit-form', ['path_processing' => FALSE]));
+    $this->getCurrentPage()->selectFieldOption('moderation_state[0][state]', MassModeration::TRASH);
+    $this->getCurrentPage()->pressButton('Save');
+    $this->assertSession()->pageTextContains('Redirect this trashed page');
+    $this->drupalGet($page->toUrl('redirects', ['path_processing' => FALSE]));
+    $this->assertSession()->statusCodeEquals(200);
   }
 
 }
