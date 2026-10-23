@@ -1,0 +1,20 @@
+# PHP security update (CVE-2026-109618, CVE-2026-109619) without waiting for a DDEV release.
+# Bump PHP_MIN_VERSION on the next PHP security release to rebuild this layer.
+ARG DDEV_PHP_VERSION
+ARG PHP_MIN_VERSION=8.4.27
+RUN curl -fsSL https://packages.sury.org/php/apt.gpg -o /usr/share/keyrings/deb.sury.org-php.gpg \
+    && apt-get update \
+    && DEBIAN_FRONTEND=noninteractive apt-get install -y --only-upgrade --no-install-recommends --no-remove \
+        -o Dpkg::Options::=--force-confdef -o Dpkg::Options::=--force-confold \
+        php${DDEV_PHP_VERSION}-cli php${DDEV_PHP_VERSION}-common php${DDEV_PHP_VERSION}-fpm php${DDEV_PHP_VERSION}-opcache \
+    && rm -rf /var/lib/apt/lists/* \
+    && cli="$(php${DDEV_PHP_VERSION} -r 'echo PHP_VERSION;')" \
+    && fpm="$(php-fpm${DDEV_PHP_VERSION} -v | awk 'NR==1{print $2}')" \
+    && echo "PHP CLI ${cli}, FPM ${fpm}, required ${PHP_MIN_VERSION} or later" \
+    && dpkg --compare-versions "${cli}" ge "${PHP_MIN_VERSION}" \
+    && dpkg --compare-versions "${fpm}" ge "${PHP_MIN_VERSION}" \
+    && ! php${DDEV_PHP_VERSION} -v 2>&1 | grep -iE 'warning|unable to load'
+# CVE-2026-115560: disable session upload-progress tracking before request processing.
+RUN printf 'session.upload_progress.enabled=0\n' \
+    | tee /etc/php/${DDEV_PHP_VERSION}/cli/conf.d/99-session-upload-progress.ini \
+          /etc/php/${DDEV_PHP_VERSION}/fpm/conf.d/99-session-upload-progress.ini > /dev/null
