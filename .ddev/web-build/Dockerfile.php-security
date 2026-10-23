@@ -14,3 +14,7 @@ RUN curl -fsSL https://packages.sury.org/php/apt.gpg -o /usr/share/keyrings/deb.
     && dpkg --compare-versions "${cli}" ge "${PHP_MIN_VERSION}" \
     && dpkg --compare-versions "${fpm}" ge "${PHP_MIN_VERSION}" \
     && ! php${DDEV_PHP_VERSION} -v 2>&1 | grep -iE 'warning|unable to load'
+# CVE-2026-115560: disable session upload-progress tracking before request processing.
+RUN printf 'session.upload_progress.enabled=0\n' \
+    | tee /etc/php/${DDEV_PHP_VERSION}/cli/conf.d/99-session-upload-progress.ini \
+          /etc/php/${DDEV_PHP_VERSION}/fpm/conf.d/99-session-upload-progress.ini > /dev/null
