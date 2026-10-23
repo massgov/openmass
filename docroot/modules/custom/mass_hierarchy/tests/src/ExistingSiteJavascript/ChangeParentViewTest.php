@@ -204,34 +204,48 @@ class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     $button = $this->getCurrentPage()->findButton('Change parent');
     $this->assertNotNull($button, 'The "Change parent" button was not found.');
     $button->click();
+    // The bulk configuration form arrives after the click. Current Chrome
+    // returns from the click before "New parent" is in the document.
+    $this->assertNotNull($this->assertSession()->waitForField('New parent'));
 
     // Select a wrong parent (incompatible bundle).
-    $this->getCurrentPage()->fillField('New parent', $parent3Node->label());
+    // "Title (nid)" is the value entity autocomplete submits. A bare title
+    // waits on the suggestion request, and current Chrome submits the form
+    // before that request finishes.
+    $this->getCurrentPage()->fillField('New parent', $parent3Node->label() . ' (' . $parent3Node->id() . ')');
     $this->getCurrentPage()->pressButton('Change parent');
-    $this->assertSession()->pageTextContains('1 error has been found');
+    // The bulk form is replaced by AJAX. Reading the page immediately uses
+    // the old document, which current Chrome reports as a stale element.
+    $this->assertTrue($this->assertSession()->waitForText('1 error has been found'));
+    $this->assertNotNull($this->assertSession()->waitForField('New parent'));
 
     // Select a wrong parent (descendant).
-    $this->getCurrentPage()->fillField('New parent', $childOfChild1Node->label());
+    $this->getCurrentPage()->fillField('New parent', $childOfChild1Node->label() . ' (' . $childOfChild1Node->id() . ')');
     $this->getCurrentPage()->pressButton('Change parent');
-    $this->assertSession()->pageTextContains('The new parent is a descendant of');
+    $this->assertTrue($this->assertSession()->waitForText('The new parent is a descendant of'));
+    $this->assertNotNull($this->assertSession()->waitForField('New parent'));
 
     // Select a correct parent.
-    $this->getCurrentPage()->fillField('New parent', $parent2Node->label());
+    $this->getCurrentPage()->fillField('New parent', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
 
     // Wait for the bulk operations to happen.
     $button = $this->getCurrentPage()->findButton('Change parent');
     $this->assertNotNull($button, 'The "Change parent" button was not found.');
     $button->click();
-    $this->getSession()->wait(3000);
+    $this->assertTrue($this->assertSession()->waitForText("Updated parent for {$child1['title']}"));
+    $this->assertTrue($this->assertSession()->waitForText("Updated parent for {$child2['title']}"));
     $this->htmlOutput();
-    // Check done message.
-    $this->assertSession()->pageTextContains("Updated parent for {$child1['title']}");
-    $this->assertSession()->pageTextContains("Updated parent for {$child2['title']}");
 
-    // Reload and ensure it has no children.
+    // Reload and ensure it has no children. The reload returns before Chrome
+    // replaces the document, so read the page through a wait that retries a
+    // stale element.
     $this->getSession()->reload();
-    $this->assertSession()->pageTextNotContains($child1['title']);
-    $this->assertSession()->pageTextNotContains($child2['title']);
+    $text = $this->getSession()->getPage()->waitFor(15, function ($page) {
+      return $page->getText();
+    });
+    $this->assertIsString($text, 'The move-children page should be readable after reload.');
+    $this->assertStringNotContainsString($child1['title'], $text);
+    $this->assertStringNotContainsString($child2['title'], $text);
 
     // Check children on new parent.
     $this->drupalGet('node/' . $parent2Node->id() . '/move-children');
@@ -284,13 +298,21 @@ class ChangeParentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     $this->drupalGet('node/' . $parent1Node->id() . '/move-children');
     $this->assertSession()->pageTextContains($child1['title']);
     $this->getCurrentPage()->find('css', '.vbo-table .select-all input')->check();
-    $this->getSession()->wait(2000);
-    $this->getCurrentPage()->pressButton('Change parent');
+    $this->getSession()->wait(3000);
+    $button = $this->getCurrentPage()->findButton('Change parent');
+    $this->assertNotNull($button, 'The "Change parent" button was not found.');
+    $button->click();
+    $this->assertSession()->waitForField('New parent');
 
     // Bulk updating to the new parent (second parent).
-    $this->getCurrentPage()->fillField('New parent', $parent2Node->label());
-    $this->getCurrentPage()->pressButton('Change parent');
-    $this->getSession()->wait(2000);
+    // "Title (nid)" is the value entity autocomplete submits. A bare title
+    // waits on the suggestion request, and current Chrome submits the form
+    // before that request finishes.
+    $this->getCurrentPage()->fillField('New parent', $parent2Node->label() . ' (' . $parent2Node->id() . ')');
+    $button = $this->getCurrentPage()->findButton('Change parent');
+    $this->assertNotNull($button, 'The "Change parent" button was not found.');
+    $button->click();
+    $this->getSession()->wait(3000);
 
     /** @var \Drupal\Node\NodeStorage */
     $node_storage = \Drupal::entityTypeManager()->getStorage('node');

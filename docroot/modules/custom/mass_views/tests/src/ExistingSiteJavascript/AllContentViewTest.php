@@ -40,6 +40,8 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
     $view_results_selector = '.view-content .views-view-table';
     $this->assertSession()->elementNotExists('css', $view_results_selector);
     $this->getCurrentPage()->pressButton('Apply');
+    // The results table is inserted by Views AJAX after Apply returns.
+    $this->assertSession()->waitForElement('css', $view_results_selector);
     $this->assertSession()->elementExists('css', $view_results_selector);
   }
 
