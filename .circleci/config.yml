@@ -285,7 +285,14 @@ jobs:
           role_arn: "$MYSQL_REBUILD_AWS_ROLE_TO_ASSUME"
           region: "$MYSQL_REBUILD_AWS_REGION"
           session_duration: "3600"
+      # The DDEV release archive, so a cache hit downloads nothing from GitHub.
+      - restore_cache:
+          keys:
+            - ddev-v1-{{ arch }}-{{ .Environment.DDEV_VERSION }}
       - run: {name: Install DDEV, command: .circleci/ddev/install-ddev.sh}
+      - save_cache:
+          key: ddev-v1-{{ arch }}-{{ .Environment.DDEV_VERSION }}
+          paths: [~/ddev-download]
       - run: {name: Configure DDEV for CI, command: .circleci/ddev/configure-ddev.sh << parameters.db_image >>}
       - run: {name: Pull database image, command: .circleci/ddev/pull-db-image.sh, no_output_timeout: 30m}
       - run: {name: Start DDEV, command: .circleci/ddev/start-ddev.sh, no_output_timeout: 30m}
