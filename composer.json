@@ -324,8 +324,8 @@
         }
     },
     "scripts": {
-        "check-platform": "@composer check-platform-reqs --lock $([ \"$COMPOSER_DEV_MODE\" = \"0\" ] && echo --no-dev)",
-        "pre-install-cmd": ["@check-platform"],
+        "check-php-platform": "bash -c 'if [ \"$COMPOSER_DEV_MODE\" = \"0\" ]; then composer check-platform-reqs --lock --no-dev; else composer check-platform-reqs --lock; fi'",
+        "pre-install-cmd": ["@check-php-platform"],
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
         "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction",
         "remove-git": [
@@ -335,7 +335,7 @@
             "@remove-git"
         ],
         "post-update-cmd": [
-            "@check-platform",
+            "@check-php-platform",
             "@remove-git"
         ]
     },
