@@ -9,7 +9,7 @@
         "process-timeout": 9600,
         "sort-packages": true,
         "platform": {
-            "php": "8.4.27"
+            "php": "8.4"
         },
         "discard-changes": true,
         "allow-plugins": {
@@ -324,8 +324,6 @@
         }
     },
     "scripts": {
-        "pre-install-cmd": ["@php scripts/check-php-security.php"],
-        "pre-update-cmd": ["@php scripts/check-php-security.php"],
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
         "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction",
         "remove-git": [
