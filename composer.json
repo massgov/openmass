@@ -326,7 +326,6 @@
     "scripts": {
         "check-platform": "@composer check-platform-reqs --lock $([ \"$COMPOSER_DEV_MODE\" = \"0\" ] && echo --no-dev)",
         "pre-install-cmd": ["@check-platform"],
-        "pre-update-cmd": ["@composer check-platform-reqs --lock"],
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
         "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction",
         "remove-git": [
