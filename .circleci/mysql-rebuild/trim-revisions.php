@@ -25,6 +25,11 @@ $etm = \Drupal::entityTypeManager();
 $efm = \Drupal::service('entity_field.manager');
 $started = microtime(TRUE);
 
+// Entity types whose revisions this script trims. Node and media are the ones
+// under content moderation.
+$moderated_types = ['node', 'media'];
+$trimmed_types = [...$moderated_types, 'paragraph', 'content_moderation_state'];
+
 $log = function (string $message) use ($started) {
   printf("[%5ds] %s\n", microtime(TRUE) - $started, $message);
 };
@@ -63,14 +68,14 @@ $keep = function (string $entity_type_id, string $select, array $args = []) use 
   $db->query("INSERT INTO {$keep_table($entity_type_id)} (rid) SELECT dt.id FROM ($select) dt (id) ON DUPLICATE KEY UPDATE rid = dt.id", $args);
 };
 
-foreach (['node', 'media', 'paragraph', 'content_moderation_state'] as $entity_type_id) {
+foreach ($trimmed_types as $entity_type_id) {
   $db->query("DROP TABLE IF EXISTS {$keep_table($entity_type_id)}");
   $db->query("CREATE TABLE {$keep_table($entity_type_id)} (rid INT UNSIGNED NOT NULL PRIMARY KEY) ENGINE=InnoDB");
 }
 
 // Nodes and media: the default revision and everything saved after it
 // (forward drafts).
-foreach (['node', 'media'] as $entity_type_id) {
+foreach ($moderated_types as $entity_type_id) {
   $entity_type = $etm->getDefinition($entity_type_id);
   $id = $entity_type->getKey('id');
   $rev = $entity_type->getKey('revision');
@@ -130,7 +135,7 @@ do {
 
 // Moderation states of kept revisions, plus the current ones.
 $keep('content_moderation_state', "SELECT revision_id FROM content_moderation_state");
-foreach (['node', 'media'] as $entity_type_id) {
+foreach ($moderated_types as $entity_type_id) {
   $keep('content_moderation_state', "SELECT c.revision_id FROM content_moderation_state_field_revision c JOIN {$keep_table($entity_type_id)} k ON k.rid = c.content_entity_revision_id WHERE c.content_entity_type_id = :type", [':type' => $entity_type_id]);
 }
 $log("content_moderation_state: keep {$count($keep_table('content_moderation_state'))} of {$count('content_moderation_state_revision')} revisions");
@@ -142,9 +147,9 @@ $log("content_moderation_state: keep {$count($keep_table('content_moderation_sta
  * current data and of kept revisions. Run before and after the trim: the
  * production data may already have a few, but the trim must not add any.
  */
-$dangling = function () use ($db, $etm, $references, $keep_table): array {
+$dangling = function () use ($db, $etm, $references, $keep_table, $trimmed_types): array {
   $counts = [];
-  foreach (['node', 'media', 'paragraph', 'content_moderation_state'] as $entity_type_id) {
+  foreach ($trimmed_types as $entity_type_id) {
     $entity_type = $etm->getDefinition($entity_type_id);
     $rev = $entity_type->getKey('revision');
     $counts["$entity_type_id current revision"] = (int) $db->query("SELECT COUNT(*) FROM {$entity_type->getBaseTable()} b LEFT JOIN {$entity_type->getRevisionTable()} r ON r.$rev = b.$rev WHERE r.$rev IS NULL")->fetchField();
@@ -180,7 +185,7 @@ $rebuild = function (string $table, string $select) use ($db, $dry_run, $count, 
   $log("$table: {$count($table)} rows");
 };
 
-foreach (['node', 'media', 'paragraph', 'content_moderation_state'] as $entity_type_id) {
+foreach ($trimmed_types as $entity_type_id) {
   foreach ($revision_tables($entity_type_id) as $table => $column) {
     $rebuild($table, "SELECT t.* FROM $table t JOIN {$keep_table($entity_type_id)} k ON k.rid = t.$column");
   }
@@ -188,7 +193,7 @@ foreach (['node', 'media', 'paragraph', 'content_moderation_state'] as $entity_t
 
 // Usage rows recorded for revisions that are gone.
 $conditions = [];
-foreach (['node', 'media', 'paragraph'] as $entity_type_id) {
+foreach ([...$moderated_types, 'paragraph'] as $entity_type_id) {
   $conditions[] = "(e.source_type = '$entity_type_id' AND NOT EXISTS (SELECT 1 FROM {$keep_table($entity_type_id)} k WHERE k.rid = e.source_vid))";
 }
 $rebuild('entity_usage', 'SELECT e.* FROM entity_usage e WHERE e.source_vid = 0 OR NOT (' . implode(' OR ', $conditions) . ')');
@@ -202,7 +207,7 @@ if (!$dry_run) {
   $log('No new references to missing revisions.');
 }
 
-foreach (['node', 'media', 'paragraph', 'content_moderation_state'] as $entity_type_id) {
+foreach ($trimmed_types as $entity_type_id) {
   $db->query("DROP TABLE {$keep_table($entity_type_id)}");
 }
 $log($dry_run ? 'Dry run, nothing changed.' : 'Done.');
