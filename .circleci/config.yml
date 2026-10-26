@@ -297,7 +297,7 @@ jobs:
           paths: [~/ddev-download]
       - run: {name: Configure DDEV for CI, command: .circleci/ddev/configure-ddev.sh << parameters.db_image >>}
       - run: {name: Pull database image, command: .circleci/ddev/pull-db-image.sh, no_output_timeout: 30m}
-      - run: {name: Start DDEV, command: .circleci/ddev/start-ddev.sh, no_output_timeout: 30m}
+      - run: {name: Start DDEV, command: ddev start -y, no_output_timeout: 30m}
       - run: {name: Wait for mysql, command: .circleci/ddev/wait-for-mysql.sh}
       - run: {name: Machine and runtime overview, command: .circleci/ddev/overview.sh}
       - run: ddev exec mkdir -p docroot/sites/default/files docroot/sites/simpletest/browser_output
@@ -635,11 +635,8 @@ jobs:
           destination: /home/circleci/code/drush/sites/self.site.yml
       - run: docker-compose up -d
       - run: docker cp /home/circleci/code/. "$(docker-compose ps -q drupal)":/var/www/html
-      # @todo Actually perform health check.
-      - run:
-          name: Wait for mysql
-          command: sleep 5
       - run: docker-compose exec drupal sudo apk add --no-cache --upgrade grep
+      # Waits for mysql to be ready first.
       - run:
           name: Turn off the InnoDB redo log
           command: ./redo-log.sh disable
