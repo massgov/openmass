@@ -224,33 +224,6 @@ jobs:
       - run: scripts/stamp-and-deploy
 
   # Run Danger to check for a changelog file in the PR.
-  # The PHPUnit job is the most expensive one, so feature branches run it only
-  # once they have a pull request. After opening one, rerun the workflow from
-  # failed to run the tests.
-  require_pr:
-    docker:
-      - image: cimg/base:current
-    resource_class: small
-    steps:
-      - run:
-          name: Check for a pull request
-          command: |
-            if [ "$CIRCLE_BRANCH" = develop ] || [ -n "${CIRCLE_PULL_REQUEST:-}" ]; then
-              exit 0
-            fi
-            # A pipeline started through the API (see
-            # .github/workflows/circleci-on-pull-request.yml) may not have
-            # CIRCLE_PULL_REQUEST, so ask GitHub.
-            open="$(curl -fsS -H "Authorization: Bearer $GITHUB_MASSGOV_BOT_TOKEN" \
-              "https://api.github.com/repos/massgov/openmass/pulls?state=open&head=massgov:${CIRCLE_BRANCH}" \
-              | jq length)"
-            if [ "$open" -gt 0 ]; then
-              exit 0
-            fi
-            echo "No pull request for $CIRCLE_BRANCH yet, so the tests are skipped."
-            echo "Opening a pull request starts them."
-            exit 1
-
   danger:
     working_directory: /tmp/code
     docker:
@@ -778,14 +751,10 @@ workflows:
           filters:
             branches:
               <<: *branch_ignore
-      - require_pr:
-          filters:
-            branches:
-              <<: *branch_ignore
       - test:
           name: test-phpunit
           command: phpunit
-          requires: [build, require_pr]
+          requires: [build]
           filters:
             branches:
               <<: *branch_ignore
