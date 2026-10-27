@@ -928,12 +928,8 @@ workflows:
           filters:
             branches:
               only: master
-      - test:
-          name: test-phpunit
-          requires: [build]
-          filters:
-            branches:
-              only: master
+      # No PHPUnit run here: master only receives release and hotfix branches,
+      # whose workflows already ran the tests on the same code.
       - hold - Release manager only:
           type: approval
           requires:
