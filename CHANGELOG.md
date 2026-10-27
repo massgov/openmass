@@ -1,5 +1,22 @@
 
 
+## [0.497.0] - October 27, 2026
+
+### Security
+  - DP-48793: Update the CSV Field module to 3.0.7 (SA-CONTRIB-2026-226, cross site scripting in the CSV table formatter).
+  
+### Added
+  - DP-48795: Internal SME / content owner field for pages and documents, with report filters and an owner directory.
+  
+### Fixed
+  - DP-49018: Use H2 for event titles on past and upcoming event listing pages so the heading order no longer skips from H1 to H3.
+  - DP-49043: Prevented repeated Akamai API failures from blocking newer cache invalidations indefinitely.
+  
+### Changed
+  - DP-49043: Enabled the Akamai cache tag purger (akamai_tag) on test and prod so cache tag invalidations are sent to Akamai.
+  
+
+
 ## [0.496.1] - October 15, 2026
 
 ### Security
