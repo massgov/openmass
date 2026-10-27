@@ -1,0 +1,113 @@
+<?php
+
+namespace Drupal\Tests\mass_caching\Unit;
+
+use Drupal\mass_caching\AkamaiPurger;
+use Drupal\mass_caching\AkamaiTagPurger;
+use Drupal\mass_caching\PurgerSelection;
+use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\DataProvider;
+use PHPUnit\Framework\Attributes\Group;
+
+/**
+ * Tests the environment-specific purger definitions.
+ */
+#[Group('mass_caching')]
+class PurgerDefinitionsTest extends UnitTestCase {
+
+  /**
+   * Tests the purgers enabled for each environment and local override.
+   */
+  #[DataProvider('environmentProvider')]
+  public function testEnabledPurgersForEnvironment(string|false $environment, string|false $override, array $expected): void {
+    $this->assertSame($expected, PurgerSelection::enabledPurgers($environment, $override));
+  }
+
+  /**
+   * Provides environment and override combinations.
+   */
+  public static function environmentProvider(): array {
+    return [
+      'production' => ['prod', FALSE, ['acquia_purge', 'akamai', 'akamai_tag']],
+      'test' => ['test', FALSE, ['acquia_purge', 'akamai', 'akamai_tag']],
+      'development' => ['dev', FALSE, ['acquia_purge']],
+      'ODE' => ['ode', FALSE, ['acquia_purge']],
+      'local' => [FALSE, FALSE, []],
+      'local Akamai override' => [FALSE, 'akamai, akamai_tag', ['akamai', 'akamai_tag']],
+      'local Acquia override' => [FALSE, 'acquia_purge', ['acquia_purge']],
+      'development tag override' => ['dev', 'akamai_tag', ['acquia_purge', 'akamai_tag']],
+      'unknown override' => [FALSE, 'definitions', []],
+      'duplicate override' => [FALSE, 'akamai,akamai', ['akamai']],
+    ];
+  }
+
+  /**
+   * Tests that only explicitly enabled purgers remain discoverable.
+   */
+  public function testDisabledPurgersAreRemoved(): void {
+    $original_environment = getenv('AH_SITE_ENVIRONMENT');
+    $original_purgers = getenv('MASS_PURGERS');
+    putenv('AH_SITE_ENVIRONMENT');
+    putenv('MASS_PURGERS');
+
+    if (!function_exists('mass_caching_purge_purgers_alter')) {
+      require_once DRUPAL_ROOT . '/modules/custom/mass_caching/mass_caching.module';
+    }
+
+    try {
+      $definitions = $this->definitions();
+      mass_caching_purge_purgers_alter($definitions);
+      $this->assertSame(['other' => ['types' => ['url']]], $definitions);
+
+      // An unknown override must not overwrite the hook's local variables.
+      putenv('MASS_PURGERS=definitions');
+      $definitions = ['sentinel' => []];
+      mass_caching_purge_purgers_alter($definitions);
+      $this->assertSame(['sentinel' => []], $definitions);
+
+      putenv('MASS_PURGERS=akamai');
+      $definitions = $this->definitions();
+      mass_caching_purge_purgers_alter($definitions);
+      $this->assertSame(['url', 'path'], $definitions['akamai']['types']);
+      $this->assertSame(AkamaiPurger::class, $definitions['akamai']['class']);
+      $this->assertArrayNotHasKey('akamai_tag', $definitions);
+      $this->assertArrayNotHasKey('acquia_purge', $definitions);
+
+      putenv('MASS_PURGERS');
+      putenv('AH_SITE_ENVIRONMENT=dev');
+      $definitions = $this->definitions();
+      mass_caching_purge_purgers_alter($definitions);
+      $this->assertArrayNotHasKey('akamai', $definitions);
+      $this->assertArrayNotHasKey('akamai_tag', $definitions);
+
+      putenv('AH_SITE_ENVIRONMENT=prod');
+      $definitions = $this->definitions();
+      mass_caching_purge_purgers_alter($definitions);
+      $expected = $this->definitions();
+      $expected['akamai']['class'] = AkamaiPurger::class;
+      $expected['akamai_tag']['class'] = AkamaiTagPurger::class;
+      $this->assertSame($expected, $definitions);
+    }
+    finally {
+      putenv($original_environment === FALSE
+        ? 'AH_SITE_ENVIRONMENT'
+        : 'AH_SITE_ENVIRONMENT=' . $original_environment);
+      putenv($original_purgers === FALSE
+        ? 'MASS_PURGERS'
+        : 'MASS_PURGERS=' . $original_purgers);
+    }
+  }
+
+  /**
+   * Returns representative purger definitions.
+   */
+  private function definitions(): array {
+    return [
+      'akamai' => ['types' => ['url', 'path'], 'class' => 'UpstreamUrlPurger'],
+      'akamai_tag' => ['types' => ['tag'], 'class' => 'UpstreamTagPurger'],
+      'acquia_purge' => ['types' => ['url', 'tag', 'everything']],
+      'other' => ['types' => ['url']],
+    ];
+  }
+
+}
