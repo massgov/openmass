@@ -63,6 +63,8 @@ services:
         - docker-php-ext-install opcache
         # Needed for image styles.
         - a2enmod headers rewrite
+        # CVE-2026-115560: apply at PHP startup before Apache reloads.
+        - echo "session.upload_progress.enabled=0" > /usr/local/etc/php/conf.d/99-session-upload-progress.ini
         - apache2ctl graceful
 
         - curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg

@@ -9,7 +9,7 @@
         "process-timeout": 9600,
         "sort-packages": true,
         "platform": {
-            "php": "8.4"
+            "php": "8.4.27"
         },
         "discard-changes": true,
         "allow-plugins": {
@@ -146,6 +146,7 @@
         }
     ],
     "require": {
+        "php": "~8.3.36-stable || ~8.4.27-stable || ~8.5.12-stable",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-libxml": "*",
@@ -323,6 +324,8 @@
         }
     },
     "scripts": {
+        "check-php-platform": "bash -c 'if [ \"$COMPOSER_DEV_MODE\" = \"0\" ]; then composer check-platform-reqs --lock --no-dev; else composer check-platform-reqs --lock; fi'",
+        "pre-install-cmd": ["@check-php-platform"],
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
         "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction",
         "remove-git": [
@@ -332,6 +335,7 @@
             "@remove-git"
         ],
         "post-update-cmd": [
+            "@check-php-platform",
             "@remove-git"
         ]
     },
@@ -385,7 +389,10 @@
                 "type:drupal-drush"
             ]
         },
-        "installer-types": ["bower-asset", "npm-asset"],
+        "installer-types": [
+            "bower-asset",
+            "npm-asset"
+        ],
         "patches": {
             "composer/installers": {
                 "PHP 8.4: Explicitly declare nullable parameter types (https://github.com/composer/installers/issues/544)": "patches/composer_installers/php84-explicit-nullable-types.patch"
@@ -420,7 +427,7 @@
                 "Dynamically provide action plugins for every moderation state change (https://www.drupal.org/project/drupal/issues/2797583#comment-14699699)": "https://www.drupal.org/files/issues/2022-09-20/core-provide-moderation-states-as-actions-2797583-207.patch",
                 "PHP Deprecated: strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in docroot/core/lib/Drupal/Core/Mail/Plugin/Mail/PhpMail.php on line 112 (https://www.drupal.org/project/drupal/issues/3328187#comment-15138241)": "https://www.drupal.org/files/issues/2023-07-05/3372667-2_0.patch",
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch",
-                "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
+                "Store table drag object in the table data": "patches/DP-23411_store-object-in-draggable-table.patch",
                 "Diffs with different line endings leads to Invalid $mode 3 specified (https://www.drupal.org/project/drupal/issues/3389715)": "https://www.drupal.org/files/issues/2024-01-09/Diffs-with-different-line-endings-leads-to-Invalid-mode-3-specified.patch",
                 "Error: Cannot read properties of undefined (reading 'settings')\u2028 with dialog.position.js (https://www.drupal.org/project/drupal/issues/3356667)": "https://www.drupal.org/files/issues/2024-09-19/3356667-69-drupal-core-10.3.5-undefined.patch",
                 "Display Bug when using #states (Forms API) with Ajax Request (https://www.drupal.org/project/drupal/issues/1091852)": "https://www.drupal.org/files/issues/2023-12-18/1091852-186.patch",
