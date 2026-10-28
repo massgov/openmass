@@ -54,6 +54,8 @@ class ContentEditingTest extends MassExistingSiteBase {
     // Bypass mass_org_access — this test edits real content across orgs.
     $editor = $this->createUser(['bypass org access']);
     $editor->addRole('editor');
+    // Only the Executive Orders role can edit the executive order QAG page.
+    $editor->addRole('executive_orders');
     $editor->activate();
     $editor->save();
     return $editor;
