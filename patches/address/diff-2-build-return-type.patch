@@ -1,0 +1,12 @@
+diff --git a/src/Plugin/diff/Field/AddressFieldBuilder.php b/src/Plugin/diff/Field/AddressFieldBuilder.php
+--- a/src/Plugin/diff/Field/AddressFieldBuilder.php
++++ b/src/Plugin/diff/Field/AddressFieldBuilder.php
+@@ -21,7 +21,7 @@ class AddressFieldBuilder extends CoreFieldBuilder {
+   /**
+    * {@inheritdoc}
+    */
+-  public function build(FieldItemListInterface $field_items) {
++  public function build(FieldItemListInterface $field_items): array {
+     $result = [];
+ 
+     foreach ($field_items as $field_key => $field_item) {
