@@ -3,9 +3,11 @@
 namespace Drupal\mass_flagging\Service;
 
 use Drupal\Component\Utility\Xss;
+use Drupal\content_moderation\ModerationInformationInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\RevisionLogInterface;
 use Drupal\diff\DiffEntityComparison;
+use Drupal\diff\FieldReferenceInterface;
 
 /**
  * Class MassFlaggingEntityComparison.
@@ -13,6 +15,14 @@ use Drupal\diff\DiffEntityComparison;
  * @package Drupal\mass_flagging\Service
  */
 class MassFlaggingEntityComparison extends DiffEntityComparison {
+
+  /**
+   * Content moderation, when the module is available.
+   *
+   * This service never receives the setter Diff 1.x used, so this stays NULL
+   * and revision summaries omit the moderation-state suffix.
+   */
+  protected ?ModerationInformationInterface $moderationInformation = NULL;
 
   /**
    * {@inheritdoc}
@@ -129,6 +139,73 @@ class MassFlaggingEntityComparison extends DiffEntityComparison {
         return TRUE;
       }
     }
+    return FALSE;
+  }
+
+  /**
+   * Builds field values and labels for a revision summary.
+   *
+   * Diff 2.1 removed DiffEntityComparison::summary(). The revision log and
+   * the image-section check still compare this shape: a flat list keyed by
+   * "{id}:{entity_type}.{field}" with "value" and "label".
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $revision
+   *   The revision to summarize.
+   *
+   * @return array
+   *   Field values keyed for comparison.
+   */
+  protected function summary(ContentEntityInterface $revision) {
+    $result = [];
+    $entity_type_id = $revision->getEntityTypeId();
+    /** @var \Drupal\Core\Field\FieldItemListInterface $field_items */
+    foreach ($revision as $field_items) {
+      $show_delta = FALSE;
+      $plugin = $this->diffBuilderManager->createInstanceForFieldDefinition($field_items->getFieldDefinition());
+      if ($plugin && $this->diffBuilderManager->showDiff($field_items->getFieldDefinition()->getFieldStorageDefinition())) {
+        if ($plugin instanceof FieldReferenceInterface) {
+          foreach ($plugin->getEntitiesToDiff($field_items) as $entity_key => $reference_entity) {
+            foreach ($this->summary($reference_entity) as $key => $build) {
+              if ($field_items->getFieldDefinition()->getFieldStorageDefinition()->getCardinality() != 1) {
+                $show_delta = TRUE;
+              }
+              $result[$key] = $build;
+              $delta = $show_delta ? ' ' . ($entity_key + 1) . ' ' : ' - ';
+              $result[$key]['label'] = $field_items->getFieldDefinition()->getLabel() . $delta . $result[$key]['label'];
+            }
+          }
+        }
+        else {
+          $key = $revision->id() . ':' . $entity_type_id . '.' . $field_items->getName();
+          $result[$key]['value'] = $field_items->getValue();
+          $result[$key]['label'] = $field_items->getFieldDefinition()->getLabel();
+        }
+      }
+    }
+
+    return $result;
+  }
+
+  /**
+   * Gets the revision's content moderation state, if available.
+   *
+   * Diff 2.1 moved this off DiffEntityComparison. getRevisionDescription()
+   * still calls it after the field summary is built.
+   *
+   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
+   *   The entity revision.
+   *
+   * @return string|false
+   *   The moderation state label, or FALSE when moderation is unavailable.
+   */
+  protected function getModerationState(ContentEntityInterface $entity) {
+    if ($this->moderationInformation && $this->moderationInformation->isModeratedEntity($entity)) {
+      if ($state = $entity->get('moderation_state')->value) {
+        $workflow = $this->moderationInformation->getWorkflowForEntity($entity);
+        return $workflow->getTypePlugin()->getState($state)->label();
+      }
+    }
+
     return FALSE;
   }
 
