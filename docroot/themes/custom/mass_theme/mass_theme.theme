@@ -33,6 +33,7 @@ use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\paragraphs\ParagraphInterface;
 use Drupal\schema_metatag\SchemaMetatagManager;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\views\Views;
 use Symfony\Component\DomCrawler\Crawler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -3984,7 +3985,7 @@ function mass_theme_add_regions_to_node($allowed_regions, &$variables) {
   $theme = \Drupal::theme()->getActiveTheme()->getName();
 
   // Retrieve theme regions.
-  $available_regions = system_region_list($theme, 'REGIONS_ALL');
+  $available_regions = \Drupal::service('theme_handler')->getTheme($theme)->listAllRegions();
 
   // Validate allowed regions with available regions.
   $regions = array_intersect(array_keys($available_regions), $allowed_regions);
@@ -4159,7 +4160,7 @@ function mass_theme_preprocess_node_section_landing(&$variables) {
   }
 
   // Get our subtopics (sections) view.
-  $view_results = views_get_view_result('ordered_topics', 'ordered_topic_list_block', $node->id());
+  $view_results = Views::getViewResult('ordered_topics', 'ordered_topic_list_block', $node->id());
   $sections = [];
   // Roll this up and give the twig tpl what it expects.
   foreach ($view_results as $key => $row) {
@@ -4514,7 +4515,11 @@ function mass_theme_preprocess_html(&$variables) {
   }
 
   if ($is_front_page) {
-    $variables['alerts_banner_view'] = views_embed_view('emergency_alert', 'block_banner');
+    $variables['alerts_banner_view'] = [
+      '#type' => 'view',
+      '#name' => 'emergency_alert',
+      '#display_id' => 'block_banner',
+    ];
     // Add a body class if this is the front.
     $variables['attributes']['class'][] = 'is-front';
   }

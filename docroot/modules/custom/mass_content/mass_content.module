@@ -56,6 +56,7 @@ use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -807,7 +808,7 @@ function mass_content_query_collection_all_alter(AlterableInterface $query) {
 
   // Executes collection_all_media to then get its query.
   // Pass Topic ID if any, if not, pass Collection ID.
-  views_get_view_result('collection_all_media', 'default', $topic_id ?? $collection_id);
+  Views::getViewResult('collection_all_media', 'default', $topic_id ?? $collection_id);
 
   /** @var Drupal\Core\Database\Query\Select $media_query */
   $media_query = mass_content_query_collection_media();
