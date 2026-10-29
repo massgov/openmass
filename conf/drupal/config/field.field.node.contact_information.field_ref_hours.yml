@@ -13,7 +13,7 @@ field_name: field_ref_hours
 entity_type: node
 bundle: contact_information
 label: Hours
-description: ''
+description: 'Hours of operation are displayed only when contact information is added to a Location page. They will not appear when the same contact information is added to other page types.'
 required: false
 translatable: false
 default_value: {  }
@@ -23,6 +23,7 @@ settings:
   handler_settings:
     target_bundles:
       hours: hours
+    negate: 0
     target_bundles_drag_drop:
       1up_stacked_band:
         weight: 54
@@ -35,6 +36,9 @@ settings:
         enabled: false
       3_up_text:
         weight: 57
+        enabled: false
+      about:
+        weight: 145
         enabled: false
       action_address:
         weight: 58
@@ -66,6 +70,24 @@ settings:
       address:
         weight: 67
         enabled: false
+      adjustment_type:
+        weight: 156
+        enabled: false
+      advisory_issuer:
+        weight: 157
+        enabled: false
+      advisory_section:
+        weight: 158
+        enabled: false
+      alert:
+        weight: 159
+        enabled: false
+      api_service_card_journey:
+        weight: 160
+        enabled: false
+      board_member:
+        weight: 161
+        enabled: false
       callout_alert:
         weight: 68
         enabled: false
@@ -74,6 +96,18 @@ settings:
         enabled: false
       callout_link:
         weight: 70
+        enabled: false
+      campaign_features:
+        weight: 165
+        enabled: false
+      card:
+        weight: 166
+        enabled: false
+      caspio_embed:
+        weight: 167
+        enabled: false
+      collection_search:
+        weight: 168
         enabled: false
       completion_time:
         weight: 71
@@ -87,14 +121,74 @@ settings:
       contact_info:
         weight: 74
         enabled: false
+      contact_placeholder:
+        weight: 173
+        enabled: false
+      content_card_group:
+        weight: 174
+        enabled: false
+      csv_table:
+        weight: 175
+        enabled: false
+      custom_html:
+        weight: 176
+        enabled: false
+      decision_participants:
+        weight: 177
+        enabled: false
+      decision_section:
+        weight: 178
+        enabled: false
+      documents_multiple:
+        weight: 179
+        enabled: false
       emergency_alert:
         weight: 75
+        enabled: false
+      event_agenda_section:
+        weight: 181
+        enabled: false
+      event_minutes_section:
+        weight: 182
+        enabled: false
+      external_organization:
+        weight: 183
         enabled: false
       fax_number:
         weight: 76
         enabled: false
+      featured_content_2up_item:
+        weight: 185
+        enabled: false
+      featured_content_single_item:
+        weight: 186
+        enabled: false
+      featured_item:
+        weight: 187
+        enabled: false
+      featured_item_mosaic:
+        weight: 188
+        enabled: false
+      featured_message:
+        weight: 189
+        enabled: false
+      featured_topics:
+        weight: 190
+        enabled: false
       file_download:
         weight: 77
+        enabled: false
+      file_download_single:
+        weight: 192
+        enabled: false
+      flexible_link_group:
+        weight: 193
+        enabled: false
+      footnotes:
+        weight: 194
+        enabled: false
+      from_library:
+        weight: 195
         enabled: false
       full_bleed:
         weight: 78
@@ -104,6 +198,9 @@ settings:
         enabled: false
       guide_section_3up:
         weight: 80
+        enabled: false
+      homepage_background_images:
+        weight: 199
         enabled: false
       hours:
         weight: 81
@@ -123,11 +220,68 @@ settings:
       image:
         weight: 86
         enabled: false
+      image_credit:
+        weight: 206
+        enabled: false
+      info_details_card_group:
+        weight: 207
+        enabled: false
+      issuer:
+        weight: 208
+        enabled: false
+      key_message:
+        weight: 209
+        enabled: false
+      key_message_section:
+        weight: 210
+        enabled: false
+      link_group_accordion:
+        weight: 214
+        enabled: false
+      link_group_document:
+        weight: 215
+        enabled: false
+      link_group_link:
+        weight: 216
+        enabled: false
       links:
         weight: 87
         enabled: false
+      links_downloads:
+        weight: 212
+        enabled: false
+      links_downloads_flexible:
+        weight: 213
+        enabled: false
+      list_board_members:
+        weight: 217
+        enabled: false
+      list_dynamic:
+        weight: 218
+        enabled: false
+      list_item_contact:
+        weight: 219
+        enabled: false
+      list_item_document:
+        weight: 220
+        enabled: false
+      list_item_link:
+        weight: 221
+        enabled: false
+      list_item_person:
+        weight: 222
+        enabled: false
+      list_manual_directory:
+        weight: 223
+        enabled: false
+      list_static:
+        weight: 224
+        enabled: false
       location_information:
         weight: 88
+        enabled: false
+      manage_account_link:
+        weight: 226
         enabled: false
       map:
         weight: 89
@@ -135,14 +289,56 @@ settings:
       map_row:
         weight: 90
         enabled: false
+      media_contact:
+        weight: 229
+        enabled: false
       method:
         weight: 91
+        enabled: false
+      more_info:
+        weight: 231
+        enabled: false
+      multiple_answers:
+        weight: 232
         enabled: false
       next_step:
         weight: 92
         enabled: false
+      numbered_step:
+        weight: 234
+        enabled: false
+      numbered_steps:
+        weight: 235
+        enabled: false
       online_email:
         weight: 93
+        enabled: false
+      org_events:
+        weight: 239
+        enabled: false
+      org_locations:
+        weight: 240
+        enabled: false
+      org_news:
+        weight: 241
+        enabled: false
+      org_related_orgs:
+        weight: 242
+        enabled: false
+      org_section_long_form:
+        weight: 243
+        enabled: false
+      organization_contact_logo:
+        weight: 237
+        enabled: false
+      organization_grid:
+        weight: 238
+        enabled: false
+      page:
+        weight: 244
+        enabled: false
+      page_group:
+        weight: 245
         enabled: false
       phone_number:
         weight: 94
@@ -156,6 +352,9 @@ settings:
       recommended_activity:
         weight: 97
         enabled: false
+      regulation_section:
+        weight: 250
+        enabled: false
       related_content:
         weight: 98
         enabled: false
@@ -165,22 +364,85 @@ settings:
       rich_text:
         weight: 100
         enabled: false
+      rules_section:
+        weight: 254
+        enabled: false
+      rules_updates:
+        weight: 255
+        enabled: false
       search_band:
         weight: 101
+        enabled: false
+      search_banner:
+        weight: 257
+        enabled: false
+      section:
+        weight: 258
+        enabled: false
+      section_board_members:
+        weight: 259
+        enabled: false
+      section_header:
+        weight: 260
+        enabled: false
+      section_heading_text:
+        weight: 261
+        enabled: false
+      section_long_form:
+        weight: 262
+        enabled: false
+      section_with_heading:
+        weight: 263
+        enabled: false
+      service_news:
+        weight: 264
+        enabled: false
+      service_rich_text:
+        weight: 265
+        enabled: false
+      service_section:
+        weight: 266
+        enabled: false
+      sitewide_alert_message:
+        weight: 267
         enabled: false
       slideshow:
         weight: 102
         enabled: false
+      social_media:
+        weight: 269
+        enabled: false
       stacked_band:
         weight: 103
+        enabled: false
+      start_button:
+        weight: 271
         enabled: false
       stat:
         weight: 104
         enabled: false
+      state_organization:
+        weight: 273
+        enabled: false
       subhead:
         weight: 105
         enabled: false
+      tableau_embed:
+        weight: 275
+        enabled: false
+      time_callout:
+        weight: 276
+        enabled: false
       video:
         weight: 106
+        enabled: false
+      video_with_header:
+        weight: 278
+        enabled: false
+      video_with_section:
+        weight: 279
+        enabled: false
+      what_would_you_like_to_do:
+        weight: 280
         enabled: false
 field_type: entity_reference_revisions

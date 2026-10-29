@@ -9,7 +9,7 @@
         "process-timeout": 9600,
         "sort-packages": true,
         "platform": {
-            "php": "8.4"
+            "php": "8.4.27"
         },
         "discard-changes": true,
         "allow-plugins": {
@@ -147,6 +147,7 @@
         }
     ],
     "require": {
+        "php": "~8.3.36-stable || ~8.4.27-stable || ~8.5.12-stable",
         "ext-dom": "*",
         "ext-json": "*",
         "ext-libxml": "*",
@@ -190,7 +191,7 @@
         "drupal/csv_serialization": "^4.0",
         "drupal/datalayer": "^2",
         "drupal/devel": "^5.4",
-        "drupal/diff": "^1.7",
+        "drupal/diff": "^2.1",
         "drupal/draggableviews": "^2.1",
         "drupal/dropzonejs": "^2",
         "drupal/dynamic_entity_reference": "^3.1",
@@ -323,6 +324,8 @@
         }
     },
     "scripts": {
+        "check-php-platform": "bash -c 'if [ \"$COMPOSER_DEV_MODE\" = \"0\" ]; then composer check-platform-reqs --lock --no-dev; else composer check-platform-reqs --lock; fi'",
+        "pre-install-cmd": ["@check-php-platform"],
         "unit": "phpunit --stop-on-failure --order-by=defects docroot/modules/custom",
         "twigcs": "twig-cs-fixer --level=notice lint docroot/themes/custom docroot/modules/custom --no-interaction",
         "remove-git": [
@@ -332,6 +335,7 @@
             "@remove-git"
         ],
         "post-update-cmd": [
+            "@check-php-platform",
             "@remove-git"
         ]
     },
@@ -385,7 +389,10 @@
                 "type:drupal-drush"
             ]
         },
-        "installer-types": ["bower-asset", "npm-asset"],
+        "installer-types": [
+            "bower-asset",
+            "npm-asset"
+        ],
         "patches": {
             "composer/installers": {
                 "PHP 8.4: Explicitly declare nullable parameter types (https://github.com/composer/installers/issues/544)": "patches/composer_installers/php84-explicit-nullable-types.patch"
@@ -397,6 +404,9 @@
             },
             "drupal/acquia_purge": {
                 "PHP 8.4: Explicitly declare nullable parameter types": "patches/acquia_purge/php84-explicit-nullable-types.patch"
+            },
+            "drupal/address": {
+                "Match Diff 2 CoreFieldBuilder::build() return type": "patches/address/diff-2-build-return-type.patch"
             },
             "drupal/ai_content_advisor": {
                 "PHP 8.4: Explicitly declare nullable parameter types": "patches/ai_content_advisor/php84-explicit-nullable-types.patch"
@@ -410,7 +420,6 @@
                 "Remove final from a class in order to inherit from it": "patches/DP-11721-jsonapi-serializer-2.patch",
                 "Remove type hint which allows usage in combination with workbench_moderation": "patches/jsonapi-2.3.0-no-type-hint.patch",
                 "IMPORTANT: Make content moderation views use indexes": "patches/content-moderation-add-views-filter-indices.patch",
-                "Batch is dependent on the order of query string parameters (https://www.drupal.org/project/drupal/issues/2879023)": "https://git.drupalcode.org/issue/drupal-2879023/-/commit/c68aa376a7fc262886cb56d9ac762e4b06e6b174.patch",
                 "3075454 - combine fields filter doesn't recognise taxonomy description field": "https://www.drupal.org/files/issues/2019-08-20/3075454-3.patch",
                 "2993688 - Views relationships with multi-valued entity reference fields invalidate Distinct query option": "https://www.drupal.org/files/issues/2022-06-16/2993688-99.patch",
                 "Avoid warnings when getting permissions for roles that do not have permissions and are not administrators": "patches/DP-23561-avoid-warnings-on-roles-without-permissions.patch",
@@ -420,7 +429,7 @@
                 "Dynamically provide action plugins for every moderation state change (https://www.drupal.org/project/drupal/issues/2797583)": "patches/core/core-provide-moderation-states-as-actions-2797583-mr16528.patch",
                 "PHP Deprecated: strpos(): Passing null to parameter #1 ($haystack) of type string is deprecated in docroot/core/lib/Drupal/Core/Mail/Plugin/Mail/PhpMail.php on line 112 (https://www.drupal.org/project/drupal/issues/3328187#comment-15138241)": "https://www.drupal.org/files/issues/2023-07-05/3372667-2_0.patch",
                 "Deletion of field_deleted_data_xxxxxx tables not working (https://www.drupal.org/project/drupal/issues/2836539#comment-13418275)": "https://www.drupal.org/files/issues/2020-01-10/2836539-34.patch",
-                "Store table drag object in the table data" : "patches/DP-23411_store-object-in-draggable-table.patch",
+                "Store table drag object in the table data": "patches/DP-23411_store-object-in-draggable-table.patch",
                 "Diffs with different line endings leads to Invalid $mode 3 specified (https://www.drupal.org/project/drupal/issues/3389715)": "https://www.drupal.org/files/issues/2024-01-09/Diffs-with-different-line-endings-leads-to-Invalid-mode-3-specified.patch",
                 "Error: Cannot read properties of undefined (reading 'settings')\u2028 with dialog.position.js (https://www.drupal.org/project/drupal/issues/3356667)": "https://www.drupal.org/files/issues/2024-09-19/3356667-69-drupal-core-10.3.5-undefined.patch",
                 "Display Bug when using #states (Forms API) with Ajax Request (https://www.drupal.org/project/drupal/issues/1091852)": "https://www.drupal.org/files/issues/2023-12-18/1091852-186.patch",
@@ -455,8 +464,7 @@
                 "Drupal 10.5/11.2 compatability (tooltip broken, cannot edit embedded entities) (https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch)": "https://www.drupal.org/files/issues/2025-08-08/entity_embed--fix-ckeditor-icon-reference--3531672-22.patch"
             },
             "drupal/diff": {
-                "500 error: Possible infinite loop": "https://www.drupal.org/files/issues/2019-02-15/diff-500-errors-possible-infinite-loop-3033455-2-d8.patch",
-                "Make revisions overview page accessible (https://www.drupal.org/project/diff/issues/3228798)": "https://www.drupal.org/files/issues/2024-05-14/diff-3228798-17.patch"
+                "Make revisions overview operation links name the revision (https://www.drupal.org/project/diff/issues/3228798)": "patches/diff/revisions-overview-accessible-names.patch"
             },
             "drupal/draggableviews": {
                 "PHP 8.4: Explicitly declare nullable migration parameters (based on https://www.drupal.org/project/draggableviews/issues/3605582)": "patches/draggableviews/php84-explicit-nullable-types.patch"
@@ -537,9 +545,6 @@
                 "Add an intermediate redirect (https://www.drupal.org/project/redirect/issues/3162696#comment-15085388)": "https://www.drupal.org/files/issues/2023-05-31/tmp.diff",
                 "Filter by redirect destination does not work with URL alias (https://www.drupal.org/project/redirect/issues/2981544) (See DP-31078 before replacing)": "https://www.drupal.org/files/issues/2024-08-13/2981544-45.patch",
                 "Redirect loop wrong detection (service unavailable: RedirectLoopException) (https://www.drupal.org/project/redirect/issues/3401916)": "https://www.drupal.org/files/issues/2024-04-25/3401916-8.x-1.9.patch"
-            },
-            "drupal/rabbit_hole": {
-                "PHP 8.4: Explicitly declare nullable parameter types": "patches/rabbit_hole/php84-explicit-nullable-types.patch"
             },
             "drupal/token": {
                 "Add Fiber fallback for token renderInIsolation callsites (combined)": "patches/token/token-fiber-fallbacks-combined.patch"
