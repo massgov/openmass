@@ -2,6 +2,8 @@
 
 namespace Drupal\Tests\mass_inline_message\ExistingSite;
 
+use Drupal\Component\Utility\Html;
+
 /**
  * Tests filter_mass_inline_message renders Mayflower markup.
  */
@@ -19,6 +21,35 @@ class InlineMessageFilterTest extends MassInlineMessageExistingSiteTestBase {
     $this->assertStringContainsString('Pay online', $filtered);
     $this->assertStringContainsString('Body text here.', $filtered);
     $this->assertStringNotContainsString('<mass-inline-message', $filtered);
+  }
+
+  /**
+   * Tests encoded characters in the title are not double-escaped on display.
+   */
+  public function testFilterDecodesTitleEntities(): void {
+    $html = '<mass-inline-message data-title="File &amp; Serve &quot;guide&quot;" data-type="info"></mass-inline-message>';
+    $filtered = check_markup($html, 'basic_html');
+    $this->assertSame('File & Serve "guide"', $this->displayedTitle($filtered));
+  }
+
+  /**
+   * Tests markup in the decoded title is still escaped on output.
+   */
+  public function testFilterEscapesDecodedTitleMarkup(): void {
+    $html = '<mass-inline-message data-title="&lt;img src=x onerror=alert(1)&gt; File &amp; Serve" data-type="info"></mass-inline-message>';
+    $filtered = check_markup($html, 'basic_html');
+    $this->assertStringNotContainsString('<img', $filtered);
+    $this->assertSame('<img src=x onerror=alert(1)> File & Serve', $this->displayedTitle($filtered));
+  }
+
+  /**
+   * Returns the message box title text as the browser displays it.
+   */
+  private function displayedTitle(string $filtered): string {
+    $pattern = '#<strong class="ma__inline-message__title">([^<]*)</strong>#';
+    $this->assertMatchesRegularExpression($pattern, $filtered);
+    preg_match($pattern, $filtered, $matches);
+    return Html::decodeEntities($matches[1]);
   }
 
   /**
