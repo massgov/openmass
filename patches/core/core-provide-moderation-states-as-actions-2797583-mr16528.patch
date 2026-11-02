@@ -81,7 +81,7 @@ index 30b14fff81c39f2dd740e4b5e1c570086364d027..fdf1f03097622d82b62666569060a4fb
    }
  
    /**
-@@ -360,6 +365,34 @@ public function workflowUpdate(WorkflowInterface $entity): void {
+@@ -360,6 +365,32 @@ public function workflowUpdate(WorkflowInterface $entity): void {
      if (\Drupal::moduleHandler()->moduleExists('views')) {
        Views::viewsData()->clear();
      }
@@ -101,22 +101,20 @@ index 30b14fff81c39f2dd740e4b5e1c570086364d027..fdf1f03097622d82b62666569060a4fb
 +      return;
 +    }
 +
-+    // Delete actions for changing moderation state.
-+    $workflow_base_action_id = 'content_moderation_' . $entity->id();
-+    $entity_types = $entity->getTypePlugin()->getEntityTypes();
-+    foreach ($entity_types as $entity_type_id) {
-+      foreach ($entity->getTypePlugin()->getStates() as $state_id => $state) {
-+        $action_id = $workflow_base_action_id . $entity_type_id . '_change_to_' . $state_id;
-+        $action = \Drupal::entityTypeManager()->getStorage('action')->load($action_id);
-+        if ($action) {
-+          $action->delete();
-+        }
-+      }
++    // Delete every moderation action for this workflow. The id prefix matches
++    // saveWorkflowActions(), including actions left behind for removed states.
++    $storage = \Drupal::entityTypeManager()->getStorage('action');
++    $ids = $storage->getQuery()
++      ->accessCheck(FALSE)
++      ->condition('id', 'content_moderation_' . $entity->id() . '_', 'STARTS_WITH')
++      ->execute();
++    if ($ids) {
++      $storage->delete($storage->loadMultiple($ids));
 +    }
    }
  
    /**
-@@ -377,4 +410,54 @@ public function viewsPostExecute(ViewExecutable $view): void {
+@@ -377,4 +408,67 @@ public function viewsPostExecute(ViewExecutable $view): void {
      }
    }
  
@@ -129,6 +127,7 @@ index 30b14fff81c39f2dd740e4b5e1c570086364d027..fdf1f03097622d82b62666569060a4fb
 +  protected function saveWorkflowActions(WorkflowInterface $workflow) : void {
 +    $workflow_base_action_id = 'content_moderation_' . $workflow->id();
 +    $entity_types = $workflow->getTypePlugin()->getEntityTypes();
++    $current_action_ids = [];
 +    foreach ($entity_types as $entity_type_id) {
 +      // Omit unsupported entity types.
 +      $entity_type = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
@@ -166,7 +165,19 @@ index 30b14fff81c39f2dd740e4b5e1c570086364d027..fdf1f03097622d82b62666569060a4fb
 +          ]);
 +        }
 +        $action->save();
++        $current_action_ids[$action_id] = $action_id;
 +      }
++    }
++
++    // Drop actions for states or entity types no longer in this workflow.
++    $storage = \Drupal::entityTypeManager()->getStorage('action');
++    $existing_ids = $storage->getQuery()
++      ->accessCheck(FALSE)
++      ->condition('id', $workflow_base_action_id . '_', 'STARTS_WITH')
++      ->execute();
++    $stale_ids = array_diff($existing_ids, $current_action_ids);
++    if ($stale_ids) {
++      $storage->delete($storage->loadMultiple($stale_ids));
 +    }
 +  }
 +
@@ -176,7 +187,7 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..73a6b9c4eded47fe18fd89d8636e0bb068dfef97
 --- /dev/null
 +++ b/core/modules/content_moderation/src/Plugin/Action/ModerationStateChange.php
-@@ -0,0 +1,321 @@
+@@ -0,0 +1,323 @@
 +<?php
 +
 +namespace Drupal\content_moderation\Plugin\Action;
@@ -477,7 +488,8 @@ index 0000000000000000000000000000000000000000..73a6b9c4eded47fe18fd89d8636e0bb0
 +    }
 +    $object = $this->loadLatestRevision($object);
 +    // Let content moderation do its job. See content_moderation_entity_access()
-+    // for more details.
++    // for more details. Update access keeps organization restrictions in place.
++    $update_access = $object->access('update', $account, TRUE);
 +
 +    $to_state_id = $this->configuration['state'];
 +    $from_state = $workflow->getTypePlugin()->getState($object->moderation_state->value);
@@ -489,6 +501,7 @@ index 0000000000000000000000000000000000000000..73a6b9c4eded47fe18fd89d8636e0bb0
 +      // permission to action the transition.
 +      $valid = $this->validator->isTransitionValid($workflow, $from_state, $to_state, $account, $object);
 +      $result = $valid ? AccessResult::allowed() : AccessResult::neutral();
++      $result = $result->andIf($update_access);
 +    }
 +    else {
 +      $result = AccessResult::forbidden('No valid transition found.');
@@ -865,7 +878,7 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..9b30dac106790680c866dfd5af85c6377ca3aa11
 --- /dev/null
 +++ b/core/modules/content_moderation/tests/src/Unit/Plugin/Action/ModerationStateChangeTest.php
-@@ -0,0 +1,558 @@
+@@ -0,0 +1,564 @@
 +<?php
 +
 +declare(strict_types=1);
@@ -876,6 +889,7 @@ index 0000000000000000000000000000000000000000..9b30dac106790680c866dfd5af85c637
 +use Drupal\content_moderation\Plugin\Action\ModerationStateChange;
 +use Drupal\content_moderation\Plugin\Field\ModerationStateFieldItemList;
 +use Drupal\Core\Access\AccessResultAllowed;
++use Drupal\Core\Access\AccessResultForbidden;
 +use Drupal\Core\DependencyInjection\ContainerBuilder;
 +use Drupal\Core\Entity\EntityConstraintViolationListInterface;
 +use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -1215,6 +1229,11 @@ index 0000000000000000000000000000000000000000..9b30dac106790680c866dfd5af85c637
 +    $node->moderation_state = (object) ['value' => 'foobar'];
 +
 +    $account = $instance->createMock(AccountInterface::class);
++
++    $node->expects($instance->once())
++      ->method('access')
++      ->with('update', $account, TRUE)
++      ->willReturn(new AccessResultForbidden());
 +
 +    $workflow_type = $instance->createMock(WorkflowTypeInterface::class);
 +    $state = $instance->createMock(StateInterface::class);
