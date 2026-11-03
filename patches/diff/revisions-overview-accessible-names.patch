@@ -1,0 +1,42 @@
+diff --git a/src/Form/EntityRevisionOverviewForm.php b/src/Form/EntityRevisionOverviewForm.php
+--- a/src/Form/EntityRevisionOverviewForm.php
++++ b/src/Form/EntityRevisionOverviewForm.php
+@@ -257,7 +257,7 @@ class EntityRevisionOverviewForm extends FormBase {
+       return NULL;
+     }
+     return [
+-      'title' => (int) $revision->getRevisionId() < (int) $defaultRevisionId ? $this->t('Revert') : $this->t('Set as current revision'),
++      'title' => (int) $revision->getRevisionId() < (int) $defaultRevisionId ? $this->t('Revert <span class="visually-hidden">revision @vid</span>', ['@vid' => $revision->getRevisionId()]) : $this->t('Set as current revision'),
+       'url' => $url,
+     ];
+   }
+@@ -282,7 +282,7 @@ class EntityRevisionOverviewForm extends FormBase {
+       return NULL;
+     }
+     return [
+-      'title' => $this->t('Delete'),
++      'title' => $this->t('Delete <span class="visually-hidden">revision @vid</span>', ['@vid' => $revision->getRevisionId()]),
+       'url' => $url,
+     ];
+   }
+diff --git a/src/Form/RevisionOverviewForm.php b/src/Form/RevisionOverviewForm.php
+--- a/src/Form/RevisionOverviewForm.php
++++ b/src/Form/RevisionOverviewForm.php
+@@ -49,7 +49,7 @@ class RevisionOverviewForm extends EntityRevisionOverviewForm {
+       return NULL;
+     }
+     return [
+-      'title' => (int) $revision->getRevisionId() < (int) $defaultRevisionId ? $this->t('Revert') : $this->t('Set as current revision'),
++      'title' => (int) $revision->getRevisionId() < (int) $defaultRevisionId ? $this->t('Revert <span class="visually-hidden">revision @vid</span>', ['@vid' => $revision->getRevisionId()]) : $this->t('Set as current revision'),
+       'url' => $url,
+     ];
+   }
+@@ -67,7 +67,7 @@ class RevisionOverviewForm extends EntityRevisionOverviewForm {
+       return NULL;
+     }
+     return [
+-      'title' => $this->t('Delete'),
++      'title' => $this->t('Delete <span class="visually-hidden">revision @vid</span>', ['@vid' => $revision->getRevisionId()]),
+       'url' => $url,
+     ];
+   }
