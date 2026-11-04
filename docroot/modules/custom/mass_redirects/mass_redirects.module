@@ -18,7 +18,7 @@ function mass_redirects_form_node_form_alter(&$form, FormStateInterface $form_st
 }
 
 /**
- * Upon saving a trashed node, give link to Move Redirects form.
+ * Upon saving a trashed or unpublished node, offer the redirects form.
  *
  * We can't easily use hook_node_update since the node URL changes to ---unpublished in pathauto_alias_alter hook.
  * We don't use hook_entity_update since that was spamming during bulk update. See https://massgov.atlassian.net/browse/DP-26408
@@ -31,10 +31,11 @@ function mass_redirects_node_form_submit($form, FormStateInterface $form_state) 
 
   /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $entity */
   $entity = $form_state->getFormObject()->getEntity();
-  if (PHP_SAPI !== 'cli' && $entity->getModerationState()->getString() == MassModeration::TRASH) {
-    $id = $entity->id();
-    $message = 'You may be able to <a href="@redirect-page">Redirect this trashed page</a> so that visitors will not get a <em>Page not Found</em> error.';
-    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $entity->toUrl('redirects')->toString()]));
+  $state = $entity->getModerationState()->getString();
+  if (in_array($state, [MassModeration::TRASH, MassModeration::UNPUBLISHED], TRUE)) {
+    $state_label = $state === MassModeration::TRASH ? 'trashed' : 'unpublished';
+    $message = 'You may be able to <a href="@redirect-page">Redirect this @state page</a> so that visitors will not get a <em>Page not Found</em> error.';
+    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $entity->toUrl('redirects', ['path_processing' => FALSE])->toString(), '@state' => $state_label]));
   }
 }
 
@@ -43,7 +44,7 @@ function mass_redirects_node_form_submit($form, FormStateInterface $form_state) 
  */
 function mass_redirects_entity_operation(EntityInterface $entity): array {
   if ($entity->getEntityTypeId() == 'node') {
-    $url = $entity->toUrl('redirects');
+    $url = $entity->toUrl('redirects', ['path_processing' => FALSE]);
     if ($url->access()) {
       $operations['redirects'] = [
         'title' => \t('Redirects'),

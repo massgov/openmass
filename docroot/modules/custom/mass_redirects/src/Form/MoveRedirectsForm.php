@@ -88,7 +88,7 @@ class MoveRedirectsForm extends ContentEntityForm {
         '@href' => $node->toUrl()->toString(),
       ];
       $this->messenger()->addStatus($this->t('Removed redirect. @short_url now points to <a href="@href">@title</a>.', $parts));
-      $form_state->setRedirectUrl($node->toUrl('redirects'));
+      $form_state->setRedirectUrl($node->toUrl('redirects', ['path_processing' => FALSE]));
     }
   }
 
@@ -113,7 +113,7 @@ class MoveRedirectsForm extends ContentEntityForm {
     foreach ($aliases as $alias) {
       $redirect = Redirect::create();
       $redirect->setSource($alias);
-      $redirect->setRedirect('node/' . $node->id());
+      $redirect->setRedirect($target_uri);
       $redirect->setLanguage($node->language()->getId());
       $redirect->setStatusCode(\Drupal::config('redirect.settings')->get('default_status_code'));
       $failed = $redirect->validate()->getEntityViolations()->count();
