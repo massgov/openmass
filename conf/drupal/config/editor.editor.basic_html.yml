@@ -6,7 +6,6 @@ dependencies:
     - filter.format.basic_html
   module:
     - ckeditor5
-    - mass_inline_message
 format: basic_html
 editor: ckeditor5
 settings:
@@ -173,6 +172,11 @@ settings:
           weight: 3
           search: '<a name="OLE_LINK[^"]*">(.*?)<\/a>'
           replace: $1
+        -
+          enabled: true
+          weight: 4
+          search: '\s+lang\s*=\s*(["''])en\1'
+          replace: ''
     ckeditor5_sourceEditing:
       allowed_tags:
         - '<cite>'
@@ -190,7 +194,6 @@ settings:
         - '<h5 id>'
         - '<h6 id>'
         - '<drupal-entity data-entity-type data-entity-substitution data-embed-button>'
-        - '<mass-inline-message data-title data-type>'
         - '<kbd>'
         - '<samp>'
     ckeditor5_style:
