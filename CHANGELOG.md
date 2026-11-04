@@ -1,5 +1,27 @@
 
 
+## [0.498.0] - November 3, 2026
+
+### Changed
+  - DP-48193: Stop running the PHPUnit job in build_github_tag, to save CircleCI credits.
+  - DP-49058: Run the PHPUnit suite in DDEV on CircleCI with PHP 8.4, against a new nightly mysql-sanitized:trimmed image without old revisions, and build the database images faster and smaller (no MySQL binary logs, zstd layers, so pulling them needs Docker 23 or newer).
+  - DP-49058: Run the PHPUnit jobs on CircleCI ARM machines and build only ARM database images (latest.arm, super.arm, trimmed.arm). The local default database image becomes super.arm.
+  
+### Fixed
+  - DP-49238: Use h4 for Phone and Online on Person contact summaries so those headings sit under the person's h3 name.
+  - DP-49306: Message box titles show special characters such as "&" correctly instead of HTML codes like "&amp;".
+  - DP-49314: Only users with the Executive Orders role can edit executive orders and schedule their transitions; the editor role no longer grants it.
+  
+### Added
+  - DP-49307: Added Help Text to Hours Field on Contact Content Type
+  
+### Security
+  - DP-49324: Require patched PHP versions and upgrade DDEV PHP packages for CVE-2026-109618 and CVE-2026-109619.
+  - DP-49324: Disable PHP session upload-progress tracking in DDEV and Tugboat to mitigate CVE-2026-115560.
+  - DP-49405: Updated the AI and Stage File Proxy modules plus dependencies.
+  
+
+
 ## [0.497.0] - October 27, 2026
 
 ### Security
