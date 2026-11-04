@@ -186,28 +186,34 @@ class MassFeedbackLoopContentFetcher {
     else {
       $feedback_api_params['page'] += 1;
     }
-    // @todo By default we actually want to show all node's latest feedback over the last two weeks.
-    // See: https://jira.mass.gov/browse/DP-11729.
-    // Until then if no specific 'org_id', 'author_id' or 'node_id' filters are provided, then
-    // by default we fetch feedback for all the nodes that the current user is watching.
-    if (!isset($feedback_api_params['node_id']) && !isset($feedback_api_params['org_id']) && !isset($feedback_api_params['author_id'])) {
-      if (isset($feedback_api_params['watch_content']) && $feedback_api_params['watch_content'] == 1) {
-        $feedback_api_params['node_id'] = $this->fetchFlaggedContent();
-      }
+    if (!empty($feedback_api_params['watch_content'])) {
+      $watched_ids = $this->fetchFlaggedContent();
+      $feedback_api_params['node_id'] = isset($feedback_api_params['node_id'])
+        ? array_values(array_intersect($feedback_api_params['node_id'], $watched_ids))
+        : $watched_ids;
     }
-    elseif (isset($feedback_api_params['node_id']) && (isset($feedback_api_params['watch_content']) && $feedback_api_params['watch_content'] == 1)) {
-      $flagged_nodes = $this->fetchFlaggedContent();
-      // Check if any of the flagged nodes match the node id filter.
-      foreach ($feedback_api_params['node_id'] as $node_id) {
-        // Check if node id is in our array.
-        if (!in_array($node_id, $flagged_nodes)) {
-          // Since this id isn't watched, don't include it in search results.
-          unset($node_id, $feedback_api_params['node_id']);
-        }
-      }
+
+    // Resolve Drupal-only owner metadata before the API paginates or exports.
+    // Multiple owners match any selected owner; other filters still intersect.
+    if (!empty($feedback_api_params['sme_owner_id'])) {
+      $owner_node_ids = $this->entityTypeManager->getStorage('node')->getQuery()
+        ->accessCheck(TRUE)
+        ->condition('field_sme_content_owner.target_id', $feedback_api_params['sme_owner_id'], 'IN')
+        ->execute();
+      $feedback_api_params['node_id'] = isset($feedback_api_params['node_id'])
+        ? array_values(array_intersect($feedback_api_params['node_id'], $owner_node_ids))
+        : array_values($owner_node_ids);
     }
-    elseif ((isset($feedback_api_params['watch_content']) && $feedback_api_params['watch_content'] == 1)) {
-      $feedback_api_params['node_id'] = $this->fetchFlaggedContent();
+    unset($feedback_api_params['sme_owner_id']);
+
+    // An empty ID list must not become an unfiltered API request.
+    if (isset($feedback_api_params['node_id']) && empty($feedback_api_params['node_id'])) {
+      return [
+        'results' => [],
+        'total' => 0,
+        'per_page' => $feedback_api_params['per_page'],
+        'is_watching_content' => TRUE,
+      ];
     }
 
     // Fetches feedback from external API.
@@ -265,12 +271,16 @@ class MassFeedbackLoopContentFetcher {
         'node_id',
         'label_id',
         'author_id',
+        'sme_owner_id',
         'watch_content',
         'flagged_inappropriate',
       ])) {
         if (in_array($key, ['watch_content', 'flagged_inappropriate']) || !empty($param)) {
           $feedback_api_params[$key] = $param;
-          if (is_array($param) && strpos($param[0], ',') !== FALSE) {
+          if ($key === 'sme_owner_id') {
+            $feedback_api_params[$key] = array_values(array_filter(array_map('intval', explode(',', implode(',', (array) $param)))));
+          }
+          elseif (is_array($param) && strpos($param[0], ',') !== FALSE) {
             $feedback_api_params[$key] = explode(',', $param[0]);
           }
           elseif (!is_array($param) && strpos($param, ',') !== FALSE) {
@@ -286,6 +296,82 @@ class MassFeedbackLoopContentFetcher {
     }
 
     return $feedback_api_params;
+  }
+
+  /**
+   * Appends current Drupal content owners to the API's feedback CSV.
+   *
+   * @param string $csv
+   *   The API export, including its node_id column.
+   *
+   * @return string
+   *   The CSV with a Content Owner / SME column appended.
+   */
+  public function addOwnersToCsv(string $csv): string {
+    $input = fopen('php://temp', 'r+');
+    fwrite($input, $csv);
+    rewind($input);
+    $header = fgetcsv($input, 0, ',', '"', '');
+    if ($header === FALSE) {
+      fclose($input);
+      return $csv;
+    }
+    $node_column = array_search('node_id', $header, TRUE);
+    if ($node_column === FALSE) {
+      fclose($input);
+      throw new \UnexpectedValueException('Feedback CSV is missing the node_id column.');
+    }
+
+    $rows = [];
+    $node_ids = [];
+    while (($row = fgetcsv($input, 0, ',', '"', '')) !== FALSE) {
+      if ($row === [NULL]) {
+        continue;
+      }
+      $rows[] = $row;
+      if (!empty($row[$node_column])) {
+        $node_ids[(int) $row[$node_column]] = (int) $row[$node_column];
+      }
+    }
+    fclose($input);
+
+    $owners = [];
+    $storage = $this->entityTypeManager->getStorage('node');
+    // Bound entity loading for exports of up to 15,000 feedback records.
+    foreach (array_chunk($node_ids, 100) as $chunk) {
+      foreach ($storage->loadMultiple($chunk) as $node) {
+        if (!$node->access('view') || !$node->hasField('field_sme_content_owner')) {
+          continue;
+        }
+        $field = $node->get('field_sme_content_owner');
+        if (!$field->access('view')) {
+          continue;
+        }
+        $names = [];
+        foreach ($field->referencedEntities() as $term) {
+          $names[] = $term->label();
+        }
+        $value = implode('; ', $names);
+        // Keep editable term names from becoming spreadsheet formulas.
+        if (preg_match('/^[=+\-@\t\r\n]/', $value)) {
+          $value = "'" . $value;
+        }
+        $owners[$node->id()] = $value;
+      }
+      $storage->resetCache($chunk);
+    }
+
+    $output = fopen('php://temp', 'r+');
+    $header[] = 'Content Owner / SME';
+    fputcsv($output, $header, ',', '"', '');
+    foreach ($rows as $row) {
+      $row[] = $owners[(int) ($row[$node_column] ?? 0)] ?? '';
+      fputcsv($output, $row, ',', '"', '');
+    }
+    rewind($output);
+    $result = stream_get_contents($output);
+    fclose($output);
+    return $result;
   }
 
   /**
