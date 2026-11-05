@@ -146,6 +146,7 @@ function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id)
         'field_video_captions',
         'field_video_transcript_enabled',
         'field_video_chapters',
+        'field_video_descriptions',
         'field_video_audio_description',
         'field_video_sign_language',
       ];
@@ -154,7 +155,7 @@ function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id)
           $form['video_accessibility'] = [
             '#type' => 'details',
             '#title' => t('Video accessibility'),
-            '#description' => t('Optional captions, navigation, and alternative videos. Uploaded text tracks must use WebVTT (.vtt) format.'),
+            '#description' => t('Optional captions, spoken descriptions, navigation, and alternative videos. Uploaded text tracks must use WebVTT (.vtt) format.'),
             '#open' => FALSE,
             '#weight' => 5,
           ];

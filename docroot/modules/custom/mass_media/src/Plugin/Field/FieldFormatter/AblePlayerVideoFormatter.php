@@ -84,7 +84,11 @@ final class AblePlayerVideoFormatter extends FormatterBase {
 
       $tracks = [];
       $languages = LanguageManager::getStandardLanguageList();
-      foreach (['field_video_captions' => 'captions', 'field_video_chapters' => 'chapters'] as $field => $kind) {
+      foreach ([
+        'field_video_captions' => 'captions',
+        'field_video_chapters' => 'chapters',
+        'field_video_descriptions' => 'descriptions',
+      ] as $field => $kind) {
         if (!$media->hasField($field)) {
           continue;
         }

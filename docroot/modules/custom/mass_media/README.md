@@ -28,6 +28,15 @@ Expand **Video accessibility** on the normal Video add/edit form:
   This setting does not change the existing transcript text or transcript link.
 - **Chapters:** upload a `.vtt` file with chapter names and time ranges, then
   select its language. The player adds a Chapters menu.
+- **Audio descriptions (.vtt):** upload timed descriptions of visual information,
+  with one file per language. Match each track's language to its captions. The
+  player can speak the descriptions using browser speech synthesis, with a
+  screen-reader fallback, and include them in the interactive transcript.
+  Viewers can adjust the voice, speech settings, and automatic pausing in
+  Preferences. Leave **Audio-described video URL** empty to use spoken WebVTT
+  descriptions. If both formats are supplied, Able Player 5.0 uses the alternate
+  video for description playback; the WebVTT text still contributes to the
+  interactive transcript.
 - **Audio-described video URL:** link to a version with narration of important
   visual information, hosted on the same provider as the main video. Matching
   timing lets the viewer switch versions with the Description control.
@@ -43,7 +52,7 @@ each file's language and optional label. All new fields are optional and hidden
 from separate field output; the player formatter consumes them and carries file
 access results and cache dependencies into its render array.
 
-Caption and chapter files need WebVTT timestamps, for example:
+Caption, chapter, and description files need WebVTT timestamps, for example:
 
 ```text
 WEBVTT
@@ -52,8 +61,10 @@ WEBVTT
 Welcome to the video.
 ```
 
-For chapters, replace the cue text with a chapter title. The player synchronizes
-the supplied content; it does not generate captions, narration, or interpretation.
+For chapters, replace the cue text with a chapter title. For spoken descriptions,
+describe the important visual information at that point in the video. The player
+synchronizes and can speak supplied description text; editors provide the text
+and any recorded narration or interpretation videos.
 
 Mayflower's local video atom override renders the formatter's render array so
 its JavaScript and CSS attachments reach the page. It retains the video heading,

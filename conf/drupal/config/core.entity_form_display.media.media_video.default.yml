@@ -8,6 +8,7 @@ dependencies:
     - field.field.media.media_video.field_video_captions
     - field.field.media.media_video.field_video_chapters
     - field.field.media.media_video.field_video_description
+    - field.field.media.media_video.field_video_descriptions
     - field.field.media.media_video.field_video_sign_language
     - field.field.media.media_video.field_video_transcript
     - field.field.media.media_video.field_video_transcript_enabled
@@ -15,6 +16,8 @@ dependencies:
   module:
     - allowed_formats
     - content_moderation
+    - link
+    - mass_media
     - maxlength
     - text
     - video_embed_field
@@ -37,9 +40,11 @@ content:
     third_party_settings: {  }
   field_video_audio_description:
     type: link_default
-    weight: 13
+    weight: 14
     region: content
-    settings: {  }
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
     third_party_settings: {  }
   field_video_captions:
     type: mass_media_video_track
@@ -69,11 +74,20 @@ content:
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
+  field_video_descriptions:
+    type: mass_media_video_track
+    weight: 13
+    region: content
+    settings:
+      progress_indicator: throbber
+    third_party_settings: {  }
   field_video_sign_language:
     type: link_default
-    weight: 14
+    weight: 15
     region: content
-    settings: {  }
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
     third_party_settings: {  }
   field_video_transcript_enabled:
     type: boolean_checkbox

@@ -36,6 +36,8 @@ class VideoAccessibilityTest extends MassExistingSiteBase {
     $english = $this->createTrack('captions-en.vtt');
     $spanish = $this->createTrack('captions-es.vtt');
     $chapters = $this->createTrack('chapters-en.vtt');
+    $descriptions = $this->createTrack('descriptions-en.vtt');
+    $spanish_descriptions = $this->createTrack('descriptions-es.vtt');
     $media = Media::create([
       'bundle' => 'media_video',
       'name' => 'Accessible video',
@@ -45,6 +47,10 @@ class VideoAccessibilityTest extends MassExistingSiteBase {
         ['target_id' => $spanish->id(), 'track_language' => 'es', 'description' => 'Español'],
       ],
       'field_video_chapters' => ['target_id' => $chapters->id(), 'track_language' => 'en'],
+      'field_video_descriptions' => [
+        ['target_id' => $descriptions->id(), 'track_language' => 'en'],
+        ['target_id' => $spanish_descriptions->id(), 'track_language' => 'es', 'description' => 'Descripciones en español'],
+      ],
       'field_video_audio_description' => ['uri' => 'https://youtu.be/Ck2TdVMhWcU'],
       'field_video_sign_language' => ['uri' => 'https://youtu.be/bf6214F7srY'],
     ]);
@@ -54,16 +60,24 @@ class VideoAccessibilityTest extends MassExistingSiteBase {
     $this->assertSame('bf6214F7srY', $attributes['data-youtube-sign-src']);
     $this->assertSame('true', $attributes['data-include-transcript']);
     $tracks = array_map(fn($track) => $track->toArray(), $player['#tracks']);
-    $this->assertCount(3, $tracks);
+    $this->assertCount(5, $tracks);
     $this->assertSame('English', $tracks[0]['label']);
     $this->assertSame('Español', $tracks[1]['label']);
     $this->assertSame('es', $tracks[1]['srclang']);
     $this->assertTrue($tracks[0]['default']);
     $this->assertFalse($tracks[1]['default']);
     $this->assertSame('chapters', $tracks[2]['kind']);
+    $this->assertSame('descriptions', $tracks[3]['kind']);
+    $this->assertSame('en', $tracks[3]['srclang']);
+    $this->assertTrue($tracks[3]['default']);
+    $this->assertSame('descriptions', $tracks[4]['kind']);
+    $this->assertSame('es', $tracks[4]['srclang']);
+    $this->assertFalse($tracks[4]['default']);
+    $this->assertContains('file:' . $descriptions->id(), $player['#cache']['tags']);
     $this->assertContains('file:' . $spanish->id(), $player['#cache']['tags']);
     $html = (string) \Drupal::service('renderer')->renderRoot($player);
-    $this->assertSame(3, substr_count($html, '<track '));
+    $this->assertSame(5, substr_count($html, '<track '));
+    $this->assertStringContainsString('kind="descriptions"', $html);
     $this->assertStringContainsString('srclang="es"', $html);
 
     $media->set('field_video_transcript_enabled', FALSE);
@@ -85,6 +99,7 @@ class VideoAccessibilityTest extends MassExistingSiteBase {
       // Avoid provider metadata requests in this storage-only test.
       'field_media_video_embed_field' => 'https://example.com/video',
       'field_video_captions' => ['target_id' => $file->id(), 'track_language' => 'es', 'description' => 'Español'],
+      'field_video_descriptions' => ['target_id' => $file->id(), 'track_language' => 'es', 'description' => 'Descripciones'],
     ]);
     $media->save();
     $this->markEntityForCleanup($media);
@@ -94,6 +109,8 @@ class VideoAccessibilityTest extends MassExistingSiteBase {
     $this->assertSame('es', $reloaded->get('field_video_captions')->track_language);
     $this->assertSame('Español', $reloaded->get('field_video_captions')->description);
     $this->assertSame((string) $file->id(), (string) $reloaded->get('field_video_captions')->target_id);
+    $this->assertSame('es', $reloaded->get('field_video_descriptions')->track_language);
+    $this->assertSame('Descripciones', $reloaded->get('field_video_descriptions')->description);
     $usage = \Drupal::service('file.usage')->listUsage($file);
     $this->assertNotEmpty($usage['file']['media'][$media->id()]);
   }
@@ -146,17 +163,21 @@ class VideoAccessibilityTest extends MassExistingSiteBase {
       'name' => 'Editor form video',
       'field_media_video_embed_field' => 'https://youtu.be/dhwpLACAls8',
       'field_video_captions' => ['target_id' => $file->id(), 'track_language' => 'es', 'description' => 'Español'],
+      'field_video_descriptions' => ['target_id' => $file->id(), 'track_language' => 'es', 'description' => 'Descripciones'],
     ]);
     $switcher = \Drupal::service('account_switcher');
     $switcher->switchTo(User::load(1));
     try {
       $form = \Drupal::service('entity.form_builder')->getForm($media);
       $this->assertSame('video_accessibility', $form['field_video_captions']['#group']);
+      $this->assertSame('video_accessibility', $form['field_video_descriptions']['#group']);
+      $this->assertSame('es', $form['field_video_descriptions']['widget'][0]['track_language']['#value']);
       $this->assertSame('es', $form['field_video_captions']['widget'][0]['track_language']['#value']);
       $this->assertSame('Español', $form['field_video_captions']['widget'][0]['description']['#value']);
       $html = (string) \Drupal::service('renderer')->renderRoot($form);
       $this->assertStringContainsString('Video accessibility', $html);
       $this->assertStringContainsString('Track language', $html);
+      $this->assertStringContainsString('Audio descriptions (.vtt)', $html);
       $this->assertStringContainsString('Synchronized sign-language video URL', $html);
       $this->assertStringContainsString('Use the same provider as the main video', $html);
       $this->assertStringContainsString('Both videos must be on YouTube', $html);
