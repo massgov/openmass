@@ -6250,7 +6250,7 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
     '#type' => 'container',
     'short_description' => $build['field_short_description'],
   ];
-  if (!$term->get('field_collection_overview')->isEmpty()) {
+  if ($term->hasField('field_collection_overview') && !$term->get('field_collection_overview')->isEmpty()) {
     $variables['collection']['description']['overview'] = $term->get('field_collection_overview')->view([
       'label' => 'hidden',
     ]);
