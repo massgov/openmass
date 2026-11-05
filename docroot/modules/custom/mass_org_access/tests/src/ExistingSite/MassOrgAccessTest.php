@@ -343,7 +343,8 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $form_object = \Drupal::entityTypeManager()
       ->getFormObject('taxonomy_term', 'default')
       ->setEntity($term);
-    $form = \Drupal::formBuilder()->buildForm($form_object, (new FormState())->setFormObject($form_object));
+    $form_state = (new FormState())->setFormObject($form_object);
+    $form = \Drupal::formBuilder()->buildForm($form_object, $form_state);
     foreach (['name', 'field_url_name', 'relations', 'status'] as $element) {
       $this->assertFalse($form[$element]['#access'] ?? TRUE, sprintf('%s must be hidden from bypass users without vocabulary access.', $element));
     }

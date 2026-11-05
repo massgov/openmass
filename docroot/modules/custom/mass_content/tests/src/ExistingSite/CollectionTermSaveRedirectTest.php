@@ -70,8 +70,8 @@ class CollectionTermSaveRedirectTest extends MassExistingSiteBase {
       $form_object = $this->container->get('entity_type.manager')
         ->getFormObject('taxonomy_term', 'default')
         ->setEntity($term);
-      return $this->container->get('form_builder')
-        ->buildForm($form_object, (new FormState())->setFormObject($form_object));
+      $form_state = (new FormState())->setFormObject($form_object);
+      return $this->container->get('form_builder')->buildForm($form_object, $form_state);
     }
     finally {
       $account_switcher->switchBack();
