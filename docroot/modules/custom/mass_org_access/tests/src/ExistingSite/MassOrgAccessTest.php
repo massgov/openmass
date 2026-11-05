@@ -298,6 +298,56 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     );
   }
 
+  /**
+   * Collection editing gives editors no vocabulary-level access.
+   *
+   * On the Collections overview the Save button stores the vocabulary's
+   * Rabbit Hole and Taxonomy unique settings, and the reset form discards the
+   * order of every Collection term. Both open up with the core
+   * `edit terms in collections` permission, which editors must not have.
+   */
+  public function testEditorCannotChangeCollectionsVocabulary(): void {
+    $this->assertFalse($this->userA->hasPermission('edit terms in collections'));
+    $this->assertFalse(
+      Vocabulary::load('collections')->access('reset all weights', $this->userA),
+      'Editors may not save the Collections overview or reset its weights.'
+    );
+
+    $this->drupalLogin($this->userA);
+    $this->drupalGet(Url::fromRoute('entity.taxonomy_vocabulary.reset_form', ['taxonomy_vocabulary' => 'collections']));
+    $this->assertSession()->statusCodeEquals(403);
+
+    $this->drupalGet(Url::fromRoute('entity.taxonomy_vocabulary.overview_form', ['taxonomy_vocabulary' => 'collections']));
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->buttonNotExists('edit-submit');
+    $this->assertSession()->buttonNotExists('edit-reset-alphabetical');
+  }
+
+  /**
+   * Users who bypass org access still get the reduced collection form.
+   *
+   * The full form (name, URL name, parent, status) is reserved for
+   * vocabulary-level editors, not for everyone who may bypass org access.
+   */
+  public function testCollectionTermBypassUserGetsReducedForm(): void {
+    $user = $this->createUser(['edit top-level collection terms', 'bypass org access']);
+    $term = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Collection bypass form ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageB->id()]],
+    ]);
+    $this->assertTrue($term->access('update', $user),
+      'Bypass users may update a top-level collection outside their Permission Groups.');
+
+    \Drupal::currentUser()->setAccount($user);
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('taxonomy_term', 'default')
+      ->setEntity($term);
+    $form = \Drupal::formBuilder()->buildForm($form_object, (new FormState())->setFormObject($form_object));
+    foreach (['name', 'field_url_name', 'relations', 'status'] as $element) {
+      $this->assertFalse($form[$element]['#access'] ?? TRUE, sprintf('%s must be hidden from bypass users without vocabulary access.', $element));
+    }
+  }
+
   public static function childCollectionEnforcementProvider(): array {
     return [
       'enforced' => [TRUE],
@@ -393,12 +443,24 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'parent' => [['target_id' => $top_level->id()]],
       'field_organizations' => [['target_id' => $this->orgPageA->id()]],
     ]);
+    $unpublished_name = 'Overview unpublished collection ' . $this->randomMachineName();
+    $this->createTerm($vocabulary, [
+      'name' => $unpublished_name,
+      'status' => 0,
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+
+    // The admin listing is not public.
+    $this->drupalGet('/admin/ma-dash/top-level-collections');
+    $this->assertSession()->statusCodeEquals(403);
 
     $this->drupalLogin($this->userA);
     $this->drupalGet('/admin/ma-dash/top-level-collections');
 
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->pageTextContains($top_level_name);
+    // The page overrides the default display's published-only filter.
+    $this->assertSession()->pageTextContains($unpublished_name);
     $this->assertSession()->elementExists('css', sprintf('a[href="/collections/%s"]', $collection_url_name));
     $this->assertSession()->elementNotExists('xpath', '//td[contains(@class, "views-field-operations")]//a[normalize-space() = "View"]');
     $this->assertSession()->elementExists('xpath', '//td[contains(@class, "views-field-operations")]//a[normalize-space() = "Edit"]');

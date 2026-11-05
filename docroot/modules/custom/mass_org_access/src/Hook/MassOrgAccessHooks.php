@@ -55,27 +55,38 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Restricts updates to top-level collection terms by Permission Group.
+   * Grants and restricts updates to collection terms.
+   *
+   * Top-level collections are editable with `edit top-level collection terms`,
+   * limited to the user's Permission Groups when enforcement is on. That
+   * permission is term-level only: unlike the core `edit terms in collections`
+   * it does not open the vocabulary overview's Save button (Rabbit Hole and
+   * Taxonomy unique settings) or the reset-weights form.
    *
    * Child collection terms are topics used within collections. Editing them
-   * requires a separate permission from editing top-level collections.
+   * requires `edit child collection terms` on top of the core permission.
    */
   #[Hook('taxonomy_term_access')]
   public function taxonomyTermAccess(TermInterface $term, string $operation, AccountInterface $account): AccessResultInterface {
     if ($operation !== 'update' || $term->bundle() !== 'collections') {
       return AccessResult::neutral();
     }
-    if ($account->hasPermission('bypass org access')) {
-      return AccessResult::neutral();
-    }
     if (!$this->isTopLevelTerm($term)) {
+      if ($account->hasPermission('bypass org access')) {
+        return AccessResult::neutral();
+      }
       return ($account->hasPermission('edit child collection terms')
         ? AccessResult::neutral()
         : AccessResult::forbidden())
         ->addCacheableDependency($term)
         ->cachePerPermissions();
     }
-    return $this->checkAccess($term, $operation, $account);
+    $granted = AccessResult::allowedIfHasPermission($account, 'edit top-level collection terms')
+      ->addCacheableDependency($term);
+    // checkAccess() is neutral when enforcement is off or the user may
+    // bypass it, and forbidden on a Permission Group mismatch. orIf() keeps
+    // a forbidden result, so the grant never overrides the organization gate.
+    return $this->checkAccess($term, $operation, $account)->orIf($granted);
   }
 
   /**
@@ -273,13 +284,19 @@ class MassOrgAccessHooks {
 
   /**
    * Removes administrator-only identifiers from collection term edit forms.
+   *
+   * Only vocabulary-level editors (`administer taxonomy` or the core
+   * `edit terms in collections`) get the full form. Everyone editing through
+   * `edit top-level collection terms` gets the reduced one, including users
+   * who may bypass organization access.
    */
   #[Hook('form_taxonomy_term_collections_form_alter')]
   public function formCollectionTermAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
     $term = $form_state->getFormObject()->getEntity();
     if (!$term instanceof TermInterface || $term->isNew()
       || !$this->isTopLevelTerm($term)
-      || $this->currentUser->hasPermission('bypass org access')) {
+      || $this->currentUser->hasPermission('administer taxonomy')
+      || $this->currentUser->hasPermission('edit terms in collections')) {
       return;
     }
 
