@@ -6246,8 +6246,10 @@ function mass_theme_preprocess_views_view_collection_all_page_all(&$variables) {
   $variables['bg_color'] = $term->field_header_color->value ?: '#FFF';
   $variables['content'] = $build;
   $variables['collection']['title'] = $term->label();
+  // No wrapper element: the template switches to the banner layout when the
+  // description renders to anything at all, and an empty container still
+  // renders a newline.
   $variables['collection']['description'] = [
-    '#type' => 'container',
     'short_description' => $build['field_short_description'],
   ];
   if ($term->hasField('field_collection_overview') && !$term->get('field_collection_overview')->isEmpty()) {

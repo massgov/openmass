@@ -385,6 +385,19 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       $this->assertArrayHasKey($element, $form);
       $this->assertTrue($form[$element]['#access'] ?? TRUE, sprintf('%s must stay editable on the add form.', $element));
     }
+    // The overview is shown on top-level Collection pages only, like the
+    // short description, so topic and add forms hide both.
+    foreach (['field_short_description', 'field_collection_overview'] as $element) {
+      $this->assertFalse($form[$element]['#access'], sprintf('%s must be hidden on the add form.', $element));
+    }
+    $topic = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Collection full form topic ' . $this->randomMachineName(),
+      'parent' => [['target_id' => $term->id()]],
+    ]);
+    $form = $this->buildCollectionTermForm($topic, $collection_administrator);
+    foreach (['field_short_description', 'field_collection_overview'] as $element) {
+      $this->assertFalse($form[$element]['#access'], sprintf('%s must be hidden on topic forms.', $element));
+    }
   }
 
   /**
@@ -598,13 +611,21 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
     $this->assertTrue($storage->loadUnchanged($term->id())->get('field_content_organization')->isEmpty());
 
+    // A Collection without Organization(s) cannot get Permission Groups and
+    // must be named in the output.
+    $orphan = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Collection deploy hook orphan ' . $this->randomMachineName(),
+    ]);
+
     \Drupal::moduleHandler()->loadInclude('mass_org_access', 'php', 'mass_org_access.deploy');
-    mass_org_access_deploy_collection_permission_groups();
+    $message = mass_org_access_deploy_collection_permission_groups();
 
     $this->assertSame(
       [(int) $this->termA->id()],
       array_map('intval', array_column($storage->loadUnchanged($term->id())->get('field_content_organization')->getValue(), 'target_id'))
     );
+    $this->assertStringContainsString(sprintf('%s (%d)', $orphan->label(), $orphan->id()), $message);
+    $this->assertStringNotContainsString(sprintf('%s (%d)', $term->label(), $term->id()), $message);
   }
 
   /**

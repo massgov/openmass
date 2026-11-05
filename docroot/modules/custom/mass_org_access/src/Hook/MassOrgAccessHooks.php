@@ -96,8 +96,9 @@ class MassOrgAccessHooks {
     $granted = AccessResult::allowedIfHasPermission($account, 'edit top-level collection terms')
       ->addCacheableDependency($term);
     // checkAccess() is neutral when enforcement is off or the user may
-    // bypass it, and forbidden on a Permission Group mismatch. orIf() keeps
-    // a forbidden result, so the grant never overrides the organization gate.
+    // bypass it. Otherwise it is forbidden when the user has no organization,
+    // the Collection has no Permission Groups, or they do not overlap. orIf()
+    // keeps a forbidden result, so the grant never overrides the gate.
     return $this->checkAccess($term, $operation, $account)->orIf($granted);
   }
 

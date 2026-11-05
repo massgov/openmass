@@ -62,6 +62,23 @@ class CollectionAllMixedResultsTest extends MassExistingSiteBase {
   }
 
   /**
+   * A Collection without description or header color keeps the plain header.
+   */
+  public function testCollectionWithoutDescriptionKeepsPlainHeader(): void {
+    $term_name = 'CollectionPlainHeader ' . $this->randomMachineName();
+    $url = 'test-plain-header-' . strtolower($this->randomMachineName());
+    $this->createTerm(Vocabulary::load('collections'), [
+      'name' => $term_name,
+      'field_url_name' => $url,
+    ]);
+
+    $this->drupalGet('/collections/' . $url);
+    $this->assertEquals(200, $this->getSession()->getStatusCode());
+    $this->assertSession()->elementNotExists('css', '.collection-header');
+    $this->assertSession()->elementExists('xpath', sprintf('//h1[not(@class) and normalize-space(.) = "%s"]', $term_name));
+  }
+
+  /**
    * Creates a published document media item in a collection.
    */
   private function createDocumentMedia(string $title, int $collection_tid): void {

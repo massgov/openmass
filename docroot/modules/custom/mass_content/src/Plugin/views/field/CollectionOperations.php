@@ -17,6 +17,9 @@ class CollectionOperations extends EntityOperations {
    */
   public function render(ResultRow $values) {
     $build = parent::render($values);
+    if (!is_array($build) || !isset($build['#links'])) {
+      return $build;
+    }
 
     $build['#links'] = array_intersect_key($build['#links'], ['edit' => TRUE]);
 
