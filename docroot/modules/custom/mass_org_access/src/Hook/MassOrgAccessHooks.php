@@ -57,14 +57,18 @@ class MassOrgAccessHooks {
   /**
    * Grants and restricts updates to collection terms.
    *
-   * Top-level collections are editable with `edit top-level collection terms`,
-   * limited to the user's Permission Groups when enforcement is on. That
-   * permission is term-level only: unlike the core `edit terms in collections`
-   * it does not open the vocabulary overview's Save button (Rabbit Hole and
-   * Taxonomy unique settings) or the reset-weights form.
+   * Vocabulary-level editors (`administer taxonomy` or the core
+   * `edit terms in collections`) manage every top-level collection, as before
+   * organization access existed. Everyone else edits top-level collections
+   * with `edit top-level collection terms`, limited to their Permission
+   * Groups when enforcement is on and they cannot bypass it. That permission
+   * is term-level only: unlike `edit terms in collections` it does not open
+   * the vocabulary overview's Save button (it stores vocabulary settings such
+   * as Taxonomy unique) or the reset-weights form.
    *
-   * Child collection terms are topics used within collections. Editing them
-   * requires `edit child collection terms` on top of the core permission.
+   * Child collection terms are topics used within collections. Users without
+   * `bypass org access` or `administer taxonomy` need
+   * `edit child collection terms` on top of the core permission to edit them.
    */
   #[Hook('taxonomy_term_access')]
   public function taxonomyTermAccess(TermInterface $term, string $operation, AccountInterface $account): AccessResultInterface {
@@ -72,12 +76,20 @@ class MassOrgAccessHooks {
       return AccessResult::neutral();
     }
     if (!$this->isTopLevelTerm($term)) {
-      if ($account->hasPermission('bypass org access')) {
-        return AccessResult::neutral();
+      if ($account->hasPermission('bypass org access') || $account->hasPermission('administer taxonomy')) {
+        return AccessResult::neutral()
+          ->addCacheableDependency($term)
+          ->cachePerPermissions();
       }
       return ($account->hasPermission('edit child collection terms')
         ? AccessResult::neutral()
         : AccessResult::forbidden())
+        ->addCacheableDependency($term)
+        ->cachePerPermissions();
+    }
+    if ($account->hasPermission('administer taxonomy') || $account->hasPermission('edit terms in collections')) {
+      // Core grants these users access.
+      return AccessResult::neutral()
         ->addCacheableDependency($term)
         ->cachePerPermissions();
     }
@@ -111,7 +123,7 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Shared org-based access logic for nodes and media.
+   * Shared org-based access logic for nodes, media and collection terms.
    *
    * Decisions depend on the user's field_user_org, so the result must
    * invalidate when that user is updated — the user:UID cache tag handles it.
@@ -152,9 +164,11 @@ class MassOrgAccessHooks {
       return $forbidden;
     }
     if ($this->orgAccessChecker->userHasOrgAccess($account, $entity)) {
-      // The core taxonomy permission is shared by the editor role, but this
-      // organization match is user-specific. Without this context an allowed
-      // result for one editor can be reused for another editor.
+      // The grant this result is combined with (core node and media
+      // permissions, `edit top-level collection terms`) varies only by
+      // permissions, but this organization match is user-specific. Without
+      // this context an allowed result for one user could be reused for
+      // another user with the same roles.
       return AccessResult::neutral()
         ->cachePerUser()
         ->addCacheableDependency($entity)
@@ -302,7 +316,8 @@ class MassOrgAccessHooks {
 
     // Term title and URL name are stable identifiers. Permission Groups are
     // derived on presave from Organization(s), so they are never editor
-    // editable. All other configured collection fields remain editable.
+    // editable. Other collection fields stay editable unless
+    // mass_content_form_taxonomy_term_collections_form_alter() hides them.
     foreach (['name', 'field_url_name', 'field_content_organization'] as $element) {
       if (isset($form[$element])) {
         $form[$element]['#access'] = FALSE;

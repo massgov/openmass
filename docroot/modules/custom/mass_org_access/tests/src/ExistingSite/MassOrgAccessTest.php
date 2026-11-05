@@ -296,14 +296,22 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       $child->access('update', $this->userA),
       'Collection topics are outside the organization-owned editing workflow.'
     );
+
+    // Until enforcement is on, Permission Groups do not limit editors.
+    \Drupal::state()->set('mass_org_access.enforce', FALSE);
+    \Drupal::entityTypeManager()->getAccessControlHandler('taxonomy_term')->resetCache();
+    $this->assertTrue(
+      $top_level->access('update', $this->userB),
+      'Without enforcement an editor may update any top-level collection.'
+    );
   }
 
   /**
    * Collection editing gives editors no vocabulary-level access.
    *
-   * On the Collections overview the Save button stores the vocabulary's
-   * Rabbit Hole and Taxonomy unique settings, and the reset form discards the
-   * order of every Collection term. Both open up with the core
+   * On the Collections overview the Save button stores vocabulary settings
+   * added by contrib form alters (Taxonomy unique), and the reset form
+   * discards the order of every Collection term. Both open up with the core
    * `edit terms in collections` permission, which editors must not have.
    */
   public function testEditorCannotChangeCollectionsVocabulary(): void {
@@ -322,6 +330,33 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->assertSession()->statusCodeEquals(200);
     $this->assertSession()->buttonNotExists('edit-submit');
     $this->assertSession()->buttonNotExists('edit-reset-alphabetical');
+  }
+
+  /**
+   * Vocabulary-level editors are not limited by Permission Groups.
+   */
+  public function testCollectionAdministratorEditsAnyTopLevelCollection(): void {
+    $collection_administrator = $this->createUser();
+    $collection_administrator->addRole('collection_administrator');
+    $collection_administrator->set('field_user_org', $this->termA->id());
+    $collection_administrator->activate();
+    $collection_administrator->save();
+
+    $vocabulary = Vocabulary::load('collections');
+    $other_org = $this->createTerm($vocabulary, [
+      'name' => 'Collection other org ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageB->id()]],
+    ]);
+    $no_org = $this->createTerm($vocabulary, [
+      'name' => 'Collection without org ' . $this->randomMachineName(),
+    ]);
+
+    $this->assertTrue($other_org->access('update', $collection_administrator),
+      'Collection Administrators may edit collections of other organizations.');
+    $this->assertTrue($no_org->access('update', $collection_administrator),
+      'Collection Administrators may edit collections without Permission Groups.');
+    $this->assertFalse($no_org->access('update', $this->userA),
+      'Editors may not edit collections without Permission Groups.');
   }
 
   /**
@@ -358,7 +393,9 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
-   * Child topics need both the dedicated and core Collection edit permissions.
+   * Child topics need the dedicated and the core Collection edit permissions.
+   *
+   * Users who bypass org access or administer taxonomy need only the core one.
    *
    * @dataProvider childCollectionEnforcementProvider
    */
@@ -386,6 +423,13 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'Editors may not edit child topics.');
     $this->assertFalse($topic->access('update', $permission_only_user),
       'The dedicated permission does not replace the core Collection edit permission.');
+    $this->assertTrue($topic->access('update', $this->createUser(['administer taxonomy'])),
+      'Taxonomy administrators may edit child topics.');
+    $vocabulary_editor = $this->createUser(['edit terms in collections']);
+    $this->assertFalse($topic->access('update', $vocabulary_editor),
+      'The core Collection edit permission alone does not cover child topics.');
+    $this->assertTrue($collection->access('update', $vocabulary_editor),
+      'The core Collection edit permission covers every top-level collection.');
   }
 
   /**
@@ -465,7 +509,8 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     $this->assertSession()->pageTextContains($unpublished_name);
     $this->assertSession()->elementExists('css', sprintf('a[href="/collections/%s"]', $collection_url_name));
     $this->assertSession()->elementNotExists('xpath', '//td[contains(@class, "views-field-operations")]//a[normalize-space() = "View"]');
-    $this->assertSession()->elementExists('xpath', '//td[contains(@class, "views-field-operations")]//a[normalize-space() = "Edit"]');
+    $edit_link = sprintf('td.views-field-operations a[href^="/taxonomy/term/%d/edit"]', $top_level->id());
+    $this->assertSession()->elementExists('css', $edit_link);
     $this->assertSession()->pageTextNotContains($child_name);
     foreach ([
       'Name',
@@ -478,6 +523,48 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     ] as $heading) {
       $this->assertSession()->pageTextContains($heading);
     }
+
+    // Rows are cached; the Edit link must follow the viewer's own groups.
+    $this->drupalLogin($this->userB);
+    $this->drupalGet('/admin/ma-dash/top-level-collections');
+    $this->assertSession()->statusCodeEquals(200);
+    $this->assertSession()->pageTextContains($top_level_name);
+    $this->assertSession()->elementNotExists('css', $edit_link);
+
+    // The page requires `access taxonomy overview`, not the default display's
+    // `use mass dashboard`, which the viewer role has.
+    $viewer = $this->createUser();
+    $viewer->addRole('viewer');
+    $viewer->activate();
+    $viewer->save();
+    $this->drupalLogin($viewer);
+    $this->drupalGet('/admin/ma-dash/top-level-collections');
+    $this->assertSession()->statusCodeEquals(404);
+  }
+
+  /**
+   * The deploy hook fills Permission Groups on existing Collections.
+   */
+  public function testDeployHookDerivesCollectionPermissionGroups(): void {
+    $term = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Collection deploy hook ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+    // Collections saved before the field existed have no Permission Groups.
+    // A syncing save skips the presave that would derive them.
+    $term->set('field_content_organization', []);
+    $term->setSyncing(TRUE);
+    $term->save();
+    $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $this->assertTrue($storage->loadUnchanged($term->id())->get('field_content_organization')->isEmpty());
+
+    \Drupal::moduleHandler()->loadInclude('mass_org_access', 'php', 'mass_org_access.deploy');
+    mass_org_access_deploy_collection_permission_groups();
+
+    $this->assertSame(
+      [(int) $this->termA->id()],
+      array_map('intval', array_column($storage->loadUnchanged($term->id())->get('field_content_organization')->getValue(), 'target_id'))
+    );
   }
 
   /**
@@ -1211,7 +1298,7 @@ class MassOrgAccessTest extends MassExistingSiteBase {
    * The lookup endpoint grants access only to who can edit the host entity.
    *
    * Anonymous and users without update/create access to the entity passed in
-   * the request are denied; only node and media are accepted.
+   * the request are denied; only nodes, media and taxonomy terms are accepted.
    */
   public function testLookupEndpointBindsToEntityAccess(): void {
     \Drupal::state()->delete('mass_org_access.enforce');
@@ -1238,11 +1325,28 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'A user who can create the bundle must be allowed for new content.'
     );
 
-    // Only node and media are accepted.
+    // Other entity types are rejected, even ones the user may update.
+    $this->assertTrue($creator->access('update', $creator), 'Precondition: users may update their own account.');
     $this->assertFalse(
-      $controller->access($creator, $req(['entity_type' => 'taxonomy_term', 'bundle' => 'user_organization']))->isAllowed(),
-      'Entity types other than node/media must be rejected.'
+      $controller->access($creator, $req(['entity_type' => 'user', 'entity_id' => $creator->id()]))->isAllowed(),
+      'Entity types other than node, media and taxonomy_term must be rejected.'
     );
+
+    // Collections: the endpoint mirrors the term's update access.
+    $collection = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Lookup collection ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageA->id()]],
+    ]);
+    \Drupal::state()->set('mass_org_access.enforce', TRUE);
+    $this->assertTrue(
+      $controller->access($this->userA, $req(['entity_type' => 'taxonomy_term', 'entity_id' => $collection->id()]))->isAllowed(),
+      'An editor who can update the collection must be allowed.'
+    );
+    $this->assertFalse(
+      $controller->access($this->userB, $req(['entity_type' => 'taxonomy_term', 'entity_id' => $collection->id()]))->isAllowed(),
+      'An editor who cannot update the collection must be denied.'
+    );
+    \Drupal::state()->delete('mass_org_access.enforce');
 
     // Existing entity: the endpoint mirrors the entity's update access.
     $node = $this->createNode([
