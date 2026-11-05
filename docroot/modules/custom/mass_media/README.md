@@ -12,6 +12,10 @@ The custom formatter adapts Video Embed Field URLs to the Able Player library
 provided by the `ableplayer` module. It handles unlisted Vimeo privacy hashes,
 legacy YouTube `/watch/ID` URLs, and whitespace in existing values. A Drupal
 behavior initializes each player once, including media inserted through AJAX.
+Its small Able Player subclass requests Vimeo's `speed` capability and waits for
+the playback-rate check before Able Player builds the controls. Without this,
+Vimeo rejects speed changes and the Faster/Slower buttons are omitted. Videos
+that reject the rate API still render without those buttons.
 The provider must allow embedding. Playback uses provider captions unless local
 caption tracks are uploaded on the Video media item.
 
@@ -88,6 +92,7 @@ rebuilt with the fix without manually editing its database.
 Validation:
 
 ```sh
+ddev exec node --test docroot/modules/custom/mass_media/tests/js/vimeo-playback-speed.test.cjs
 ddev exec vendor/bin/phpunit docroot/modules/custom/mass_media/tests/src/Unit/AblePlayerInstallTest.php
 ddev exec vendor/bin/phpunit docroot/modules/custom/mass_media/tests/src/ExistingSite/AblePlayerVideoTest.php
 ddev exec vendor/bin/phpunit docroot/modules/custom/mass_media/tests/src/ExistingSite/VideoAccessibilityTest.php
