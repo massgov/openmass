@@ -1,0 +1,27 @@
+uuid: 96413761-3fb6-4020-bd29-86d1739b6897
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_captions
+    - media.type.media_video
+  module:
+    - mass_media
+id: media.media_video.field_video_captions
+field_name: field_video_captions
+entity_type: media
+bundle: media_video
+label: 'Captions and subtitles'
+description: 'Upload one WebVTT (.vtt) file per language. Choose the language and optional label after upload. The first file is the default caption track. Local captions replace provider captions in this player.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: 'video-accessibility/[date:custom:Y]-[date:custom:m]'
+  file_extensions: vtt
+  max_filesize: '2 MB'
+  description_field: true
+field_type: mass_media_video_track

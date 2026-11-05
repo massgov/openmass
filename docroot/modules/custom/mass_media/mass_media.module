@@ -139,6 +139,42 @@ function mass_media_form_alter(&$form, FormStateInterface $form_state, $form_id)
   $uid = \Drupal::currentUser()->id();
   $current_user_roles = \Drupal::currentUser()->getRoles();
 
+  if ($form_state->getFormObject() instanceof \Drupal\Core\Entity\EntityFormInterface) {
+    $entity = $form_state->getFormObject()->getEntity();
+    if ($entity instanceof MediaInterface && $entity->bundle() === 'media_video') {
+      $fields = [
+        'field_video_captions',
+        'field_video_transcript_enabled',
+        'field_video_chapters',
+        'field_video_descriptions',
+        'field_video_audio_description',
+        'field_video_sign_language',
+      ];
+      foreach ($fields as $field) {
+        if (isset($form[$field])) {
+          $form['video_accessibility'] = [
+            '#type' => 'details',
+            '#title' => t('Video accessibility'),
+            '#description' => t('Optional captions, spoken descriptions, navigation, and alternative videos. Uploaded text tracks must use WebVTT (.vtt) format.'),
+            '#open' => FALSE,
+            '#weight' => 5,
+          ];
+          $form[$field]['#group'] = 'video_accessibility';
+        }
+      }
+      // Existing videos have no stored value until this new field is saved.
+      if (isset($form['field_video_transcript_enabled']) && $entity->get('field_video_transcript_enabled')->isEmpty()) {
+        $form['field_video_transcript_enabled']['widget']['value']['#default_value'] = TRUE;
+      }
+      // These provider URLs need specific guidance instead of generic link help.
+      foreach (['field_video_audio_description', 'field_video_sign_language'] as $field) {
+        if (isset($form[$field]['widget'][0]['uri'])) {
+          $form[$field]['widget'][0]['uri']['#description'] = \Drupal\Core\Field\FieldFilteredMarkup::create($entity->getFieldDefinition($field)->getDescription());
+        }
+      }
+    }
+  }
+
   if ($form_id === "views_bulk_operations_confirm_action") {
     if ($form_data = $form_state->get('views_bulk_operations')) {
       if ($form_data['view_id'] == "media" && $form_data['display_id'] == "media_page_list") {
@@ -405,4 +441,22 @@ function mass_media_file_move(FileInterface $file, FileInterface $source) {
     // Cannot use File::delete() because $file and $source share same ID.
     $file_system->delete($source->getFileUri());
   }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function mass_media_theme() {
+  return [
+    'mass_media_ableplayer' => [
+      'variables' => ['attributes' => NULL, 'url' => NULL, 'tracks' => []],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function mass_media_entity_type_alter(array &$entity_types) {
+  $entity_types['media']->addConstraint('MassMediaVideoAccessibility');
 }

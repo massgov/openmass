@@ -1,0 +1,23 @@
+uuid: 0a7ef6a3-e9b1-48f6-ab89-56c7c86cd65a
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_sign_language
+    - media.type.media_video
+  module:
+    - link
+id: media.media_video.field_video_sign_language
+field_name: field_video_sign_language
+entity_type: media
+bundle: media_video
+label: 'Synchronized sign-language video URL'
+description: 'Optional interpretation video on YouTube, with timing that matches the main video. Both videos must be on YouTube. Synchronized sign language is not supported for Vimeo or on iOS by this player version.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 0
+  link_type: 16
+field_type: link

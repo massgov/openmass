@@ -1,0 +1,23 @@
+uuid: a6f3e650-625b-4980-9d5d-1993251133e6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_transcript_enabled
+    - media.type.media_video
+id: media.media_video.field_video_transcript_enabled
+field_name: field_video_transcript_enabled
+entity_type: media
+bundle: media_video
+label: 'Offer an interactive transcript'
+description: 'Adds a Transcript button inside the video player. Viewers can read the captions and click a passage to jump to that point in the video. First upload at least one caption (.vtt) file under Captions and subtitles. This option does not transcribe the video automatically. Your existing Transcript and Video Description text and transcript link remain separate.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: Enabled
+  off_label: Disabled
+field_type: boolean

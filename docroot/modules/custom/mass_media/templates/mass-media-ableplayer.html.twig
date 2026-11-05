@@ -1,0 +1,8 @@
+<div class="mass-media-ableplayer">
+  <video{{ attributes }}>
+    {% for track in tracks %}
+      <track{{ track }}>
+    {% endfor %}
+    <a href="{{ url }}">{{ 'Watch video on the provider website'|t }}</a>
+  </video>
+</div>

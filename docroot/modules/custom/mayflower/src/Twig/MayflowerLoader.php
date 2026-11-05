@@ -29,7 +29,12 @@ class MayflowerLoader extends FilesystemLoader {
     foreach (self::NAMESPACES as $namespace => $folder) {
       $path = sprintf('%s/twig/%s', rtrim($artifactsRoot, '/'), $folder);
       try {
-        $this->setPaths([$path], $namespace);
+        $paths = [$path];
+        $overrides = __DIR__ . '/../../templates/' . $folder;
+        if (is_dir($overrides)) {
+          array_unshift($paths, $overrides);
+        }
+        $this->setPaths($paths, $namespace);
       }
       // Throw a more friendly error message.
       catch (LoaderError $e) {

@@ -6831,13 +6831,10 @@ function mass_theme_theme_suggestions_textarea_alter(array &$suggestions, array 
  *   - media: An individual media for display.
  */
 function mass_theme_preprocess_media(array &$variables) {
-  $src = '';
+  $media = $variables['elements']['#media'];
+  $media_bundle = $media->bundle();
 
-  // Do something special for document bundle.
-  $media_bundle = $variables['elements']['#media']->bundle();
-
-  if (isset($variables['elements']['field_media_video_embed_field'][0]['children']['#url'])) {
-    $src = $variables['elements']['field_media_video_embed_field'][0]['children']['#url'];
+  if ($media_bundle === 'media_video' && isset($variables['elements']['field_media_video_embed_field'])) {
 
     // Set static pageHeader properties to pass to prepare function.
     $pageHeader_options = [
@@ -6847,14 +6844,9 @@ function mass_theme_preprocess_media(array &$variables) {
     // Make pageBanner data object available in twig template.
     $variables['pageHeader'] = Organisms::preparePageHeader($variables['elements']['#media'], $pageHeader_options);
 
-    $variables['video'] = [
-      'src' => $src,
-      'label' => Helper::fieldValue($variables['elements']['#media'], 'name'),
-      'width' => '',
-      'height' => '',
-      'link' => NULL,
-      'position' => '',
-    ];
+    $variables['video'] = Atoms::prepareVideo($media, []) ?? [];
+    // The transcript is already displayed on the media's own page.
+    $variables['video']['link'] = NULL;
 
     $back_url = \Drupal::request()->server->get('HTTP_REFERER');
     $current_path = \Drupal::service('path.current')->getPath();
