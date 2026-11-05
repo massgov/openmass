@@ -314,8 +314,9 @@ class MassOrgAccessTest extends MassExistingSiteBase {
     );
 
     $this->drupalLogin($this->userA);
+    // m4032404 serves access denied as 404.
     $this->drupalGet(Url::fromRoute('entity.taxonomy_vocabulary.reset_form', ['taxonomy_vocabulary' => 'collections']));
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertSession()->statusCodeEquals(404);
 
     $this->drupalGet(Url::fromRoute('entity.taxonomy_vocabulary.overview_form', ['taxonomy_vocabulary' => 'collections']));
     $this->assertSession()->statusCodeEquals(200);
@@ -450,9 +451,9 @@ class MassOrgAccessTest extends MassExistingSiteBase {
       'field_organizations' => [['target_id' => $this->orgPageA->id()]],
     ]);
 
-    // The admin listing is not public.
+    // The admin listing is not public (m4032404 serves access denied as 404).
     $this->drupalGet('/admin/ma-dash/top-level-collections');
-    $this->assertSession()->statusCodeEquals(403);
+    $this->assertSession()->statusCodeEquals(404);
 
     $this->drupalLogin($this->userA);
     $this->drupalGet('/admin/ma-dash/top-level-collections');
