@@ -1,0 +1,34 @@
+uuid: da455d66-bba4-4298-94ec-5968fdc61454
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.media.able_player_caption_view_mode
+    - field.field.media.able_player_caption.ableplayer_caption
+    - media.type.able_player_caption
+  module:
+    - ableplayer
+_core:
+  default_config_hash: gndPiDtozTA_XujeIQaCC1FvWyvGE1xiZFYeyTAa8o0
+id: media.able_player_caption.able_player_caption_view_mode
+targetEntityType: media
+bundle: able_player_caption
+mode: able_player_caption_view_mode
+content:
+  ableplayer_caption:
+    type: ableplayer_caption
+    label: above
+    settings:
+      controls: true
+      autoplay: false
+      loop: false
+      multiple_file_display_type: tags
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  created: true
+  langcode: true
+  name: true
+  thumbnail: true
+  uid: true

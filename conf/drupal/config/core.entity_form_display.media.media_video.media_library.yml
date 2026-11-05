@@ -1,0 +1,45 @@
+uuid: 27a5b2b6-d46e-464e-9e09-04a91871ea24
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.media.media_library
+    - field.field.media.media_video.field_media_video_embed_field
+    - field.field.media.media_video.field_video_audio_description
+    - field.field.media.media_video.field_video_captions
+    - field.field.media.media_video.field_video_chapters
+    - field.field.media.media_video.field_video_description
+    - field.field.media.media_video.field_video_sign_language
+    - field.field.media.media_video.field_video_transcript
+    - field.field.media.media_video.field_video_transcript_enabled
+    - media.type.media_video
+id: media.media_video.media_library
+targetEntityType: media
+bundle: media_video
+mode: media_library
+content:
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  field_media_video_embed_field: true
+  field_video_audio_description: true
+  field_video_captions: true
+  field_video_chapters: true
+  field_video_description: true
+  field_video_sign_language: true
+  field_video_transcript: true
+  field_video_transcript_enabled: true
+  langcode: true
+  moderation_state: true
+  path: true
+  search: true
+  simple_sitemap: true
+  status: true
+  uid: true

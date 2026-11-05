@@ -320,6 +320,10 @@ class Atoms {
         'position' => (isset($options['position']) && !empty($options['position'])) ? $options['position'] : NULL,
       ];
 
+      if (isset($video_render_array['#mass_video_embed'])) {
+        $video['player'] = $video_render_array;
+      }
+
       // Only add the link if field_video_description has content in it.
       if (!empty($entity->get('field_video_description')->value)) {
         $video['link'] = [
@@ -349,6 +353,10 @@ class Atoms {
    * Extract embed URL + dimensions from field render or raw value.
    */
   private static function extractVideoEmbedData($entity, array $video_render_array): array {
+    if (isset($video_render_array['#mass_video_embed'])) {
+      return $video_render_array['#mass_video_embed'];
+    }
+
     if (isset($video_render_array['children']['#url'])) {
       return [
         'src' => $video_render_array['children']['#url'],

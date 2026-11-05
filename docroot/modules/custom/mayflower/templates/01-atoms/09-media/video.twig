@@ -1,0 +1,41 @@
+{# Drupal override of the Mayflower video atom; render configured players with their attachments. #}
+{% set posClass = video.position ? "ma__video--" ~ video.position : '' %}
+{% set headingLevel = video.headingLevel? : 3 %}
+{% set skiplinkId = "video-" ~ random(9999) %}
+
+
+  {# backward compatibile with v5.6 - toggle new styles with ma__video--new #}
+<div class="ma__video ma__video--new {{ posClass }}">
+
+  <div class="ma__video__container {{ video.player ? 'ma__video__container--ableplayer' : 'js-ma-responsive-video' }}"{% if not video.link %} style="padding-bottom: 13px;"{% endif %}>
+    <h{{ headingLevel }} class="ma__video-title ma__visually-hidden">Video: {{ video.label }}</h{{ headingLevel }}>
+
+    {% if video.link %}
+      <div class="ma__video__link">
+      {% set video = video|merge({'link': {
+                                    'href': video.link.href,
+                                    'text': video.link.text,
+                                    'info': '',
+                                    'labelContext': video.link.labelContext,
+                                    'property': video.link.property }}) %}
+        {% set decorativeLink = video.link %}
+        {% include "@atoms/decorative-link.twig" %}
+      </div>
+    {% endif %}
+
+    {# SKIP LINK #}
+    <a class="ma__video__skip-link js-skiplink" href="#{{ skiplinkId }}">Skip this video<span class="ma__visually-hidden"> {{ video.label }}</span>.</a>
+
+    {% if video.player %}
+      {{ video.player }}
+    {% else %}
+    <iframe width="{{ video.width }}" height="{{ video.height }}" src="{{ video.src }}" allowfullscreen allow="accelerometer; fullscreen; gyroscope; picture-in-picture" title="{{ video.label }}"></iframe>
+    {% endif %}
+
+    {# SKIP LINK LANDING #}
+    <div class="ma__video__skip-link_target js-skiplink-target">
+      <a id="{{ skiplinkId }}" tabindex="-1">You skipped the video, {{ video.label }}.</a>
+    </div>
+
+  </div>
+</div>

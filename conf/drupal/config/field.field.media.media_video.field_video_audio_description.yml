@@ -1,0 +1,23 @@
+uuid: c2b61e4b-1e46-403a-ac60-453b0c45796d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_audio_description
+    - media.type.media_video
+  module:
+    - link
+id: media.media_video.field_video_audio_description
+field_name: field_video_audio_description
+entity_type: media
+bundle: media_video
+label: 'Audio-described video URL'
+description: 'Optional alternate version with narration of important visual information. Use the same provider as the main video (YouTube or Vimeo), with matching timing. The viewer can switch versions with the Description control.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  title: 0
+  link_type: 16
+field_type: link

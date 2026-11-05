@@ -4,15 +4,20 @@ status: true
 dependencies:
   config:
     - field.field.media.media_video.field_media_video_embed_field
+    - field.field.media.media_video.field_video_audio_description
+    - field.field.media.media_video.field_video_captions
+    - field.field.media.media_video.field_video_chapters
     - field.field.media.media_video.field_video_description
+    - field.field.media.media_video.field_video_sign_language
     - field.field.media.media_video.field_video_transcript
+    - field.field.media.media_video.field_video_transcript_enabled
     - image.style.thumbnail
     - media.type.media_video
   module:
     - image
+    - mass_media
     - text
     - user
-    - video_embed_field
 id: media.media_video.default
 targetEntityType: media
 bundle: media_video
@@ -38,13 +43,9 @@ content:
     weight: 2
     region: content
   field_media_video_embed_field:
-    type: video_embed_field_video
+    type: mass_media_ableplayer
     label: above
-    settings:
-      autoplay: true
-      responsive: true
-      width: 854
-      height: 480
+    settings: {  }
     third_party_settings: {  }
     weight: 4
     region: content
@@ -82,5 +83,10 @@ content:
     weight: 1
     region: content
 hidden:
+  field_video_audio_description: true
+  field_video_captions: true
+  field_video_chapters: true
+  field_video_sign_language: true
   field_video_transcript: true
+  field_video_transcript_enabled: true
   langcode: true

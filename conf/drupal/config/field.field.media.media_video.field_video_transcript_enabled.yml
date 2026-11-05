@@ -1,0 +1,23 @@
+uuid: a6f3e650-625b-4980-9d5d-1993251133e6
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_transcript_enabled
+    - media.type.media_video
+id: media.media_video.field_video_transcript_enabled
+field_name: field_video_transcript_enabled
+entity_type: media
+bundle: media_video
+label: 'Offer an interactive transcript'
+description: 'Build a clickable, synchronized transcript from the uploaded captions. Requires at least one caption file. Your existing transcript text and link are kept.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 1
+default_value_callback: ''
+settings:
+  on_label: Enabled
+  off_label: Disabled
+field_type: boolean
