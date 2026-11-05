@@ -19,3 +19,19 @@ function mass_media_update_8001() {
     ->setSetting('uri_scheme', 'private')
     ->save();
 }
+
+/**
+ * Remove incomplete displays created by Able Player before its installer fix.
+ */
+function mass_media_update_10001() {
+  $removed = 0;
+  foreach (['core.entity_form_display.media.video.default', 'core.entity_view_display.media.video.default'] as $name) {
+    $config = \Drupal::configFactory()->getEditable($name);
+    if (!$config->isNew() && (!$config->get('targetEntityType') || !$config->get('bundle'))) {
+      // Raw configuration deletion avoids instantiating the broken entity.
+      $config->delete();
+      $removed++;
+    }
+  }
+  return t('Removed @count incomplete Able Player display records.', ['@count' => $removed]);
+}

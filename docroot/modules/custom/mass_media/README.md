@@ -74,13 +74,21 @@ video data supplied without a configured player, including the client-rendered
 decision tree component.
 
 The exported configuration includes Able Player and the Media Library dependency
-installed with it. Able Player 3.4.3 also creates incomplete display records for
-a media bundle named `video` even when that bundle does not exist; those records
-are intentionally excluded from this site's configuration.
+installed with it. A Composer patch prevents Able Player 3.4.3 from creating
+incomplete display records for a missing media bundle named `video`. Its installer
+also leaves configuration imports in control of media fields and displays.
+
+`mass_media_update_10001()` removes the two malformed installer records from
+environments that already attempted an installation, using raw configuration
+deletion because Drupal cannot instantiate the broken display entities. Valid
+display records are preserved. This update runs before configuration import in
+the normal `drush deploy` / `ddev updatedb` workflow, so a failed preview can be
+rebuilt with the fix without manually editing its database.
 
 Validation:
 
 ```sh
+ddev exec vendor/bin/phpunit docroot/modules/custom/mass_media/tests/src/Unit/AblePlayerInstallTest.php
 ddev exec vendor/bin/phpunit docroot/modules/custom/mass_media/tests/src/ExistingSite/AblePlayerVideoTest.php
 ddev exec vendor/bin/phpunit docroot/modules/custom/mass_media/tests/src/ExistingSite/VideoAccessibilityTest.php
 ```
