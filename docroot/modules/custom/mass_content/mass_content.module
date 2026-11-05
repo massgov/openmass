@@ -52,6 +52,7 @@ use Drupal\mass_content\Entity\Bundle\paragraph\AddressBundle;
 use Drupal\mass_content\Entity\Bundle\paragraph\ListItemDocumentsBundle;
 use Drupal\mass_content\Entity\Bundle\taxonomy_term\CollectionsBundle;
 use Drupal\mass_content\Entity\Bundle\user\UserBundle;
+use Drupal\mass_content\Hook\CollectionTermHooks;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
@@ -425,10 +426,9 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
     $form['field_default_sort']['#access'] = FALSE;
     $form['field_sort_order']['#access'] = FALSE;
     $form['field_primary_parent']['#access'] = FALSE;
-    $form['field_landing_page']['#access'] = FALSE;
     $form['field_reusable_label']['#access'] = FALSE;
-    $form['field_all_collection_breadcrumb']['#access'] = FALSE;
     $form['field_short_description']['#access'] = FALSE;
+    $form['field_collection_overview']['#access'] = FALSE;
     $form['field_header_color']['#access'] = FALSE;
     $form['field_organizations']['#access'] = FALSE;
     $form['field_collection_logo']['#access'] = FALSE;
@@ -438,6 +438,15 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
   }
   else {
     $form['field_additional_search_keywords']['#access'] = FALSE;
+  }
+
+  foreach (['submit', 'overview'] as $action) {
+    if (isset($form['actions'][$action]['#submit'])) {
+      $form['actions'][$action]['#submit'][] = [CollectionTermHooks::class, 'collectionTermSaved'];
+    }
+  }
+  if (isset($form['actions']['submit']['#submit'])) {
+    $form['actions']['submit']['#submit'][] = [CollectionTermHooks::class, 'collectionTermRedirect'];
   }
 
   $default_sort_widget = &$form['field_default_sort']['widget'][0]['value'];
