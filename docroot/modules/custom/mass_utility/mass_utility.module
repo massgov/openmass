@@ -581,10 +581,6 @@ function mass_utility_field_widget_single_element_form_alter(&$element, FormStat
       if ($field_name == 'field_externaldata_url') {
         $element['uri']['#description'] = t('Enter a complete URL. It must begin with "https://" or "http://".');
       }
-      // Override description of the Link text field in Collections vocabulary.
-      if ($field_name == 'field_landing_page') {
-        $element['title']['#description'] = t('Link text is required for both internal and external links.');
-      }
     }
   }
   elseif ($type == 'entity_reference_hierarchy') {
