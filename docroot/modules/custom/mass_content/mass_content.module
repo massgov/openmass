@@ -11,6 +11,7 @@ use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
 use Drupal\Core\StringTranslation\ByteSizeMarkup;
+use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\mass_content\Entity\Bundle\media\DocumentBundle;
 use Drupal\mass_content\Entity\Bundle\media\MediaVideoBundle;
@@ -459,6 +460,9 @@ function mass_content_form_taxonomy_term_collections_form_alter(array &$form, Fo
       $form['actions'][$action]['#submit'][] = 'mass_content_collection_term_saved';
     }
   }
+  if (isset($form['actions']['submit']['#submit'])) {
+    $form['actions']['submit']['#submit'][] = 'mass_content_collection_term_redirect';
+  }
 
   $default_sort_widget = &$form['field_default_sort']['widget'][0]['value'];
   $default_sort_widget['#type'] = 'select';
@@ -491,6 +495,27 @@ function mass_content_collection_term_saved(array &$form, FormStateInterface $fo
   $messenger->deleteByType(MessengerInterface::TYPE_STATUS);
   foreach ($messages as $message) {
     $messenger->addStatus((string) $message === $core_message ? t('Collection updated.') : $message);
+  }
+}
+
+/**
+ * Sends users who cannot see the raw term page to the public Collection page.
+ *
+ * After an update core redirects to the term page when the user has view
+ * access, and Rabbit Hole answers that page with a 404 for users without
+ * "rabbit hole bypass taxonomy_term". A destination query still wins.
+ */
+function mass_content_collection_term_redirect(array &$form, FormStateInterface $form_state): void {
+  if (\Drupal::currentUser()->hasPermission('rabbit hole bypass taxonomy_term')) {
+    return;
+  }
+  $term = $form_state->getFormObject()->getEntity();
+  if (!$term instanceof TermInterface || !$term->hasField('field_url_name') || !empty($term->get('parent')->target_id)) {
+    return;
+  }
+  $url_name = $term->get('field_url_name')->value;
+  if ($url_name) {
+    $form_state->setRedirectUrl(Url::fromUserInput('/collections/' . $url_name));
   }
 }
 
