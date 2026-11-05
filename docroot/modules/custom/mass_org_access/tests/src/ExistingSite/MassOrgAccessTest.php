@@ -360,6 +360,46 @@ class MassOrgAccessTest extends MassExistingSiteBase {
   }
 
   /**
+   * Vocabulary-level editors and the add form keep the full collection form.
+   */
+  public function testCollectionFullFormForAdministratorsAndNewTerms(): void {
+    $collection_administrator = $this->createUser();
+    $collection_administrator->addRole('collection_administrator');
+    $collection_administrator->activate();
+    $collection_administrator->save();
+    $term = $this->createTerm(Vocabulary::load('collections'), [
+      'name' => 'Collection full form ' . $this->randomMachineName(),
+      'field_organizations' => [['target_id' => $this->orgPageB->id()]],
+    ]);
+    $form = $this->buildCollectionTermForm($term, $collection_administrator);
+    foreach (['name', 'field_url_name', 'relations', 'status'] as $element) {
+      $this->assertArrayHasKey($element, $form);
+      $this->assertTrue($form[$element]['#access'] ?? TRUE, sprintf('%s must stay editable for Collection Administrators.', $element));
+    }
+
+    // Content Team creates Collections and also has the editor permission.
+    $creator = $this->createUser(['create terms in collections', 'edit top-level collection terms', 'bypass org access']);
+    $new = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->create(['vid' => 'collections']);
+    $form = $this->buildCollectionTermForm($new, $creator);
+    foreach (['name', 'field_url_name'] as $element) {
+      $this->assertArrayHasKey($element, $form);
+      $this->assertTrue($form[$element]['#access'] ?? TRUE, sprintf('%s must stay editable on the add form.', $element));
+    }
+  }
+
+  /**
+   * Builds the collection term form for an entity as the given user.
+   */
+  private function buildCollectionTermForm(TermInterface $term, UserInterface $account): array {
+    \Drupal::currentUser()->setAccount($account);
+    $form_object = \Drupal::entityTypeManager()
+      ->getFormObject('taxonomy_term', 'default')
+      ->setEntity($term);
+    $form_state = (new FormState())->setFormObject($form_object);
+    return \Drupal::formBuilder()->buildForm($form_object, $form_state);
+  }
+
+  /**
    * Users who bypass org access still get the reduced collection form.
    *
    * The full form (name, URL name, parent, status) is reserved for
