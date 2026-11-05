@@ -56,9 +56,10 @@ services:
         - apt-get update
         - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
         - sudo apt update
-        # Install Node.js 22.x
-        - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+        # Install Node.js 24.x to match package.json's engine requirement.
+        - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
         - apt-get install -y nodejs
+        - node --version
         # Install opcache
         - docker-php-ext-install opcache
         # Needed for image styles.
