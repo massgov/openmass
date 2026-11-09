@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.sitewide_alert.field_reusable_label
     - field.field.node.sitewide_alert.field_sitewide_alert
     - field.field.node.sitewide_alert.field_sitewide_alert_severity
+    - field.field.node.sitewide_alert.field_sme_content_owner
     - node.type.sitewide_alert
     - workflows.workflow.editorial
   module:
@@ -74,8 +75,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_alert
       weight: 24
       format_type: tab
@@ -153,6 +155,16 @@ content:
     weight: 25
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 24
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   langcode:
     type: language_select

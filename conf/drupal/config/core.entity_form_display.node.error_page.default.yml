@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.error_page.field_error_title
     - field.field.node.error_page.field_helpful_links
     - field.field.node.error_page.field_include_search
+    - field.field.node.error_page.field_sme_content_owner
     - node.type.error_page
   module:
     - content_moderation
@@ -57,8 +58,9 @@ third_party_settings:
         - simple_sitemap
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_erro
       weight: 1
       format_type: tab
@@ -121,6 +123,16 @@ content:
     region: content
     settings:
       display_label: true
+    third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   moderation_state:
     type: moderation_state_default

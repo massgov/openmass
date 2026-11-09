@@ -28,6 +28,7 @@ dependencies:
     - field.field.node.person.field_ref_single_address
     - field.field.node.person.field_reusable_label
     - field.field.node.person.field_short_bio
+    - field.field.node.person.field_sme_content_owner
     - field.field.node.person.field_social_links
     - image.style.thumbnail
     - node.type.person
@@ -130,8 +131,9 @@ third_party_settings:
         - url_redirects
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_node_edit_form
       weight: 6
       format_type: tab
@@ -242,7 +244,7 @@ content:
             selector: ''
   field_metatags:
     type: metatag_firehose
-    weight: 1
+    weight: 2
     region: content
     settings:
       sidebar: false
@@ -496,6 +498,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 1
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_social_links:
     type: link_default
     weight: 34
@@ -529,20 +541,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 4
+    weight: 5
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 2
+    weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -577,7 +589,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }

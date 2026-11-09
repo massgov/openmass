@@ -38,6 +38,7 @@ dependencies:
     - field.field.node.org_page.field_secondary_person_bio
     - field.field.node.org_page.field_short_title
     - field.field.node.org_page.field_show_custom_collection_des
+    - field.field.node.org_page.field_sme_content_owner
     - field.field.node.org_page.field_social_links
     - field.field.node.org_page.field_sub_brand
     - field.field.node.org_page.field_sub_title
@@ -254,6 +255,7 @@ third_party_settings:
         - search_nosnippet
         - search
         - simple_sitemap
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_node_edit_form
@@ -460,7 +462,7 @@ content:
     third_party_settings: {  }
   field_metatags:
     type: metatag_firehose
-    weight: 26
+    weight: 27
     region: content
     settings:
       sidebar: false
@@ -717,6 +719,16 @@ content:
             effect: show
             effect_options: {  }
             selector: ''
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 26
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_social_links:
     type: link_default
     weight: 139
@@ -788,20 +800,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 29
+    weight: 30
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 28
+    weight: 29
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 30
+    weight: 31
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -840,7 +852,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 27
+    weight: 28
     region: content
     settings: {  }
     third_party_settings: {  }

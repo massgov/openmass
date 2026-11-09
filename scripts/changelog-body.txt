@@ -1,16 +1,22 @@
 
 
-## [0.495.0] - September 29, 2026
+## [0.498.0] - November 3, 2026
 
 ### Changed
-  - DP-41516: Accessibility fixes related to high contrast modes.
-  - DP-48741: Announce the document title before file type and size so screen readers hear the link name first.
-
+  - DP-48193: Stop running the PHPUnit job in build_github_tag, to save CircleCI credits.
+  - DP-49058: Run the PHPUnit suite in DDEV on CircleCI with PHP 8.4, against a new nightly mysql-sanitized:trimmed image without old revisions, and build the database images faster and smaller (no MySQL binary logs, zstd layers, so pulling them needs Docker 23 or newer).
+  - DP-49058: Run the PHPUnit jobs on CircleCI ARM machines and build only ARM database images (latest.arm, super.arm, trimmed.arm). The local default database image becomes super.arm.
+  
 ### Fixed
-  - DP-48604: Paginate organization event listing pages so large archives no longer 500.
-  - DP-49003: Choosing an organization as the Issuer on executive orders and advisories no longer fails with an AJAX error, which had blocked saving those pages.
-  - DP-48999: Organization-based access no longer blocks editing of content types that have no Permission Groups field (API service cards, basic pages, sitewide alerts, videos and others), which had become admin-only once enforcement was turned on.
-
-### Removed
-  - DP-48966: Remove IAL1 form the Service card idv level options.
-
+  - DP-49238: Use h4 for Phone and Online on Person contact summaries so those headings sit under the person's h3 name.
+  - DP-49306: Message box titles show special characters such as "&" correctly instead of HTML codes like "&amp;".
+  - DP-49314: Only users with the Executive Orders role can edit executive orders and schedule their transitions; the editor role no longer grants it.
+  
+### Added
+  - DP-49307: Added Help Text to Hours Field on Contact Content Type
+  
+### Security
+  - DP-49324: Require patched PHP versions and upgrade DDEV PHP packages for CVE-2026-109618 and CVE-2026-109619.
+  - DP-49324: Disable PHP session upload-progress tracking in DDEV and Tugboat to mitigate CVE-2026-115560.
+  - DP-49405: Updated the AI and Stage File Proxy modules plus dependencies.
+  

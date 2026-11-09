@@ -76,7 +76,7 @@ were created for testing purposes.
 
 CircleCI installs the versions of BackstopJS and Playwright pinned in
 `package.json` and `yarn.lock`, downloads the matching Chromium build, and runs
-Backstop directly in the pinned `cimg/node:24.21.0-browsers` executor. Local
+Backstop directly in the pinned `cimg/node:24.22.1-browsers` executor. Local
 runs use the same project dependencies and Chromium build inside DDEV's web
 container instead of maintaining a separate Backstop image.
 
