@@ -1483,9 +1483,9 @@ display:
           error_message: true
         field_sme_content_owner_target_id:
           id: field_sme_content_owner_target_id
-          table: node__field_sme_content_owner
+          table: node_revision__field_sme_content_owner
           field: field_sme_content_owner_target_id
-          relationship: nid
+          relationship: none
           group_type: group
           admin_label: ''
           plugin_id: taxonomy_index_tid
@@ -1520,7 +1520,7 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          reduce_duplicates: false
+          reduce_duplicates: true
           vid: sme_owner
           type: textfield
           hierarchy: false
@@ -3110,11 +3110,11 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-        field_sme_content_owner:
-          id: field_sme_content_owner
-          table: node__field_sme_content_owner
-          field: field_sme_content_owner
-          relationship: nid
+        field_sme_content_owner__revision_id:
+          id: field_sme_content_owner__revision_id
+          table: node_revision__field_sme_content_owner
+          field: field_sme_content_owner__revision_id
+          relationship: none
           group_type: group
           admin_label: ''
           plugin_id: field
@@ -3151,7 +3151,7 @@ display:
           element_class: ''
           element_label_type: ''
           element_label_class: ''
-          element_label_colon: false
+          element_label_colon: true
           element_wrapper_type: ''
           element_wrapper_class: ''
           element_default_classes: true
