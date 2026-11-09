@@ -83,6 +83,8 @@ class GlossaryPopoverTest extends MassExistingSiteSelenium2DriverTestBase {
   private function createEditor() {
     $editor = $this->createUser(['bypass org access']);
     $editor->addRole('editor');
+    // Only the Executive Orders role can edit the executive order QAG page.
+    $editor->addRole('executive_orders');
     $editor->activate();
     $editor->save();
     return $editor;
