@@ -1,8 +1,12 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\trashbin\ExistingSite;
 
+use Drupal\Core\File\FileExists;
 use Drupal\file\Entity\File;
+use Drupal\pathauto\PathautoState;
 
 /**
  * Shared fixtures for trashbin purge tests.
@@ -25,7 +29,7 @@ trait TrashbinFixturesTrait {
       'moderation_state' => 'published',
       // Candidate/command tests exercise content without redirect dependencies.
       // Redirect preservation tests add their own explicit aliases and chains.
-      'path' => ['pathauto' => 0],
+      'path' => ['pathauto' => PathautoState::SKIP],
     ]);
     $node->set('moderation_state', 'trash');
     $node->save();
@@ -64,7 +68,7 @@ trait TrashbinFixturesTrait {
    */
   private function createTrashedDocumentMediaWithActivity(int $activityTimestamp): int {
     $destination = 'public://' . $this->randomMachineName(12) . '.txt';
-    \Drupal::service('file_system')->copy('core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt', $destination, TRUE);
+    \Drupal::service('file_system')->copy('core/tests/Drupal/Tests/Component/FileCache/Fixtures/llama-23.txt', $destination, FileExists::Replace);
     $file = File::create(['uri' => $destination]);
     $file->setPermanent();
     $file->save();

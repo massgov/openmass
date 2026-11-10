@@ -7,4 +7,6 @@ namespace Drupal\trashbin;
 /**
  * An entity must stay in trash because its redirects cannot be preserved.
  */
-final class UnsafePurgeRedirectException extends \RuntimeException {}
+final class UnsafePurgeRedirectException extends \RuntimeException {
+
+}

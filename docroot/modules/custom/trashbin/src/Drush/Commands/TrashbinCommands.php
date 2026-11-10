@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\trashbin\Drush\Commands;
 
 use Drupal\Component\Datetime\TimeInterface;

@@ -6,6 +6,7 @@ namespace Drupal\Tests\trashbin\ExistingSite;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\path_alias\Entity\PathAlias;
+use Drupal\pathauto\PathautoState;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\trashbin\TrashbinPurgeRedirects;
 use Drupal\trashbin\UnsafePurgeRedirectException;
@@ -23,6 +24,24 @@ class TrashbinPurgeRedirectsTest extends MassExistingSiteBase {
 
   use MediaCreationTrait;
   use TrashbinFixturesTrait;
+
+  /**
+   * Redirect source paths created by the purge, for teardown cleanup.
+   *
+   * @var string[]
+   */
+  private array $bridgeSources = [];
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function tearDown(): void {
+    foreach ($this->bridgeSources as $source) {
+      $storage = \Drupal::entityTypeManager()->getStorage('redirect');
+      $storage->delete($storage->loadByProperties(['redirect_source__path' => $source]));
+    }
+    parent::tearDown();
+  }
 
   /**
    * DP-49254 incoming links stay attached until permanent deletion, then work.
@@ -226,7 +245,13 @@ class TrashbinPurgeRedirectsTest extends MassExistingSiteBase {
   }
 
   private function service(): TrashbinPurgeRedirects {
-    return new TrashbinPurgeRedirects(\Drupal::database(), \Drupal::entityTypeManager(), \Drupal::service('path_alias.manager'), \Drupal::service('path.validator'), \Drupal::configFactory());
+    return new TrashbinPurgeRedirects(
+      \Drupal::database(),
+      \Drupal::entityTypeManager(),
+      \Drupal::service('path_alias.manager'),
+      \Drupal::service('path.validator'),
+      \Drupal::configFactory(),
+    );
   }
 
   private function trashedNode(): EntityInterface {
@@ -234,11 +259,20 @@ class TrashbinPurgeRedirectsTest extends MassExistingSiteBase {
   }
 
   private function targetNode(): EntityInterface {
-    return $this->createNode(['type' => 'org_page', 'title' => $this->randomMachineName(), 'moderation_state' => 'published', 'path' => ['pathauto' => 0]]);
+    return $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'moderation_state' => 'published',
+      'path' => ['pathauto' => PathautoState::SKIP],
+    ]);
   }
 
   private function alias(EntityInterface $entity, string $path): void {
-    $alias = PathAlias::create(['path' => '/' . $entity->getEntityTypeId() . '/' . $entity->id(), 'alias' => $path, 'langcode' => 'en']);
+    $alias = PathAlias::create([
+      'path' => '/' . $entity->getEntityTypeId() . '/' . $entity->id(),
+      'alias' => $path,
+      'langcode' => 'en',
+    ]);
     $alias->save();
     $this->markEntityForCleanup($alias);
   }
@@ -248,7 +282,12 @@ class TrashbinPurgeRedirectsTest extends MassExistingSiteBase {
   }
 
   private function redirect(string $source, string $uri, int $status = 301, array $options = [], array $query = []): Redirect {
-    $redirect = Redirect::create(['redirect_source' => ['path' => ltrim($source, '/'), 'query' => $query], 'redirect_redirect' => ['uri' => $uri, 'options' => $options], 'status_code' => $status, 'language' => 'en']);
+    $redirect = Redirect::create([
+      'redirect_source' => ['path' => ltrim($source, '/'), 'query' => $query],
+      'redirect_redirect' => ['uri' => $uri, 'options' => $options],
+      'status_code' => $status,
+      'language' => 'en',
+    ]);
     $redirect->save();
     $this->markEntityForCleanup($redirect);
     return $this->reload($redirect);
@@ -261,21 +300,11 @@ class TrashbinPurgeRedirectsTest extends MassExistingSiteBase {
   }
 
   private function markBridgesForCleanup(array $plan): void {
-    // Register the new records after the purge inserts them. A teardown hook
-    // also cleans up bridges after an assertion failure below.
+    // Track sources before deletion so teardown also cleans up bridges if a
+    // subsequent assertion fails.
     foreach ($plan['create'] as $values) {
       $this->bridgeSources[] = $values['redirect_source']['path'];
     }
-  }
-
-  private array $bridgeSources = [];
-
-  protected function tearDown(): void {
-    foreach ($this->bridgeSources as $source) {
-      $storage = \Drupal::entityTypeManager()->getStorage('redirect');
-      $storage->delete($storage->loadByProperties(['redirect_source__path' => $source]));
-    }
-    parent::tearDown();
   }
 
 }

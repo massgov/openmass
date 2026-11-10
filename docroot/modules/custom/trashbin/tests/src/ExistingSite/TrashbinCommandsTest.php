@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\trashbin\ExistingSite;
 
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -91,7 +93,11 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
    */
   public function testRedirectTransferRunsOnlyForPermanentPurge(): void {
     $nid = $this->createTrashedOrgPageWithActivity(10000);
-    $target = $this->createNode(['type' => 'org_page', 'title' => $this->randomMachineName(), 'moderation_state' => 'published']);
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'moderation_state' => 'published',
+    ]);
     $outgoing = Redirect::create([
       'redirect_source' => ['path' => 'node/' . $nid],
       'redirect_redirect' => ['uri' => 'internal:/node/' . $target->id()],
@@ -350,7 +356,13 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
       $etm ?? \Drupal::entityTypeManager(),
       \Drupal::time(),
       $this->purgeCandidateQuery(),
-      new TrashbinPurgeRedirects(\Drupal::database(), \Drupal::entityTypeManager(), \Drupal::service('path_alias.manager'), \Drupal::service('path.validator'), \Drupal::configFactory()),
+      new TrashbinPurgeRedirects(
+        \Drupal::database(),
+        \Drupal::entityTypeManager(),
+        \Drupal::service('path_alias.manager'),
+        \Drupal::service('path.validator'),
+        \Drupal::configFactory(),
+      ),
     );
     $logger = new DrushLoggerManager();
     $logger->add('test', new NullLogger());

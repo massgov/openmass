@@ -4,5 +4,5 @@ services:
     public: true
 
   Drupal\trashbin\TrashbinPurgeRedirects:
-    arguments: ['@database', '@entity_type.manager', '@path_alias.manager', '@path.validator', '@config.factory']
+    autowire: true
     public: true

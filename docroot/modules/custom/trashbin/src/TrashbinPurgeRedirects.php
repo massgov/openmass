@@ -27,6 +27,8 @@ final class TrashbinPurgeRedirects {
 
   /**
    * Redirect dependencies read while planning, for the concurrency check.
+   *
+   * @var array<int|string, array>
    */
   private array $dependencies = [];
 
@@ -36,17 +38,22 @@ final class TrashbinPurgeRedirects {
     private AliasManagerInterface $aliasManager,
     private PathValidatorInterface $pathValidator,
     private ConfigFactoryInterface $configFactory,
-  ) {}
+  ) {
+  }
 
   /**
    * Builds a read-only plan; unsafe redirects prevent the whole entity purge.
    *
-   * @return array
+   * @return array{updates: array, originals: array, create: array}
    *   Field updates, originals for concurrency checks, and new URL bridges.
    */
   public function prepare(EntityInterface $entity): array {
     $this->dependencies = [];
-    $plan = ['updates' => [], 'originals' => [], 'create' => []];
+    $plan = [
+      'updates' => [],
+      'originals' => [],
+      'create' => [],
+    ];
     if (!in_array($entity->getEntityTypeId(), ['node', 'media'], TRUE) || !$this->entityTypeManager->hasDefinition('redirect')) {
       return $plan;
     }
@@ -75,7 +82,9 @@ final class TrashbinPurgeRedirects {
 
     $storage = $this->entityTypeManager->getStorage('redirect');
     $query = $storage->getQuery()->accessCheck(FALSE);
-    $matches = $query->orConditionGroup()->condition('redirect_source__path', array_map(fn($path) => ltrim($path, '/'), array_keys($paths)), 'IN');
+    $sources = array_map(fn($path) => ltrim($path, '/'), array_keys($paths));
+    $matches = $query->orConditionGroup()
+      ->condition('redirect_source__path', $sources, 'IN');
     // Include every subpath and query/fragment form that Redirect's deletion
     // hook can remove, as well as aliases which disappear with the entity.
     foreach (array_keys($paths) as $path) {
@@ -147,9 +156,12 @@ final class TrashbinPurgeRedirects {
     try {
       if ($storage) {
         if ($plan['originals']) {
-          $this->database->select('redirect', 'r')->fields('r', ['rid'])
+          $this->database->select('redirect', 'r')
+            ->fields('r', ['rid'])
             ->condition('rid', array_keys($plan['originals']), 'IN')
-            ->forUpdate()->execute()->fetchCol();
+            ->forUpdate()
+            ->execute()
+            ->fetchCol();
         }
         $storage->resetCache(array_keys($plan['originals']));
         foreach ($plan['originals'] as $id => $original) {
@@ -348,7 +360,10 @@ final class TrashbinPurgeRedirects {
    */
   private function snapshot(Redirect $redirect): array {
     return [
-      'source' => ['path' => $redirect->getSource()['path'], 'query' => (array) $redirect->getSource()['query']],
+      'source' => [
+        'path' => $redirect->getSource()['path'],
+        'query' => (array) $redirect->getSource()['query'],
+      ],
       'destination' => $redirect->getRedirect() + ['title' => NULL, 'options' => []],
       'language' => $redirect->language()->getId(),
       'status' => (int) $redirect->getStatusCode(),
