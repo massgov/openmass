@@ -1,11 +1,15 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\Tests\trashbin\ExistingSite;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\redirect\Entity\Redirect;
 use Drupal\trashbin\Drush\Commands\TrashbinCommands;
 use Drupal\trashbin\TrashbinPurgeCandidateQuery;
+use Drupal\trashbin\TrashbinPurgeRedirects;
 use Drush\Config\DrushConfig;
 use Drush\Log\DrushLoggerManager;
 use MassGov\Dtt\MassExistingSiteBase;
@@ -82,6 +86,69 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
 
     $storage->resetCache([$nid]);
     $this->assertNotNull($storage->load($nid), 'Simulate must leave the fixture intact.');
+  }
+
+  /**
+   * Simulation plans redirect transfer; only a real purge saves it.
+   */
+  public function testRedirectTransferRunsOnlyForPermanentPurge(): void {
+    $nid = $this->createTrashedOrgPageWithActivity(10000);
+    $target = $this->createNode([
+      'type' => 'org_page',
+      'title' => $this->randomMachineName(),
+      'moderation_state' => 'published',
+    ]);
+    $outgoing = Redirect::create([
+      'redirect_source' => ['path' => 'node/' . $nid],
+      'redirect_redirect' => ['uri' => 'internal:/node/' . $target->id()],
+      'language' => 'en',
+      'status_code' => 301,
+    ]);
+    $outgoing->save();
+    $this->markEntityForCleanup($outgoing);
+    $incoming = Redirect::create([
+      'redirect_source' => ['path' => 'trashbin-command-' . $this->randomMachineName()],
+      'redirect_redirect' => ['uri' => 'entity:node/' . $nid],
+      'language' => 'en',
+      'status_code' => 302,
+    ]);
+    $incoming->save();
+    $this->markEntityForCleanup($incoming);
+    $this->assertWindowContains('node', 1, [$nid]);
+
+    $this->createCommand(simulate: TRUE)->purge('node', ['max' => 1, 'days-ago' => 180]);
+    $storage = \Drupal::entityTypeManager()->getStorage('redirect');
+    $storage->resetCache();
+    $this->assertSame('entity:node/' . $nid, $storage->load($incoming->id())->getRedirect()['uri']);
+    $this->assertNotNull(\Drupal::entityTypeManager()->getStorage('node')->load($nid));
+
+    $this->createCommand()->purge('node', ['max' => 1, 'days-ago' => 180]);
+    $storage->resetCache();
+    $this->assertSame('internal:/node/' . $target->id(), $storage->load($incoming->id())->getRedirect()['uri']);
+    $this->assertNull(\Drupal::entityTypeManager()->getStorage('node')->load($nid));
+  }
+
+  /**
+   * A redirect without an onward replacement skips just its own candidate.
+   */
+  public function testUnsafeRedirectSkipsEntityAndContinuesBatch(): void {
+    $blocked = $this->createTrashedOrgPageWithActivity(10000);
+    $healthy = $this->createTrashedOrgPageWithActivity(20000);
+    $incoming = Redirect::create([
+      'redirect_source' => ['path' => 'trashbin-blocked-' . $this->randomMachineName()],
+      'redirect_redirect' => ['uri' => 'internal:/node/' . $blocked],
+      'language' => 'en',
+      'status_code' => 301,
+    ]);
+    $incoming->save();
+    $this->markEntityForCleanup($incoming);
+    $this->assertWindowContains('node', 2, [$blocked, $healthy]);
+    $this->createCommand()->purge('node', ['max' => 2, 'days-ago' => 180]);
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $storage->resetCache([$blocked, $healthy]);
+    $this->assertNotNull($storage->load($blocked));
+    $this->assertNull($storage->load($healthy));
+    $this->assertSame('internal:/node/' . $blocked, \Drupal::entityTypeManager()->getStorage('redirect')->load($incoming->id())->getRedirect()['uri']);
   }
 
   /**
@@ -288,7 +355,14 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
     $command = new TrashbinCommands(
       $etm ?? \Drupal::entityTypeManager(),
       \Drupal::time(),
-      $this->purgeCandidateQuery()
+      $this->purgeCandidateQuery(),
+      new TrashbinPurgeRedirects(
+        \Drupal::database(),
+        \Drupal::entityTypeManager(),
+        \Drupal::service('path_alias.manager'),
+        \Drupal::service('path.validator'),
+        \Drupal::configFactory(),
+      ),
     );
     $logger = new DrushLoggerManager();
     $logger->add('test', new NullLogger());

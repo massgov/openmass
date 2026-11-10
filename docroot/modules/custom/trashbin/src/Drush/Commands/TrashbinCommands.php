@@ -1,10 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Drupal\trashbin\Drush\Commands;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\trashbin\TrashbinPurgeCandidateQuery;
+use Drupal\trashbin\TrashbinPurgeRedirects;
+use Drupal\trashbin\UnsafePurgeRedirectException;
 use Drush\Attributes as CLI;
 use Drush\Commands\AutowireTrait;
 use Drush\Commands\DrushCommands;
@@ -27,6 +31,7 @@ final class TrashbinCommands extends DrushCommands {
     private EntityTypeManagerInterface $etm,
     private TimeInterface $time,
     private TrashbinPurgeCandidateQuery $purgeCandidateQuery,
+    private TrashbinPurgeRedirects $purgeRedirects,
   ) {
     parent::__construct();
   }
@@ -117,7 +122,30 @@ final class TrashbinCommands extends DrushCommands {
           continue;
         }
 
+        $redirect_plan = $this->purgeRedirects->prepare($entity);
+        if ($redirect_plan['updates'] || $redirect_plan['create']) {
+          $this->logger()->notice('ID={id}: {updates} redirect destinations and {create} URL bridges to preserve{simulation}.', [
+            'id' => $id,
+            'updates' => count($redirect_plan['updates']),
+            'create' => count($redirect_plan['create']),
+            'simulation' => $this->getConfig()->simulate() ? ' (simulation)' : '',
+          ]);
+        }
+
         if ($this->getConfig()->simulate()) {
+          foreach ($redirect_plan['updates'] as $rid => $destination) {
+            $this->logger()->notice('Would preserve redirect ID={rid}: {source} -> {destination}', [
+              'rid' => $rid,
+              'source' => $redirect_plan['originals'][$rid]['source']['path'],
+              'destination' => $destination['uri'],
+            ]);
+          }
+          foreach ($redirect_plan['create'] as $values) {
+            $this->logger()->notice('Would create URL bridge: {source} -> {destination}', [
+              'source' => $values['redirect_source']['path'],
+              'destination' => $values['redirect_redirect']['uri'],
+            ]);
+          }
           $this->logger()->notice('Simulated delete of "{title}". ID={id}, {url}', [
             'title' => $entity->label(),
             'id' => $entity->id(),
@@ -128,20 +156,27 @@ final class TrashbinCommands extends DrushCommands {
           continue;
         }
 
-        $entity->delete();
+        $this->purgeRedirects->delete($entity, $redirect_plan);
         $deleted++;
         $this->logger()->notice('Deleted "{title}". ID={id}', [
           'title' => $entity->label(),
           'id' => $entity->id(),
         ]);
       }
+      catch (UnsafePurgeRedirectException $e) {
+        $this->logger()->warning('Skipping ID={id}; redirects cannot safely be preserved: {reason}', [
+          'id' => $id,
+          'reason' => $e->getMessage(),
+        ]);
+        $skipped++;
+        $storage->resetCache([$id]);
+      }
       catch (\Exception $e) {
         // One entity failing must not abort the batch: with deterministic
         // oldest-first ordering it would wedge the purge at the same spot
-        // on every run. \Error is deliberately NOT caught: core storage
-        // only rolls its delete transaction back for \Exception, so an
-        // \Error must abort the run rather than continue on top of an
-        // abnormally unwound transaction.
+        // on every run. The redirect service rolls its transaction back for
+        // any throwable; engine errors still abort the command rather than
+        // continuing with potentially inconsistent in-memory entity state.
         $failed++;
         $previous = $e->getPrevious();
         $this->logger()->error('Failed to purge entity ID={id}: {class}: {message}', [
