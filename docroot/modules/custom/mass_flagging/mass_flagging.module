@@ -264,9 +264,6 @@ function mass_flagging_mail($key, &$message, $params) {
   $options = ['langcode' => $message['langcode']];
   switch ($key) {
     case 'email_queue':
-      $system_site_mail = \Drupal::config('system.site')->get('mail');
-      // Ensures email headers match the From field.
-      $message['from'] = $message['headers']['From'] = $message['headers']['Sender'] = $message['headers']['Reply-to'] = $message['headers']['Return-Path'] = $system_site_mail;
       $message['subject'] = t('Watch Report: @title', ['@title' => $params['node_title']], $options);
       $message['body'][] = $params['message'];
       break;

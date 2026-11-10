@@ -236,9 +236,6 @@ function mass_alerts_mail($key, &$message, $params) {
   $options = ['langcode' => $message['langcode']];
   switch ($key) {
     case 'mass_alerts_sitewide':
-      $system_site_mail = \Drupal::config('system.site')->get('mail');
-      // Ensures email headers match the From field.
-      $message['from'] = $message['headers']['From'] = $message['headers']['Sender'] = $message['headers']['Reply-to'] = $message['headers']['Return-Path'] = $system_site_mail;
       $message['subject'] = t('Sitewide alert on Mass.gov: @title', ['@title' => $params['subject']], $options);
       $message['body'][] = $params['message'];
       break;

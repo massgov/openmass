@@ -54,7 +54,7 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       }
 
       if (isset($cc_mails)) {
-        $params['headers']['cc'] = implode(',', $cc_mails);
+        $params['headers']['Cc'] = implode(',', $cc_mails);
       }
       $url = Url::fromRoute('entity.node.canonical', ['node' => $nid])->setAbsolute()->toString();
 
@@ -99,7 +99,8 @@ class UnpublishReminderQueue extends QueueWorkerBase {
       }
 
       $mailManager = \Drupal::service('plugin.manager.mail');
-      if (!$mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, TRUE)) {
+      $message = $mailManager->mail('mass_unpublish_reminders', 'unpublish_reminder', $author_mail, 'en', $params, NULL, TRUE);
+      if (empty($message['result'])) {
         // Something is really wrong with mail enqueue.
         throw new SuspendQueueException('Unable to send mass_unpublish_reminder email');
       }
