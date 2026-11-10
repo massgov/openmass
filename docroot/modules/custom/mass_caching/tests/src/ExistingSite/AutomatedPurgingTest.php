@@ -14,16 +14,37 @@ use MassGov\Dtt\MassExistingSiteBase;
 class AutomatedPurgingTest extends MassExistingSiteBase {
 
   /**
+   * The purger override in place before setUp().
+   *
+   * @var string|false
+   */
+  private $purgerOverrideBeforeSetUp;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
+    $this->purgerOverrideBeforeSetUp = getenv('MASS_PURGERS');
+    putenv('MASS_PURGERS=akamai');
     parent::setUp();
     /** @var \Drupal\purge\Plugin\Purge\Queue\QueueServiceInterface $queue */
     $queue = \Drupal::service('purge.queue');
     $queue->emptyQueue();
-    // Ensure that mass_caching_purge_purgers_alter() executes during the phpunit run.
-    $manager = \Drupal::service('plugin.cache_clearer');
-    $manager->clearCachedDefinitions();
+    // Rebuild definitions with the URL purger enabled for these queue tests.
+    \Drupal::service('plugin.manager.purge.purgers')->clearCachedDefinitions();
+    \Drupal::service('purge.purgers')->reload();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function tearDown(): void {
+    putenv($this->purgerOverrideBeforeSetUp === FALSE
+      ? 'MASS_PURGERS'
+      : 'MASS_PURGERS=' . $this->purgerOverrideBeforeSetUp);
+    \Drupal::service('plugin.manager.purge.purgers')->clearCachedDefinitions();
+    \Drupal::service('purge.purgers')->reload();
+    parent::tearDown();
   }
 
   /**
@@ -48,12 +69,12 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
     foreach ($schemas as $schema) {
       foreach ($hosts as $host) {
         $absolute = sprintf('%s://%s%s', $schema, $host, $relative);
-        $invalidations[] = $this->getInvalidations('uri', $absolute);
+        $invalidations = array_merge($invalidations, $this->getInvalidations('url', $absolute));
       }
     }
 
     // We expect this to be 2 for each host,
-    // both edit.stage.mass.gov and stage.mass.gov
+    // both edit.stage.mass.gov and stage.mass.gov.
     $this->assertCount(2, $invalidations);
     $file->set('uri', 'public://llama-44.txt');
     $file->save();
@@ -62,11 +83,11 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
     foreach ($schemas as $schema) {
       foreach ($hosts as $host) {
         $absolute = sprintf('%s://%s%s', $schema, $host, $relative);
-        $invalidations[] = $this->getInvalidations('uri', $absolute);
+        $invalidations = array_merge($invalidations, $this->getInvalidations('url', $absolute));
       }
     }
     // We expect this to be 2 for each host,
-    // both edit.stage.mass.gov and stage.mass.gov
+    // both edit.stage.mass.gov and stage.mass.gov.
     $this->assertCount(2, $invalidations);
   }
 
@@ -106,11 +127,11 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
     foreach ($schemas as $schema) {
       foreach ($hosts as $host) {
         $absolute = $node->toUrl('canonical', ['base_url' => "$schema://$host", 'absolute' => TRUE])->toString();
-        $invalidations[] = $this->getInvalidations('uri', $absolute);
+        $invalidations = array_merge($invalidations, $this->getInvalidations('url', $absolute));
       }
     }
     // We expect this to be 2 for each host,
-    // both edit.stage.mass.gov and stage.mass.gov
+    // both edit.stage.mass.gov and stage.mass.gov.
     $this->assertCount(2, $invalidations);
     $node->path->alias = '/foo-bar';
     $node->save();
@@ -119,11 +140,11 @@ class AutomatedPurgingTest extends MassExistingSiteBase {
     foreach ($schemas as $schema) {
       foreach ($hosts as $host) {
         $absolute = $node->toUrl('canonical', ['base_url' => "$schema://$host", 'absolute' => TRUE])->toString();
-        $invalidations[] = $this->getInvalidations('uri', $absolute);
+        $invalidations = array_merge($invalidations, $this->getInvalidations('url', $absolute));
       }
     }
     // We expect this to be 2 for each host,
-    // both edit.stage.mass.gov and stage.mass.gov
+    // both edit.stage.mass.gov and stage.mass.gov.
     $this->assertCount(2, $invalidations);
   }
 

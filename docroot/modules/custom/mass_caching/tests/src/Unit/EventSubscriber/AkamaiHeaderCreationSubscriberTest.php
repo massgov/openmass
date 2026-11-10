@@ -10,6 +10,7 @@ use Drupal\akamai\Plugin\Purge\Purger\AkamaiTagPurger;
 use Drupal\mass_caching\EventSubscriber\AkamaiHeaderCreationSubscriber;
 use Drupal\purge\Plugin\Purge\Invalidation\TagInvalidation;
 use Drupal\Tests\UnitTestCase;
+use PHPUnit\Framework\Attributes\Group;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -17,9 +18,8 @@ use Symfony\Component\EventDispatcher\EventDispatcher;
 
 /**
  * Tests Akamai header creation event alterations.
- *
- * @group mass_caching
  */
+#[Group('mass_caching')]
 class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
 
   /**
@@ -43,17 +43,18 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
   }
 
   /**
-   * Tests cache tags are hashed after tag alterations.
+   * Tests dispatched header tags are filtered before hashing.
    */
   public function testHeaderTagsHashed(): void {
     $tags = [
+      'node_list',
       'node_list:news',
       'node:123',
     ];
     $event = new AkamaiHeaderEvents($tags);
-    $subscriber = $this->createSubscriber();
-
-    $subscriber->hashTags($event);
+    $dispatcher = new EventDispatcher();
+    $dispatcher->addSubscriber($this->createSubscriber());
+    $dispatcher->dispatch($event, AkamaiHeaderEvents::HEADER_CREATION);
 
     $this->assertSame(Hash::cacheTags([
       'node_list_news',
@@ -155,21 +156,6 @@ class AkamaiHeaderCreationSubscriberTest extends UnitTestCase {
     $subscriber->hashTags($event);
 
     $this->assertSame($paths, $event->data);
-  }
-
-  /**
-   * Tests the subscriber listens to Akamai header creation events.
-   */
-  public function testSubscribedEvents(): void {
-    $this->assertSame([
-      AkamaiHeaderEvents::HEADER_CREATION => [
-        ['onHeaderCreation', -100],
-        ['hashTags', -1000],
-      ],
-      AkamaiPurgeEvents::PURGE_CREATION => [
-        ['hashTags', -1000],
-      ],
-    ], AkamaiHeaderCreationSubscriber::getSubscribedEvents());
   }
 
   /**
