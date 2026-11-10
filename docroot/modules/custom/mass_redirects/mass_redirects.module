@@ -1,9 +1,45 @@
 <?php
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\TrustedRedirectResponse;
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
+use Drupal\redirect\Entity\Redirect;
+
+/**
+ * Implements hook_redirect_response_alter().
+ */
+function mass_redirects_redirect_response_alter(TrustedRedirectResponse $response, Redirect $redirect): void {
+  $url = $redirect->getRedirectUrl();
+  if (!$url->isRouted() || $url->getRouteName() !== 'entity.node.canonical') {
+    return;
+  }
+  $node = \Drupal::entityTypeManager()->getStorage('node')->load($url->getRouteParameters()['node']);
+  if (!$node instanceof NodeBundle || $node->isPublished()) {
+    return;
+  }
+
+  // Incoming redirects resolve to the unpublished alias. Follow the public
+  // alias's replacement without changing the incoming redirect itself.
+  $response->addCacheableDependency($node);
+  $replacement = \Drupal::service('redirect.repository')->findMatchingRedirect(MoveRedirectsForm::shortenUrl($node), [], $node->language()->getId());
+  if (!$replacement) {
+    $response->getCacheableMetadata()->addCacheTags(['redirect_list']);
+    return;
+  }
+  $response->addCacheableDependency($replacement);
+  if (!in_array($replacement->getRedirect()['uri'], ['internal:/node/' . $node->id(), 'entity:node/' . $node->id()], TRUE)) {
+    $url = $replacement->getRedirectUrl();
+    $query = UrlHelper::parse($response->getTargetUrl())['query'];
+    $url->setOption('query', ($url->getOption('query') ?? []) + $query);
+    $generated_url = $url->setAbsolute()->toString(TRUE);
+    $response->setTrustedTargetUrl($generated_url->getGeneratedUrl());
+    $response->addCacheableDependency($generated_url);
+  }
+}
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
