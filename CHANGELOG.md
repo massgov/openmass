@@ -1,5 +1,19 @@
 
 
+## [0.498.0] - November 10, 2026
+
+### Fixed
+  - DP-45281: A single rich-text callout link uses the 5-column action-finder measure from 911px, with a 20rem floor, instead of the 4-column grid.
+  
+### Added
+  - DP-49277: Add Bengali language to Drupal site.
+  - DP-49277: Add Bengali to the Google Translate language menu.
+  
+### Security
+  - DP-49404: Updated Node.js to v24.22.1.
+  
+
+
 ## [0.498.0] - November 3, 2026
 
 ### Changed
