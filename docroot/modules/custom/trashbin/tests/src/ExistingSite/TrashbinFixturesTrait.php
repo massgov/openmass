@@ -23,6 +23,9 @@ trait TrashbinFixturesTrait {
       'title' => 'Trashbin purge fixture ' . uniqid('', TRUE),
       'field_sub_title' => $this->randomString(20),
       'moderation_state' => 'published',
+      // Candidate/command tests exercise content without redirect dependencies.
+      // Redirect preservation tests add their own explicit aliases and chains.
+      'path' => ['pathauto' => 0],
     ]);
     $node->set('moderation_state', 'trash');
     $node->save();

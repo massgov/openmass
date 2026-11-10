@@ -2,3 +2,7 @@ services:
   Drupal\trashbin\TrashbinPurgeCandidateQuery:
     autowire: true
     public: true
+
+  Drupal\trashbin\TrashbinPurgeRedirects:
+    arguments: ['@database', '@entity_type.manager', '@path_alias.manager', '@path.validator', '@config.factory']
+    public: true
