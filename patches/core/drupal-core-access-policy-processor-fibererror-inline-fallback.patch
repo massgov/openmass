@@ -1,10 +1,10 @@
 diff --git a/lib/Drupal/Core/Session/AccessPolicyProcessor.php b/lib/Drupal/Core/Session/AccessPolicyProcessor.php
 --- a/lib/Drupal/Core/Session/AccessPolicyProcessor.php
 +++ b/lib/Drupal/Core/Session/AccessPolicyProcessor.php
-@@ -46,14 +46,39 @@ public function processAccessPolicies(AccountInterface $account, string $scope =
- 
-     // If running in a fiber, prevent the current user switch from escaping to
-     // outside the fiber by resuming the fiber if it was suspended.
+@@ -50,18 +50,45 @@
+     // If running in a fiber and processing a different account, prevent the
+     // account switch from escaping to outside the fiber by resuming the fiber
+     // if it was suspended.
 -    $fiber = new \Fiber([$this, 'doProcessAccessPolicies']);
 -    $fiber->start($account, $scope);
 -    while (!$fiber->isTerminated()) {
@@ -24,7 +24,9 @@ diff --git a/lib/Drupal/Core/Session/AccessPolicyProcessor.php b/lib/Drupal/Core
          }
        }
 +      return $fiber->getReturn();
-+    }
+     }
+-
+-    return $fiber->getReturn();
 +    catch (\FiberError) {
 +      // If fiber switching is disallowed, avoid account-switching and cache
 +      // writes in this request path to prevent leaking switched users.
@@ -40,13 +42,17 @@ diff --git a/lib/Drupal/Core/Session/AccessPolicyProcessor.php b/lib/Drupal/Core
 +        $calculated_permissions = $calculated_permissions->merge($policy_permissions);
 +      }
 +      foreach ($this->accessPolicies as $access_policy) {
-+        if ($access_policy->applies($scope)) {
-+          $access_policy->alterPermissions($account, $scope, $calculated_permissions);
++        if (!$access_policy->applies($scope)) {
++          continue;
++        }
++        $access_policy->alterPermissions($account, $scope, $calculated_permissions);
++        if (!$this->validateScope($scope, $calculated_permissions)) {
++          throw new AccessPolicyScopeException(sprintf('The access policy "%s" altered permissions in a scope other than "%s".', get_class($access_policy), $scope));
 +        }
 +      }
 +      $calculated_permissions->addCacheTags(['access_policies']);
 +      return new CalculatedPermissions($calculated_permissions);
-     }
- 
--    return $fiber->getReturn();
++    }
    }
+ 
+   /**
