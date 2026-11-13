@@ -37,157 +37,12 @@ index 7b14efbe49278173d86f2c03daa051789eb47727..c39377eb2b0cb506354c52f4e63880e2
 +    revision_log_message:
 +      type: label
 +      label: 'Revision log message'
-diff --git a/core/modules/content_moderation/content_moderation.post_update.php b/core/modules/content_moderation/content_moderation.post_update.php
-index a2a33f81a638d5916fefcdbaa77cd7398d48d120..309dfb23c590ce92f6ecf87abc6bf7f8570a32a4 100644
---- a/core/modules/content_moderation/content_moderation.post_update.php
-+++ b/core/modules/content_moderation/content_moderation.post_update.php
-@@ -5,6 +5,9 @@
-  * Post update functions for the Content Moderation module.
-  */
- 
-+use Drupal\Core\Config\Entity\ConfigEntityUpdater;
-+use Drupal\workflows\WorkflowInterface;
-+
- /**
-  * Implements hook_removed_post_updates().
-  */
-@@ -27,3 +30,13 @@ function content_moderation_post_update_add_index_content_moderation_state_field
-   $entity_type = $update_manager->getEntityType('content_moderation_state');
-   $update_manager->updateEntityType($entity_type);
- }
-+
-+/**
-+ * Ensure moderation state change actions are available for all workflows.
-+ */
-+function content_moderation_post_update_create_workflow_actions(array &$sandbox = []): void {
-+  \Drupal::classResolver(ConfigEntityUpdater::class)
-+    ->update($sandbox, 'workflow', function (WorkflowInterface $workflow): bool {
-+      return $workflow->getTypePlugin()->getPluginId() === 'content_moderation';
-+    });
-+}
-diff --git a/core/modules/content_moderation/src/Hook/ContentModerationHooks.php b/core/modules/content_moderation/src/Hook/ContentModerationHooks.php
-index 30b14fff81c39f2dd740e4b5e1c570086364d027..fdf1f03097622d82b62666569060a4fbe053ed1a 100644
---- a/core/modules/content_moderation/src/Hook/ContentModerationHooks.php
-+++ b/core/modules/content_moderation/src/Hook/ContentModerationHooks.php
-@@ -344,6 +344,11 @@ public function workflowInsert(WorkflowInterface $entity): void {
-     if (\Drupal::moduleHandler()->moduleExists('views')) {
-       Views::viewsData()->clear();
-     }
-+
-+    // Create actions for changing the moderation state.
-+    if ($entity->getTypePlugin()->getPluginId() === 'content_moderation' && !$entity->isSyncing()) {
-+      $this->saveWorkflowActions($entity);
-+    }
-   }
- 
-   /**
-@@ -360,6 +365,32 @@ public function workflowUpdate(WorkflowInterface $entity): void {
-     if (\Drupal::moduleHandler()->moduleExists('views')) {
-       Views::viewsData()->clear();
-     }
-+
-+    // Create/update actions for changing the moderation state.
-+    if ($entity->getTypePlugin()->getPluginId() === 'content_moderation' && !$entity->isSyncing()) {
-+      $this->saveWorkflowActions($entity);
-+    }
-+  }
-+
-+  /**
-+   * Implements hook_ENTITY_TYPE_delete().
-+   */
-+  #[Hook('workflow_delete')]
-+  public function workflowDelete(WorkflowInterface $entity): void {
-+    if ($entity->getTypePlugin()->getPluginId() !== 'content_moderation' || $entity->isSyncing()) {
-+      return;
-+    }
-+
-+    // Delete every moderation action for this workflow. The id prefix matches
-+    // saveWorkflowActions(), including actions left behind for removed states.
-+    $storage = \Drupal::entityTypeManager()->getStorage('action');
-+    $ids = $storage->getQuery()
-+      ->accessCheck(FALSE)
-+      ->condition('id', 'content_moderation_' . $entity->id() . '_', 'STARTS_WITH')
-+      ->execute();
-+    if ($ids) {
-+      $storage->delete($storage->loadMultiple($ids));
-+    }
-   }
- 
-   /**
-@@ -377,4 +408,67 @@ public function viewsPostExecute(ViewExecutable $view): void {
-     }
-   }
- 
-+  /**
-+   * Save workflow actions.
-+   *
-+   * @param \Drupal\workflows\WorkflowInterface $workflow
-+   *   The workflow being saved.
-+   */
-+  protected function saveWorkflowActions(WorkflowInterface $workflow) : void {
-+    $workflow_base_action_id = 'content_moderation_' . $workflow->id();
-+    $entity_types = $workflow->getTypePlugin()->getEntityTypes();
-+    $current_action_ids = [];
-+    foreach ($entity_types as $entity_type_id) {
-+      // Omit unsupported entity types.
-+      $entity_type = \Drupal::entityTypeManager()->getDefinition($entity_type_id);
-+      if (!\Drupal::service('content_moderation.moderation_information')->canModerateEntitiesOfEntityType($entity_type)) {
-+        continue;
-+      }
-+      foreach ($workflow->getTypePlugin()->getStates() as $state_id => $state) {
-+        $action_id = $workflow_base_action_id . '_' . $entity_type_id . '_change_to_' . $state_id;
-+        $action = \Drupal::entityTypeManager()->getStorage('action')->load($action_id);
-+        if (!$action) {
-+          $action = \Drupal::entityTypeManager()->getStorage('action')->create([
-+            'id' => $action_id,
-+            'type' => $entity_type_id,
-+            'label' => $this->t('Change moderation state to @state', ['@state' => $state->label()]),
-+            'configuration' => [
-+              'workflow' => $workflow->id(),
-+              'state' => $state_id,
-+              'revision_log_message' => $this->t('Change moderation state to @state', ['@state' => $state->label()]),
-+            ],
-+            'plugin' => 'moderation_state_change:' . $entity_type_id,
-+            'dependencies' => [
-+              'config' => ['workflows.workflow.' . $workflow->id()],
-+            ],
-+          ]);
-+        }
-+        else {
-+          $action->set('label', $this->t('Change moderation state to @state', ['@state' => $state->label()]));
-+          $action->set('configuration', [
-+            'workflow' => $workflow->id(),
-+            'state' => $state_id,
-+            'revision_log_message' => $this->t('Change moderation state to @state', ['@state' => $state->label()]),
-+          ]);
-+          $action->set('dependencies', [
-+            'config' => ['workflows.workflow.' . $workflow->id()],
-+          ]);
-+        }
-+        $action->save();
-+        $current_action_ids[$action_id] = $action_id;
-+      }
-+    }
-+
-+    // Drop actions for states or entity types no longer in this workflow.
-+    $storage = \Drupal::entityTypeManager()->getStorage('action');
-+    $existing_ids = $storage->getQuery()
-+      ->accessCheck(FALSE)
-+      ->condition('id', $workflow_base_action_id . '_', 'STARTS_WITH')
-+      ->execute();
-+    $stale_ids = array_diff($existing_ids, $current_action_ids);
-+    if ($stale_ids) {
-+      $storage->delete($storage->loadMultiple($stale_ids));
-+    }
-+  }
-+
- }
 diff --git a/core/modules/content_moderation/src/Plugin/Action/ModerationStateChange.php b/core/modules/content_moderation/src/Plugin/Action/ModerationStateChange.php
 new file mode 100644
 index 0000000000000000000000000000000000000000..73a6b9c4eded47fe18fd89d8636e0bb068dfef97
 --- /dev/null
 +++ b/core/modules/content_moderation/src/Plugin/Action/ModerationStateChange.php
-@@ -0,0 +1,323 @@
+@@ -0,0 +1,342 @@
 +<?php
 +
 +namespace Drupal\content_moderation\Plugin\Action;
@@ -419,8 +274,13 @@ index 0000000000000000000000000000000000000000..73a6b9c4eded47fe18fd89d8636e0bb0
 +   * {@inheritdoc}
 +   */
 +  public function execute(?ContentEntityInterface $entity = NULL): void {
-+    /** @var \Drupal\node\Entity\Node $revision */
++    if (!$entity) {
++      return;
++    }
 +    $revision = $this->loadLatestRevision($entity);
++    if (!$revision) {
++      return;
++    }
 +    // Create a new revision if the states don't match.
 +    if ($revision->moderation_state->value != $this->configuration['state']) {
 +      $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
@@ -454,17 +314,26 @@ index 0000000000000000000000000000000000000000..73a6b9c4eded47fe18fd89d8636e0bb0
 +   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
 +   *   The content entity.
 +   *
-+   * @return \Drupal\Core\Entity\ContentEntityInterface
-+   *   The latest revision of content entity.
++   * @return \Drupal\Core\Entity\ContentEntityInterface|null
++   *   The latest revision of the content entity, or NULL when none exists.
 +   */
-+  protected function loadLatestRevision(ContentEntityInterface $entity) {
++  protected function loadLatestRevision(ContentEntityInterface $entity): ?ContentEntityInterface {
 +    /** @var \Drupal\Core\Entity\RevisionableStorageInterface $entity_storage */
 +    $entity_storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
-+    $original_entity =
-+      ($revision_id = $entity_storage->getLatestTranslationAffectedRevisionId($entity->id(), $entity->language()->getId())) ?
-+        $entity_storage->loadRevision($revision_id)->getTranslation($entity->language()->getId()) :
-+        NULL;
-+    return $original_entity;
++    $langcode = $entity->language()->getId();
++    $revision_id = $entity_storage->getLatestTranslationAffectedRevisionId($entity->id(), $langcode)
++      ?: $entity_storage->getLatestRevisionId($entity->id());
++    if (!$revision_id) {
++      return NULL;
++    }
++    $revision = $entity_storage->loadRevision($revision_id);
++    if (!$revision) {
++      return NULL;
++    }
++    if ($revision->hasTranslation($langcode)) {
++      $revision = $revision->getTranslation($langcode);
++    }
++    return $revision;
 +  }
 +
 +  /**
@@ -486,7 +355,12 @@ index 0000000000000000000000000000000000000000..73a6b9c4eded47fe18fd89d8636e0bb0
 +      $result = AccessResult::forbidden('No workflow found for the entity.');
 +      return $return_as_object ? $result : $result->isAllowed();
 +    }
++    $account = $account ?: $this->currentUser;
 +    $object = $this->loadLatestRevision($object);
++    if (!$object) {
++      $result = AccessResult::forbidden('No revision is available.');
++      return $return_as_object ? $result : $result->isAllowed();
++    }
 +    // Let content moderation do its job. See content_moderation_entity_access()
 +    // for more details. Update access keeps organization restrictions in place.
 +    $update_access = $object->access('update', $account, TRUE);
