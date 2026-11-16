@@ -123,22 +123,45 @@ final class TrashbinCommands extends DrushCommands {
         }
 
         $redirect_plan = $this->purgeRedirects->prepare($entity);
-        if ($redirect_plan['updates'] || $redirect_plan['create']) {
-          $this->logger()->notice('ID={id}: {updates} redirect destinations and {create} URL bridges to preserve{simulation}.', [
+        if ($redirect_plan['updates'] || $redirect_plan['create'] || $redirect_plan['preserve'] || $redirect_plan['remove']) {
+          $this->logger()->notice('ID={id}: {updates} redirect destinations, {create} URL bridges, {preserve} original redirects to preserve, and {remove} redirects to remove{simulation}.', [
             'id' => $id,
             'updates' => count($redirect_plan['updates']),
             'create' => count($redirect_plan['create']),
+            'preserve' => count($redirect_plan['preserve']),
+            'remove' => count($redirect_plan['remove']),
             'simulation' => $this->getConfig()->simulate() ? ' (simulation)' : '',
+          ]);
+        }
+        foreach ($redirect_plan['warnings'] as $warning) {
+          $this->logger()->warning('ID={id}: {reason}{simulation}', [
+            'id' => $id,
+            'reason' => $warning,
+            'simulation' => $this->getConfig()->simulate() ? ' (simulation)' : '',
+          ]);
+        }
+        foreach ($redirect_plan['remove'] as $rid => $reason) {
+          $this->logger()->warning('ID={id}: {action} redirect ID={rid}, {source}: {reason}', [
+            'id' => $id,
+            'action' => $this->getConfig()->simulate() ? 'Would remove' : 'Removing',
+            'rid' => $rid,
+            'source' => $redirect_plan['originals'][$rid]['source']['path'],
+            'reason' => $reason,
           ]);
         }
 
         if ($this->getConfig()->simulate()) {
-          foreach ($redirect_plan['updates'] as $rid => $destination) {
-            $this->logger()->notice('Would preserve redirect ID={rid}: {source} -> {destination}', [
-              'rid' => $rid,
-              'source' => $redirect_plan['originals'][$rid]['source']['path'],
-              'destination' => $destination['uri'],
-            ]);
+          foreach (['updates' => 'retarget', 'preserve' => 'retain'] as $section => $action) {
+            foreach ($redirect_plan[$section] as $rid => $values) {
+              $original = $redirect_plan['originals'][$rid];
+              $destination = $section === 'updates' ? $values : $original['destination'];
+              $this->logger()->notice('Would {action} redirect ID={rid}: {source} -> {destination}', [
+                'action' => $action,
+                'rid' => $rid,
+                'source' => $original['source']['path'],
+                'destination' => $destination['uri'],
+              ]);
+            }
           }
           foreach ($redirect_plan['create'] as $values) {
             $this->logger()->notice('Would create URL bridge: {source} -> {destination}', [
@@ -164,7 +187,7 @@ final class TrashbinCommands extends DrushCommands {
         ]);
       }
       catch (UnsafePurgeRedirectException $e) {
-        $this->logger()->warning('Skipping ID={id}; redirects cannot safely be preserved: {reason}', [
+        $this->logger()->warning('Skipping ID={id}; redirect plan changed before deletion: {reason}', [
           'id' => $id,
           'reason' => $e->getMessage(),
         ]);

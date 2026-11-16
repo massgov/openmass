@@ -6,6 +6,7 @@ namespace Drupal\Tests\trashbin\ExistingSite;
 
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\pathauto\PathautoState;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\trashbin\Drush\Commands\TrashbinCommands;
 use Drupal\trashbin\TrashbinPurgeCandidateQuery;
@@ -89,6 +90,55 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
   }
 
   /**
+   * Pathauto's old public alias redirect survives purging its original node.
+   */
+  public function testPurgePreservesAutomaticPublicAliasRedirect(): void {
+    $node = $this->createNode([
+      'type' => 'org_page',
+      'title' => 'Trashbin Pathauto fixture ' . $this->randomMachineName(),
+      'moderation_state' => 'published',
+      'path' => ['pathauto' => PathautoState::CREATE],
+    ]);
+    $nid = (int) $node->id();
+    $base = '/node/' . $nid;
+    $alias_manager = \Drupal::service('path_alias.manager');
+    $public = $alias_manager->getAliasByPath($base, 'en');
+    $this->assertNotSame($base, $public, 'Pathauto must generate the published alias.');
+
+    $node->set('moderation_state', 'trash');
+    $node->save();
+    $this->assertSame($public . '---unpublished', $alias_manager->getAliasByPath($base, 'en'));
+    $redirect_storage = \Drupal::entityTypeManager()->getStorage('redirect');
+    $redirects = $redirect_storage->loadByProperties(['redirect_source__path' => ltrim($public, '/')]);
+    $this->assertCount(1, $redirects, 'Trashing must create the automatic old-alias redirect.');
+    $redirect = reset($redirects);
+    $this->markEntityForCleanup($redirect);
+    $this->assertSame('internal:' . $base, $redirect->getRedirect()['uri']);
+    $original = $redirect->toArray();
+    $this->forceNodeActivity($nid, (int) $node->getRevisionId(), 10000);
+    $this->assertWindowContains('node', 1, [$nid]);
+
+    $this->createCommand(simulate: TRUE)->purge('node', ['max' => 1, 'days-ago' => 180]);
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $node_storage->resetCache([$nid]);
+    $redirect_storage->resetCache([$redirect->id()]);
+    $this->assertNotNull($node_storage->load($nid));
+    $this->assertSame($original, $redirect_storage->load($redirect->id())->toArray());
+
+    $this->createCommand()->purge('node', ['max' => 1, 'days-ago' => 180]);
+    $node_storage->resetCache([$nid]);
+    $redirect_storage->resetCache([$redirect->id()]);
+    $this->assertNull($node_storage->load($nid), 'An automatic self-reference must not block permanent deletion.');
+    $saved = $redirect_storage->load($redirect->id());
+    $this->assertNotNull($saved, 'The automatic public-path redirect must survive deletion hooks.');
+    $this->assertSame($original, $saved->toArray(), 'Preserve the original redirect identity and fields.');
+    $this->assertEmpty(\Drupal::entityTypeManager()->getStorage('path_alias')->loadByProperties(['path' => $base]));
+    $this->assertCount(1, $redirect_storage->loadByProperties([
+      'redirect_source__path' => [ltrim($public, '/'), ltrim($public . '---unpublished', '/'), ltrim($base, '/')],
+    ]), 'The automatic record must not create additional redirects back to the deleted node.');
+  }
+
+  /**
    * Simulation plans redirect transfer; only a real purge saves it.
    */
   public function testRedirectTransferRunsOnlyForPermanentPurge(): void {
@@ -129,9 +179,9 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
   }
 
   /**
-   * A redirect without an onward replacement skips just its own candidate.
+   * A redirect without a replacement is removed and the whole batch is purged.
    */
-  public function testUnsafeRedirectSkipsEntityAndContinuesBatch(): void {
+  public function testBrokenRedirectDoesNotBlockPurgeBatch(): void {
     $blocked = $this->createTrashedOrgPageWithActivity(10000);
     $healthy = $this->createTrashedOrgPageWithActivity(20000);
     $incoming = Redirect::create([
@@ -143,12 +193,21 @@ class TrashbinCommandsTest extends MassExistingSiteBase {
     $incoming->save();
     $this->markEntityForCleanup($incoming);
     $this->assertWindowContains('node', 2, [$blocked, $healthy]);
-    $this->createCommand()->purge('node', ['max' => 2, 'days-ago' => 180]);
+    $this->createCommand(simulate: TRUE)->purge('node', ['max' => 2, 'days-ago' => 180]);
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $storage->resetCache([$blocked, $healthy]);
     $this->assertNotNull($storage->load($blocked));
+    $this->assertNotNull($storage->load($healthy));
+    $redirect_storage = \Drupal::entityTypeManager()->getStorage('redirect');
+    $redirect_storage->resetCache([$incoming->id()]);
+    $this->assertNotNull($redirect_storage->load($incoming->id()), 'Simulation must not remove broken redirects.');
+
+    $this->createCommand()->purge('node', ['max' => 2, 'days-ago' => 180]);
+    $storage->resetCache([$blocked, $healthy]);
+    $this->assertNull($storage->load($blocked));
     $this->assertNull($storage->load($healthy));
-    $this->assertSame('internal:/node/' . $blocked, \Drupal::entityTypeManager()->getStorage('redirect')->load($incoming->id())->getRedirect()['uri']);
+    $redirect_storage->resetCache([$incoming->id()]);
+    $this->assertNull($redirect_storage->load($incoming->id()));
   }
 
   /**

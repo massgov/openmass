@@ -39,3 +39,10 @@
 Changed:
   - description: Added redirect preservation to permanent purge for nodes and media
     issue: DP-49514
+  - description: Keep healthy friendly URL chains intact during purge and simplify redirect planning while retaining redirects for former addresses
+    issue: DP-49514
+Fixed:
+  - description: Allow permanent purge when an automatic public-alias redirect points back to the trashed node, preserving the original redirect record
+    issue: DP-49514
+  - description: Purge content despite broken or ambiguous redirects, removing affected broken chains while preserving each working source mapping and unpublished targets
+    issue: DP-49514
