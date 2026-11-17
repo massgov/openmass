@@ -4,7 +4,6 @@ namespace Drupal\mass_feedback_loop\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
-use Drupal\Driver\Exception\Exception;
 use Drupal\mass_feedback_loop\Service\MassFeedbackLoopContentFetcher;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -79,7 +78,8 @@ class MassFeedbackCsvDownloadController extends ControllerBase {
         ];
       }
       else {
-        $response = new Response($fileContent);
+        $response = new Response($this->contentFetcher->addOwnersToCsv((string) $fileContent));
+        $response->headers->set('Content-Type', 'text/csv; charset=UTF-8');
 
         $formatted_timestamp = \Drupal::service('date.formatter')->format(
             \Drupal::time()->getCurrentTime(), 'custom', 'Ymd_H\hi\ms\s'
@@ -92,7 +92,7 @@ class MassFeedbackCsvDownloadController extends ControllerBase {
       }
 
     }
-    catch (Exception $e) {
+    catch (\Exception $e) {
       return [
         '#type' => 'markup',
         '#markup' => $this->t('Something went wrong and the csv export of filtered feedback did not work.'),
