@@ -345,3 +345,66 @@ test('full-page captures include real cross-origin Tableau pixels without changi
   })));
   assert.deepEqual(report(scenario.label).state.tableaus.map(viz => viz.snapshots), [1, 1]);
 });
+
+test('regular content iframe HTTP and network failures are reported instead of captured as blank content', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div class="ma__iframe__container js-ma-responsive-iframe"><iframe title="Embedded document" width="300" height="200" src="https://frames.example.test/document"></iframe></div>'));
+    return true;
+  };
+  const scenario = { label: 'failed-iframe', url: `${origin}/page`, captureTimeout: 5000 };
+  for (const status of [404, 500, 'abort']) {
+    await capture(scenario, async page => {
+      await assert.rejects(ready(page, scenario, viewport), status === 'abort' ? /Navigation failed/ : new RegExp(`HTTP ${status}`));
+      assert.equal(await page.locator('img[data-backstop-iframe-snapshot]').count(), 0);
+    }, viewport, page => page.route('https://frames.example.test/**', route => status === 'abort'
+      ? route.abort('failed') : route.fulfill({ status, contentType: 'text/html', body: '<h1>Unavailable</h1>' })));
+    const result = report(scenario.label);
+    assert.equal(result.outcome, 'readiness-failure');
+    assert.equal(result.stage, 'content iframes');
+    assert.equal(result.state.iframes[0].state, 'error');
+    if (status !== 'abort') assert.equal(result.state.iframes[0].status, String(status));
+  }
+});
+
+test('a lazy content iframe waits for its application and images and appears in the full-page screenshot', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div style="height:1200px"></div><div class="ma__iframe__container js-ma-responsive-iframe" style="margin-left:30px"><iframe loading="lazy" title="Embedded document" style="display:block;border:0" width="300" height="800" src="https://frames.example.test/document"></iframe></div>'));
+    return true;
+  };
+  const scenario = { label: 'ready-iframe', url: `${origin}/page`, captureTimeout: 8000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    const snapshot = page.locator('img[data-backstop-iframe-snapshot]');
+    assert.equal(await snapshot.count(), 1);
+    assert.deepEqual(page.viewportSize(), { width: viewport.width, height: viewport.height });
+    const rect = await snapshot.boundingBox();
+    const image = PNG.sync.read(await page.screenshot({ fullPage: true }));
+    const offset = ((Math.round(rect.y) + 700) * image.width + Math.round(rect.x) + 50) * 4;
+    assert.deepEqual([...image.data.subarray(offset, offset + 4)], [30, 150, 120, 255]);
+  }, viewport, page => page.route('https://frames.example.test/**', async route => {
+    if (route.request().url().endsWith('/image.svg')) {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      return route.fulfill({ contentType: 'image/svg+xml', body: svg });
+    }
+    return route.fulfill({ contentType: 'text/html', body: '<style>body{margin:0}</style><div id="app" aria-busy="true" style="height:800px">Loading<img src="/image.svg"></div><script>document.querySelector("img").onload=()=>{const app=document.querySelector("#app");app.style.background="rgb(30,150,120)";app.setAttribute("aria-busy","false");};</script>' });
+  }));
+  assert.equal(report(scenario.label).state.iframes[0].snapshot, true);
+  assert.equal(report(scenario.label).state.iframes[0].status, '200');
+});
+
+test('an empty successful iframe does not pass readiness', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div class="js-ma-responsive-iframe"><iframe width="300" height="200" src="https://frames.example.test/empty"></iframe></div>'));
+    return true;
+  };
+  const scenario = { label: 'empty-iframe', url: `${origin}/page`, captureTimeout: 2300 };
+  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Readiness: content iframes/), viewport,
+    page => page.route('https://frames.example.test/**', route => route.fulfill({ contentType: 'text/html', body: '<body></body>' })));
+  assert.equal(report(scenario.label).outcome, 'readiness-failure');
+});

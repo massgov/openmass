@@ -128,6 +128,15 @@ size is preserved. This only changes the test browser; it does not change the
 site or replace Tableau with sample data. Diagnostics include a snapshot count
 for each Tableau container.
 
+Regular content iframes (`.js-ma-responsive-iframe` / `.ma__iframe__container`)
+must also return a successful HTTP response and render nonempty content before
+capture. Backstop waits for their document, images, fonts, and visible busy
+indicators, then preserves the rendered frame in the full-page screenshot using
+the same capture method. HTTP errors and network failures are reported as
+readiness failures with the iframe URL and status. Intentionally blocked embeds
+remain excluded. A broken external embed URL must be corrected in the content;
+waiting longer cannot restore a deleted page.
+
 Vimeo and YouTube player requests are allowed. Visible video embeds must render
 a player before capture; their preview images/posters and fonts must finish
 loading, and HTML video playback is paused for a stable screenshot. A provider

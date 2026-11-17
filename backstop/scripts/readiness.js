@@ -5,6 +5,7 @@ const captures = new WeakMap();
 const transient = status => status === 408 || status === 429 || status >= 500;
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const videoSelector = 'iframe[src*="player.vimeo.com/video/"], iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"]';
+const contentIframeSelector = '.js-ma-responsive-iframe iframe, .ma__iframe__container iframe';
 
 function safeUrl(value) {
   try {
@@ -28,13 +29,14 @@ function monitor(page, scenario, viewport, isReference, config = {}) {
     scenario: scenario.label, viewport: viewport.label,
     url: safeUrl(isReference && scenario.referenceUrl || scenario.url),
     expectedStatus: scenario.expectedStatus ?? 200,
-    requests: [], errors: [], blocked: new Set(), stylesheets: new Map(),
+    requests: [], errors: [], blocked: new Set(), stylesheets: new Map(), frameResponses: new WeakMap(),
     directory: config.diagnosticsPath || path.resolve(__dirname, '../diagnostics'),
     name: `${isReference ? 'reference' : 'test'}-${scenario.label}-${viewport.label}`.replace(/[^a-zA-Z0-9_.-]/g, '_')
   };
   captures.set(page, capture);
   page.on('response', response => {
     const request = response.request();
+    if (request.isNavigationRequest()) capture.frameResponses.set(request.frame(), { status: response.status(), url: response.url() });
     if (request.resourceType() === 'stylesheet') capture.stylesheets.set(response.url(), { status: response.status(), contentType: response.headers()['content-type'] || '' });
     if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
       // A previous attempt's failed CSS must not invalidate the next document
@@ -45,6 +47,7 @@ function monitor(page, scenario, viewport, isReference, config = {}) {
     if (response.status() >= 400) capture.requests.push({ type: request.resourceType(), status: response.status(), url: safeUrl(response.url()) });
   });
   page.on('requestfailed', request => {
+    if (request.isNavigationRequest()) capture.frameResponses.set(request.frame(), { error: request.failure()?.errorText });
     if (request.resourceType() === 'stylesheet') capture.stylesheets.set(request.url(), { error: request.failure()?.errorText });
     if (!capture.blocked.has(request.url())) capture.requests.push({ type: request.resourceType(), url: safeUrl(request.url()), error: request.failure()?.errorText });
   });
@@ -61,7 +64,7 @@ function save(page, details) {
   if (!capture) return;
   capture.finished = true;
   fs.mkdirSync(capture.directory, { recursive: true });
-  const { directory, name, blocked, finished, stylesheets, ...diagnostic } = capture;
+  const { directory, name, blocked, finished, stylesheets, frameResponses, ...diagnostic } = capture;
   fs.writeFileSync(path.join(directory, `${name}.json`), JSON.stringify({ ...diagnostic, ...details }, (key, value) => {
     return typeof value === 'string' && /^(https?:|data:)/.test(value)
       ? (value.startsWith('data:') ? '[inline image]' : safeUrl(value)) : value;
@@ -166,34 +169,77 @@ async function tableauSnapshots(page) {
     await iframe.scrollIntoViewIfNeeded();
     const frame = await (await iframe.elementHandle()).contentFrame();
     if (!frame) throw new Error('Tableau frame was not attached');
-    await assets(frame, { label: 'Document' }, 500);
-    await frame.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-    // Chromium can omit offscreen cross-origin frames from a full-page shot
-    // even after FirstInteractive. Capture the real chart while it is visible.
-    const bitmap = await iframe.screenshot({ animations: 'disabled', timeout: 10000 });
-    await iframe.evaluate(async (element, source) => {
-      // The v3 iframe may live in an open shadow root.
-      let owner = element;
-      while (!owner.closest('.ma_tableau_container') && owner.getRootNode().host) owner = owner.getRootNode().host;
-      const container = owner.closest('.ma_tableau_container');
-      if (!container) throw new Error('Tableau container was not found');
-      const rect = element.getBoundingClientRect();
-      const image = document.createElement('img');
-      image.src = source;
-      image.alt = '';
-      image.setAttribute('aria-hidden', 'true');
-      image.dataset.backstopTableauSnapshot = 'true';
-      image.style.cssText = `all: initial; position: absolute; left: 0; top: 0; width: ${rect.width}px; height: ${rect.height}px; z-index: 1; pointer-events: none;`;
-      container.appendChild(image);
-      await image.decode();
-      const origin = image.getBoundingClientRect();
-      image.style.left = `${rect.left - origin.left}px`;
-      image.style.top = `${rect.top - origin.top}px`;
-      // Retain the iframe in the flow, including its dimensions and selectors.
-      element.style.setProperty('opacity', '0', 'important');
-      element.dataset.backstopTableauSnapshot = 'true';
-    }, `data:image/png;base64,${bitmap.toString('base64')}`);
+    await frameSnapshot(iframe, frame, '.ma_tableau_container', 'backstopTableauSnapshot');
   }
+}
+
+async function frameSnapshot(iframe, frame, containerSelector, marker) {
+  await assets(frame, { label: 'Document' }, 500);
+  await frame.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+  // Capture cross-origin content while visible: Chromium may omit it from
+  // the full-page shot even when the embedded application has finished loading.
+  const bitmap = await iframe.screenshot({ animations: 'disabled', timeout: 10000 });
+  await iframe.evaluate(async (element, { source, containerSelector, marker }) => {
+    let owner = element;
+    while (!owner.closest(containerSelector) && owner.getRootNode().host) owner = owner.getRootNode().host;
+    const container = owner.closest(containerSelector);
+    if (!container) throw new Error('Iframe container was not found');
+    const rect = element.getBoundingClientRect();
+    const image = document.createElement('img');
+    image.src = source;
+    image.alt = '';
+    image.setAttribute('aria-hidden', 'true');
+    image.dataset[marker] = 'true';
+    image.style.cssText = `all: initial; position: absolute; left: 0; top: 0; width: ${rect.width}px; height: ${rect.height}px; z-index: 1; pointer-events: none;`;
+    container.appendChild(image);
+    await image.decode();
+    const origin = image.getBoundingClientRect();
+    image.style.left = `${rect.left - origin.left}px`;
+    image.style.top = `${rect.top - origin.top}px`;
+    // Retain the iframe in the flow, including its dimensions and selectors.
+    element.style.setProperty('opacity', '0', 'important');
+    element.dataset[marker] = 'true';
+  }, { source: `data:image/png;base64,${bitmap.toString('base64')}`, containerSelector, marker });
+}
+
+async function contentIframeSnapshots(page) {
+  let count = 0;
+  const capture = captures.get(page);
+  for (const iframe of await page.locator(contentIframeSelector).all()) {
+    if (!await iframe.isVisible() || await iframe.evaluate(element => element.matches('iframe[src*="vimeo.com/"], iframe[src*="youtube.com/"], iframe[src*="youtube-nocookie.com/"]') || !!element.closest('.ma_tableau_container'))) continue;
+    count++;
+    const source = await iframe.evaluate(element => element.src);
+    if (capture.blocked.has(source)) {
+      await iframe.evaluate(element => { element.dataset.backstopIframeState = 'blocked'; });
+      continue;
+    }
+    await iframe.evaluate(element => { element.dataset.backstopIframeState = 'loading'; });
+    try {
+      await iframe.scrollIntoViewIfNeeded();
+      const frame = await (await iframe.elementHandle()).contentFrame();
+      if (!frame) throw new Error('Frame was not attached');
+      while (true) {
+        const response = capture.frameResponses.get(frame);
+        if (response?.status) await iframe.evaluate((element, status) => { element.dataset.backstopIframeStatus = status; }, String(response.status));
+        if (response?.error) throw new Error(`Navigation failed (${response.error})`);
+        if (response?.status >= 400) throw new Error(`HTTP ${response.status}`);
+        if ((response?.status >= 200 && response.status < 300 && frame.url() !== 'about:blank') || await iframe.getAttribute('srcdoc') !== null) break;
+        await page.waitForTimeout(100);
+      }
+      await frame.waitForFunction(() => {
+        const visible = element => element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
+        return document.readyState === 'complete' && document.body &&
+          ![...document.querySelectorAll('[aria-busy="true"], [role="progressbar"]')].some(visible) &&
+          (document.body.innerText.trim().length > 0 || [...document.querySelectorAll('img[src], canvas, svg, video, input, button')].some(visible));
+      });
+      await frameSnapshot(iframe, frame, '.js-ma-responsive-iframe, .ma__iframe__container', 'backstopIframeSnapshot');
+      await iframe.evaluate(element => { element.dataset.backstopIframeState = 'ready'; });
+    } catch (error) {
+      await iframe.evaluate(element => { element.dataset.backstopIframeState = 'error'; }).catch(() => {});
+      throw new Error(`Content iframe failed: ${safeUrl(source)} (${safeMessage(error.message)})`);
+    }
+  }
+  return count;
 }
 
 // Serializable browser function shared by polling and failure diagnostics.
@@ -272,6 +318,7 @@ function snapshot() {
     styles: [...document.querySelectorAll('link[rel~="stylesheet"]')].filter(link => !link.disabled && matchMedia(link.media || 'all').matches).map(link => ({ source: link.href, ready: !!link.sheet })),
     images, banners, tableaus,
     videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, box: box(element) })),
+    iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
     footer: [...document.querySelectorAll('.ma__footer-new')].map(box)
   };
 }
@@ -326,4 +373,4 @@ async function guard(page, scenario, action) {
   }
 }
 
-module.exports = { monitor, save, warmup, navigation, styles, scrollPage, videoPlayers, tableauSnapshots, snapshot, assets, guard };
+module.exports = { monitor, save, warmup, navigation, styles, scrollPage, videoPlayers, tableauSnapshots, contentIframeSnapshots, snapshot, assets, guard };

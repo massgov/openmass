@@ -177,8 +177,9 @@ module.exports = async (page, scenario, viewport) => {
     await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
     await page.mouse.move(viewport.width - 1, 0);
     const state = await step('images, fonts, Tableau and layout', () => readiness.assets(page, scenario));
-    if (!state.tableaus.length) return state;
-    await step('Tableau chart screenshots', () => readiness.tableauSnapshots(page));
+    const iframeCount = await step('content iframes', () => readiness.contentIframeSnapshots(page));
+    if (!state.tableaus.length && !iframeCount) return state;
+    if (state.tableaus.length) await step('Tableau chart screenshots', () => readiness.tableauSnapshots(page));
     await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
     return step('final layout', () => readiness.assets(page, scenario));
   });
