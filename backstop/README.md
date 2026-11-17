@@ -162,6 +162,12 @@ screenshot, with its HTTP status and `error-page` state retained in diagnostics.
 Other HTTP errors, network failures, and empty frames remain readiness failures.
 Intentionally blocked embeds remain excluded.
 
+Gravity Forms embeds (`.js-gf-iframe`) must show initialized fields with no
+visible loading spinner, and the iframe must resize to fit the form before its
+bitmap is captured. Diagnostics include `formState`. Snapshot alignment is
+measured after bitmap decoding so embed-triggered scrolling cannot move the
+form over the page header.
+
 Vimeo and YouTube iframe areas receive the same fixed Video placeholder in
 reference and test captures, preserving the original dimensions. Before masking
 each frame, a separate check waits up to five seconds for visible play/pause

@@ -231,6 +231,27 @@ async function tableauSnapshots(page) {
   }
 }
 
+async function gravityForm(iframe, frame) {
+  await iframe.evaluate(element => { element.dataset.backstopFormState = 'loading'; });
+  await frame.waitForFunction(() => {
+    const visible = element => element && element.getClientRects().length &&
+      getComputedStyle(element).visibility !== 'hidden' && getComputedStyle(element).opacity !== '0';
+    const wrapper = document.querySelector('.gform_wrapper');
+    const form = wrapper?.querySelector('form');
+    return visible(wrapper) && visible(form) &&
+      [...form.querySelectorAll('input:not([type="hidden"]), select, textarea, button')].some(visible) &&
+      ![...document.querySelectorAll('.gform_ajax_spinner, .gform-loader, .gform-theme-spinner, [data-js="gform-loader"]')].some(visible);
+  });
+  // Gravity may reveal the form before iFrame Resizer's next height message.
+  // Do not freeze a small loading frame and clip the initialized form below it.
+  while (true) {
+    const contentHeight = await frame.evaluate(() => Math.max(document.body.scrollHeight, document.documentElement.scrollHeight));
+    if (await iframe.evaluate(element => element.clientHeight) >= contentHeight - 2) break;
+    await frame.waitForTimeout(100);
+  }
+  await iframe.evaluate(element => { element.dataset.backstopFormState = 'ready'; });
+}
+
 async function frameSnapshot(iframe, frame, containerSelector, marker) {
   // External frames aren't part of our monitored document/CSS responses.
   await assets(frame, { skipStylesheets: true }, 500);
@@ -243,7 +264,7 @@ async function frameSnapshot(iframe, frame, containerSelector, marker) {
     while (!owner.closest(containerSelector) && owner.getRootNode().host) owner = owner.getRootNode().host;
     const container = owner.closest(containerSelector);
     if (!container) throw new Error('Iframe container was not found');
-    const rect = element.getBoundingClientRect();
+    let rect = element.getBoundingClientRect();
     const image = document.createElement('img');
     image.src = source;
     image.alt = '';
@@ -252,6 +273,9 @@ async function frameSnapshot(iframe, frame, containerSelector, marker) {
     image.style.cssText = `all: initial; position: absolute; left: 0; top: 0; width: ${rect.width}px; height: ${rect.height}px; z-index: 1; pointer-events: none;`;
     container.appendChild(image);
     await image.decode();
+    // Embed messages/focus handlers can scroll the parent while decoding.
+    // Measure both elements in the same current coordinate system.
+    rect = element.getBoundingClientRect();
     const origin = image.getBoundingClientRect();
     image.style.left = `${rect.left - origin.left}px`;
     image.style.top = `${rect.top - origin.top}px`;
@@ -293,6 +317,9 @@ async function contentIframeSnapshots(page) {
           ![...document.querySelectorAll('[aria-busy="true"], [role="progressbar"]')].some(visible) &&
           (document.body.innerText.trim().length > 0 || [...document.querySelectorAll('img[src], canvas, svg, video, input, button')].some(visible));
       });
+      if (await iframe.evaluate(element => element.matches('.js-gf-iframe') && element.dataset.backstopIframeStatus !== '404')) {
+        await gravityForm(iframe, frame);
+      }
       await frameSnapshot(iframe, frame, '.js-ma-responsive-iframe, .ma__iframe__container', 'backstopIframeSnapshot');
       await iframe.evaluate(element => {
         element.dataset.backstopIframeState = element.dataset.backstopIframeStatus === '404' ? 'error-page' : 'ready';
@@ -414,7 +441,7 @@ function snapshot(tableOfContentsOnly = false) {
     homepageBanner: window.__backstopHomepageBanner || null,
     stickyNavigation: [...document.querySelectorAll('.ma__sticky-nav')].map(element => ({ position: getComputedStyle(element).position, box: box(element) })),
     videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, playerCheck: element.dataset.backstopVideoCheck, message: element.dataset.backstopVideoMessage, box: box(element) })),
-    iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
+    iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, formState: element.dataset.backstopFormState, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
     footer: [...document.querySelectorAll('.ma__footer-new')].map(box),
     feedback: [...document.querySelectorAll('.ma__fixed-feedback-button')].map(element => ({ display: getComputedStyle(element).display, visibility: getComputedStyle(element).visibility, box: box(element) }))
   };

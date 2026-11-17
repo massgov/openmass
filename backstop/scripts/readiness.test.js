@@ -651,6 +651,71 @@ test('a lazy content iframe waits for its application and images and appears in 
   assert.equal(report(scenario.label).state.iframes[0].status, '200');
 });
 
+test('iframe snapshots stay aligned when embed scripts scroll the parent during bitmap decoding', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<h1>Page header</h1><div style="height:900px"></div><div class="js-ma-responsive-iframe" style="margin-left:30px"><iframe width="300" height="800" src="https://frames.example.test/form"></iframe></div>'));
+    return true;
+  };
+  const scenario = { label: 'scrolling-iframe', url: `${origin}/page`, captureTimeout: 7000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.deepEqual(await page.locator('img[data-backstop-iframe-snapshot]').boundingBox(), await page.locator('iframe').boundingBox());
+    assert.equal(await page.evaluate(() => window.scrollDuringDecode), true);
+  }, viewport, async page => {
+    await page.addInitScript(() => {
+      const decode = HTMLImageElement.prototype.decode;
+      HTMLImageElement.prototype.decode = async function () {
+        await decode.call(this);
+        if (this.dataset.backstopIframeSnapshot) {
+          window.scrollDuringDecode = true;
+          window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+      };
+    });
+    await page.route('https://frames.example.test/**', route => route.fulfill({ contentType: 'text/html', body: '<style>body{margin:0;background:green}</style><form><label>Form field<input></label></form>' }));
+  });
+});
+
+test('Gravity Forms waits for visible initialized fields and iframe resizing before freezing the form', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div class="js-ma-responsive-iframe"><iframe class="js-gf-iframe" width="300" height="200" src="https://frames.example.test/gravity"></iframe></div>', "window.addEventListener('message', event => { if (event.data === 'form-ready') document.querySelector('iframe').height = '800'; });"));
+    return true;
+  };
+  const scenario = { label: 'delayed-gravity', url: `${origin}/page`, captureTimeout: 7000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    const snapshot = page.locator('img[data-backstop-iframe-snapshot]');
+    const rect = await snapshot.boundingBox();
+    assert.equal(rect.height, 804);
+    assert.deepEqual(rect, await page.locator('iframe').boundingBox());
+    const png = PNG.sync.read(await page.screenshot({ fullPage: true }));
+    const offset = ((Math.round(rect.y) + 100) * png.width + Math.round(rect.x) + 100) * 4;
+    assert.deepEqual([...png.data.subarray(offset, offset + 4)], [0, 128, 0, 255]);
+  }, viewport, page => page.route('https://frames.example.test/**', route => route.fulfill({ contentType: 'text/html', body: `<!doctype html><style>body{margin:0} .gform_wrapper{display:none} form{height:800px;background:green}</style>
+    <div id="loading">Loading form</div><div class="gform_wrapper"><form><label>Ready field<input></label></form></div>
+    <script>setTimeout(() => { document.querySelector('#loading').remove(); document.querySelector('.gform_wrapper').style.display='block'; setTimeout(() => parent.postMessage('form-ready','*'), 150); }, 2700);</script>` })));
+  assert.equal(report(scenario.label).state.iframes[0].formState, 'ready');
+});
+
+test('a Gravity form that never initializes remains a readiness failure', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div class="js-ma-responsive-iframe"><iframe class="js-gf-iframe" width="300" height="200" src="https://frames.example.test/gravity"></iframe></div>'));
+    return true;
+  };
+  const scenario = { label: 'pending-gravity', url: `${origin}/page`, captureTimeout: 3500 };
+  await capture(scenario, async page => {
+    await assert.rejects(ready(page, scenario, viewport), /Readiness: content iframes/);
+    assert.equal(await page.locator('img[data-backstop-iframe-snapshot]').count(), 0);
+  }, viewport, page => page.route('https://frames.example.test/**', route => route.fulfill({ contentType: 'text/html', body: '<!doctype html>Loading form<div class="gform_wrapper" style="display:none"><form><input></form></div>' })));
+  assert.equal(report(scenario.label).state.iframes[0].formState, 'loading');
+});
+
 test('an empty successful iframe does not pass readiness', async () => {
   handle = (request, response) => {
     if (request.url !== '/page') return false;
