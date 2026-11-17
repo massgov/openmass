@@ -120,6 +120,13 @@ Tableau containers expose `data-tableau-state` as `loading`, `ready`, `error`, o
 on environments running older application code. A missing spinner is never used
 as proof that a visualization is ready.
 
+Vimeo and YouTube player requests are allowed. Visible video embeds must render
+a player before capture; their preview images/posters and fonts must finish
+loading, and HTML video playback is paused for a stable screenshot. A provider
+error or automated-browser challenge fails the video readiness step rather than
+silently capturing a blank iframe. Video URLs and readiness states are included
+in diagnostics.
+
 CircleCI runs a representative page and stylesheet preflight before reference
 and test jobs, requiring two consecutive successful checks. Run it locally with:
 

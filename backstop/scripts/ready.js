@@ -171,6 +171,7 @@ module.exports = async (page, scenario, viewport) => {
         await page.locator('.ma__footer-new__container').waitFor();
       }
     });
+    await step('video players', () => readiness.videoPlayers(page));
     // Footer interactions and lazy loading can leave the page scrolled, changing
     // banner parallax/crops. Always settle at the capture's starting position.
     await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));

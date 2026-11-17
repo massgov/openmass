@@ -10,11 +10,9 @@ module.exports = async (page, scenario, viewport, isReference, browserContext, c
     'js-agent.newrelic.com',
     'translate.google.com',
     'foresee.com',
-    'www.youtube.com',
     'bam.nr-data.net',
     'maps.googleapis.com',
     '9p83os0fkf.execute-api.us-east-1.amazonaws.com/v1/waittime',
-    'player.vimeo.com',
     'https://massgov.github.io/FWE/PondMaps/dfw-pond-maps-table.html',
   ];
   await page.route('**/*', (route) => {
@@ -24,7 +22,7 @@ module.exports = async (page, scenario, viewport, isReference, browserContext, c
       capture.blocked.add(url);
       return route.abort();
     }
-    return route.continue();
+    return route.fallback();
   });
 
   if (process.env.MASS_BYPASS_RATE_LIMIT) {

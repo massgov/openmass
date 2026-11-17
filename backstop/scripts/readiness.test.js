@@ -47,10 +47,11 @@ after(async () => {
   fs.rmSync(directory, { recursive: true, force: true });
 });
 
-async function capture(scenario, action, size = viewport) {
+async function capture(scenario, action, size = viewport, prepare = async () => {}) {
   const context = await browser.newContext({ viewport: size });
   const page = await context.newPage();
   try {
+    await prepare(page);
     await beforeCapture(page, scenario, size, false, context, { diagnosticsPath: directory });
     await page.goto(scenario.url, { waitUntil: 'domcontentloaded' });
     return await action(page);
@@ -254,4 +255,54 @@ test('diagnostics remove URL credentials and token query parameters', () => {
   const text = JSON.stringify(report('secret'));
   assert.doesNotMatch(text, /password|jwt-secret|user:/);
   assert.match(text, /width=800/);
+});
+
+test('Vimeo and YouTube embeds load, wait for their posters, and keep analytics blocked', async () => {
+  for (const provider of ['https://player.vimeo.com/video/123', 'https://www.youtube.com/embed/123']) {
+    let playerRequests = 0;
+    let posterRequests = 0;
+    handle = (request, response) => {
+      if (request.url !== '/page') return false;
+      response.writeHead(200, { 'content-type': 'text/html' });
+      response.end(html(`<iframe width="320" height="180" src="${provider}"></iframe><script src="https://www.googletagmanager.com/gtm.js"></script>`));
+      return true;
+    };
+    const scenario = { label: 'video-player', url: `${origin}/page`, captureTimeout: 7000 };
+    await capture(scenario, async page => {
+      await ready(page, scenario, viewport);
+      const frame = await (await page.locator('iframe').elementHandle()).contentFrame();
+      assert.equal(await frame.locator('video').evaluate(video => video.paused), true);
+      assert.equal(await page.evaluate(() => window.analyticsRan), undefined);
+    }, viewport, async page => {
+      // Registered before beforeCapture: its routing policy must allow the
+      // actual provider request through, or this fixture is never reached.
+      await page.route(`${new URL(provider).origin}/**`, async route => {
+        if (route.request().url().endsWith('/poster.svg')) {
+          posterRequests++;
+          await new Promise(resolve => setTimeout(resolve, 400));
+          return route.fulfill({ contentType: 'image/svg+xml', body: svg });
+        }
+        playerRequests++;
+        return route.fulfill({ contentType: 'text/html', body: '<style>body{margin:0}video{width:320px;height:140px}</style><video poster="/poster.svg"></video><script>setTimeout(() => { const button = document.createElement("button"); button.setAttribute("aria-label", "Play video"); button.textContent = "Play"; document.body.appendChild(button); }, 300);</script>' });
+      });
+      await page.route('https://www.googletagmanager.com/**', route => route.fulfill({ contentType: 'text/javascript', body: 'window.analyticsRan = true;' }));
+    });
+    assert.ok(playerRequests > 0);
+    assert.ok(posterRequests > 0);
+    assert.equal(report(scenario.label).state.videoPlayers[0].state, 'ready');
+  }
+});
+
+test('a blank video player fails readiness instead of silently passing', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<iframe width="320" height="180" src="https://player.vimeo.com/video/123"></iframe>'));
+    return true;
+  };
+  const scenario = { label: 'blank-video', url: `${origin}/page`, captureTimeout: 1200 };
+  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Readiness: video players/), viewport,
+    page => page.route('https://player.vimeo.com/**', route => route.fulfill({ contentType: 'text/html', body: '<body>Loading</body>' })));
+  assert.equal(report(scenario.label).outcome, 'readiness-failure');
+  assert.equal(report(scenario.label).stage, 'video players');
 });

@@ -4,6 +4,7 @@ const path = require('node:path');
 const captures = new WeakMap();
 const transient = status => status === 408 || status === 429 || status >= 500;
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
+const videoSelector = 'iframe[src*="player.vimeo.com/video/"], iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"]';
 
 function safeUrl(value) {
   try {
@@ -131,6 +132,33 @@ async function scrollPage(page) {
   throw new Error('Page did not reach the bottom after 200 scroll steps');
 }
 
+async function videoPlayers(page) {
+  for (const iframe of await page.locator(videoSelector).all()) {
+    if (!await iframe.isVisible()) continue;
+    const source = await iframe.getAttribute('src');
+    await iframe.evaluate(element => { element.dataset.backstopVideoState = 'loading'; });
+    try {
+      await iframe.scrollIntoViewIfNeeded();
+      const frame = await (await iframe.elementHandle()).contentFrame();
+      if (!frame) throw new Error('Video frame was not attached');
+      // An iframe load event can describe the initial blank document. Require
+      // a rendered player, then wait for its preview images and fonts as well.
+      await frame.waitForFunction(() => {
+        const visible = element => element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
+        return [...document.querySelectorAll('video')].some(video => visible(video) && video.readyState >= 2) ||
+          [...document.querySelectorAll('button, [role="button"]')].some(button => visible(button) && /\b(play|pause)\b/i.test(button.getAttribute('aria-label') || button.title || button.textContent));
+      }, null, { timeout: 30000 });
+      await frame.evaluate(() => document.querySelectorAll('video').forEach(video => video.pause()));
+      // The enclosing page's stylesheet monitor doesn't apply across frames.
+      await assets(frame, { label: 'Document' }, 500);
+      await iframe.evaluate(element => { element.dataset.backstopVideoState = 'ready'; });
+    } catch (error) {
+      await iframe.evaluate(element => { element.dataset.backstopVideoState = 'error'; }).catch(() => {});
+      throw new Error(`Video player did not render: ${safeUrl(source)} (${error.name})`);
+    }
+  }
+}
+
 // Serializable browser function shared by polling and failure diagnostics.
 function snapshot() {
   const visible = element => element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
@@ -162,6 +190,18 @@ function snapshot() {
     fit: getComputedStyle(image).objectFit, position: getComputedStyle(image).objectPosition
   }));
   const banners = [];
+  for (const video of [...document.querySelectorAll('video[poster]')].filter(visible)) {
+    if (!video.poster) continue;
+    let entry = backgrounds.get(video.poster);
+    if (!entry) {
+      const image = new Image();
+      image.src = video.poster;
+      entry = { image };
+      backgrounds.set(video.poster, entry);
+    }
+    images.push({ element: `${describe(video)}:poster`, source: video.poster,
+      state: decode(entry.image, entry.image, cache), box: box(video) });
+  }
   for (const element of document.querySelectorAll('body *')) {
     if (!visible(element)) continue;
     for (const pseudo of [null, '::before', '::after']) {
@@ -193,6 +233,7 @@ function snapshot() {
     fontErrors: [...document.fonts].filter(font => font.status === 'error').map(font => font.family),
     styles: [...document.querySelectorAll('link[rel~="stylesheet"]')].filter(link => !link.disabled && matchMedia(link.media || 'all').matches).map(link => ({ source: link.href, ready: !!link.sheet })),
     images, banners, tableaus,
+    videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, box: box(element) })),
     footer: [...document.querySelectorAll('.ma__footer-new')].map(box)
   };
 }
@@ -247,4 +288,4 @@ async function guard(page, scenario, action) {
   }
 }
 
-module.exports = { monitor, save, warmup, navigation, styles, scrollPage, snapshot, assets, guard };
+module.exports = { monitor, save, warmup, navigation, styles, scrollPage, videoPlayers, snapshot, assets, guard };
