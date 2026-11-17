@@ -99,3 +99,49 @@ making to backstop related code:
 ```
 drush ma:ci:backstop-compare --reference=prod --target=prod --force-reference --ci-branch=dp-26913-run-backstop-js-locally
 ```
+
+## Capture readiness and diagnostics
+
+Reference and test captures use the same readiness checks. Each page must return
+its configured `expectedStatus` (200 by default; the intentional 404 scenario
+sets 404). Warmup and actual browser navigation retry transient failures up to
+three times. Unexpected 4xx responses and persistent server errors fail capture.
+
+`ready.js` has a shared 90-second deadline (`captureTimeout`, in milliseconds,
+can be overridden per scenario). Within that deadline it checks active linked
+stylesheets, visits each viewport to trigger lazy content, returns to the top,
+and waits for image decoding, fonts, Tableau readiness, and one second of stable
+image geometry and page height. CSS background images and pseudo-elements are
+included. Image crop styles are preserved. The Document scenario skips stylesheet
+and footer checks because it displays a document rather than a themed HTML page.
+
+Tableau containers expose `data-tableau-state` as `loading`, `ready`, `error`, or
+`timeout`. The test hooks also observe public Tableau readiness callbacks/events
+on environments running older application code. A missing spinner is never used
+as proof that a visualization is ready.
+
+CircleCI runs a representative page and stylesheet preflight before reference
+and test jobs, requiring two consecutive successful checks. Run it locally with:
+
+```bash
+ddev exec node backstop/scripts/preflight.js --target=local
+```
+
+Each capture writes a JSON file under `backstop/diagnostics/` with document
+status, failed requests, image URLs and dimensions, background crop styles,
+and Tableau states. Readiness failures also save a diagnostic screenshot and
+appear as engine errors in Backstop rather than ordinary visual differences.
+Intentionally blocked third-party requests are excluded from failed-request
+logs. Credentials and sensitive URL query parameters are redacted. CircleCI
+stores diagnostics as artifacts, including when readiness fails.
+
+Run the controlled Chromium checks with:
+
+```bash
+ddev exec node --test backstop/scripts/readiness.test.js
+```
+
+These cover delayed and lazy images, responsive image changes, stable repeated
+captures at desktop/mobile sizes, failed CSS/images, HTTP status handling, and
+both Tableau API generations. After changing capture behavior, review and
+regenerate reference images before using them for a release comparison.

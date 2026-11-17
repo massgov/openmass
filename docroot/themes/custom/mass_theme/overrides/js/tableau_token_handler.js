@@ -72,6 +72,8 @@
    * interactive, has failed, or has run out of time.
    */
   async function loadOne(placeholder) {
+    const container = placeholder.closest('.ma_tableau_container');
+    container.dataset.tableauState = 'loading';
     const tokenUrl = placeholder.dataset.tokenUrl;
     if (!tokenUrl) {
       renderFailure(placeholder, 'no token URL configured');
@@ -138,6 +140,10 @@
           return;
         }
         settled = true;
+        const container = viz.closest('.ma_tableau_container');
+        if (container) {
+          container.dataset.tableauState = outcome === 'interactive' ? 'ready' : outcome;
+        }
         clearTimeout(timer);
         viz.removeEventListener('firstinteractive', onInteractive);
         viz.removeEventListener('vizloaderror', onError);
@@ -187,6 +193,7 @@
    * data attributes and reserved height remain available.
    */
   function renderFailure(placeholder, reason) {
+    placeholder.closest('.ma_tableau_container').dataset.tableauState = 'error';
     console.error('Tableau embed failed:', reason);
     const message = document.createElement('div');
     message.className = 'ma_tableau_error';

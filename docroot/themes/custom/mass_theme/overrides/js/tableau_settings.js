@@ -32,10 +32,12 @@
 
           var id = $tableauItem.attr('id');
           var url = $tableauItem.data('tableau-url');
+          $tableauContainer.attr('data-tableau-state', 'loading');
           const needsRefresh = $tableauContainer.closest('.tableau-needs-refresh').length > 0;
           var options = {
             device: deviceType,
             onFirstInteractive: function () {
+              $tableauContainer.attr('data-tableau-state', 'ready');
               if (needsRefresh) {
                 window.dispatchEvent(new Event('resize'));
               }

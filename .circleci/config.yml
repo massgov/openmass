@@ -62,6 +62,19 @@ commands:
           paths:
             - ~/.cache/ms-playwright
 
+  backstop_preflight:
+    description: Require two successful document and stylesheet checks before capture
+    parameters:
+      target:
+        type: string
+      tugboat:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Wait for Backstop target readiness
+          command: node backstop/scripts/preflight.js --target=<< parameters.target >> --tugboat=<< parameters.tugboat >>
+
   git_configure_user:
     steps:
       - run: git config --global user.email "circleci@example.com"
@@ -465,6 +478,8 @@ jobs:
     steps:
       - checkout
       - install_backstop
+      - backstop_preflight:
+          target: << parameters.target >>
       - run:
           name: "Setup environment variables"
           command: |
@@ -484,6 +499,8 @@ jobs:
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
+      - store_artifacts:
+          path: backstop/diagnostics
       - run:
           name: Save Build Number
           command: |
@@ -527,6 +544,9 @@ jobs:
     steps:
       - checkout
       - install_backstop
+      - backstop_preflight:
+          target: << parameters.target >>
+          tugboat: << parameters.tugboat >>
       - run:
           name: "Setup environment variables"
           command: |
