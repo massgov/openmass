@@ -408,3 +408,36 @@ test('an empty successful iframe does not pass readiness', async () => {
     page => page.route('https://frames.example.test/**', route => route.fulfill({ contentType: 'text/html', body: '<body></body>' })));
   assert.equal(report(scenario.label).outcome, 'readiness-failure');
 });
+
+test('empty image sources are skipped even though the browser resolves image.src to the document URL', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<img class="ma__image" alt="" src="" width="100" height="100"><img width="10" height="10" src="   ">'));
+    return true;
+  };
+  const scenario = { label: 'empty-image-source', url: `${origin}/page`, captureTimeout: 4000 };
+  await capture(scenario, async page => {
+    assert.equal(await page.locator('img.ma__image').evaluate(image => image.src), scenario.url);
+    await ready(page, scenario, viewport);
+  });
+  assert.equal(report(scenario.label).outcome, 'ready');
+  assert.ok(report(scenario.label).state.images.every(image => image.source !== scenario.url));
+});
+
+test('scenario selectors are initialized before readiness can fail, preserving the document reference filename', () => {
+  const config = require('../backstop');
+  const { generateTestPair } = require('backstopjs/core/util/engineTools');
+  const scenario = config.scenarios.find(scenario => scenario.label === 'PersonBoardMember');
+  const engineConfig = {
+    _fileNameTemplate: '{configId}_{scenarioLabel}_{selectorIndex}_{selectorLabel}_{viewportIndex}_{viewportLabel}',
+    _outputFileFormatSuffix: '.png', _configId: config.id,
+    _bitmapsTestPath: '/tmp/test', _bitmapsReferencePath: '/tmp/reference', screenshotDateTime: 'run'
+  };
+  const size = { label: 'desktop', vIndex: 0 };
+  // Match Backstop's engine-error path, which joins the configured selectors.
+  const failure = generateTestPair(engineConfig, scenario, size, scenario.label, scenario.label, 0, scenario.selectors.join('__'));
+  const success = generateTestPair(engineConfig, scenario, size, scenario.label, scenario.label, 0, 'document');
+  assert.equal(failure.reference, success.reference);
+  assert.equal(failure.fileName, 'regression_PersonBoardMember_0_document_0_desktop.png');
+});

@@ -266,7 +266,7 @@ function snapshot() {
     }
     return entry.state;
   };
-  const images = [...document.images].filter(image => visible(image) && (image.currentSrc || image.getAttribute('src'))).map(image => ({
+  const images = [...document.images].filter(image => visible(image) && (image.currentSrc || image.getAttribute('src')?.trim())).map(image => ({
     element: describe(image), source: image.currentSrc || image.src,
     state: decode(image, image, cache), complete: image.complete,
     natural: [image.naturalWidth, image.naturalHeight], box: box(image),

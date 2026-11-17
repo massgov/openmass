@@ -91,6 +91,9 @@ const scenarios = pages.map(function(page) {
   }
   return {
     ...page,
+    // Backstop applies its default after onReadyScript. Set it now so engine
+    // failures use the same reference filename as successful document captures.
+    selectors: page.selectors?.length ? page.selectors : ['document'],
     url: withCache ? `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}` : `${base}${page.url}`,
     misMatchThreshold: 0.1,
     removeSelectors,
