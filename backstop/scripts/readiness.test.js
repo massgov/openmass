@@ -527,3 +527,87 @@ test('embed timeouts identify the specific readiness check', async () => {
     assert.equal(report(scenario.label).stage, stage);
   }
 });
+
+test('TOC readiness waits for all generated links and targets on desktop and collapsed mobile, in reference and test captures', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(`<style>.ma__sticky-toc { display:none } @media(max-width:480px) { .ma__sticky-toc__column { display:none } }</style>
+      <main id="article"><section class="ma__sticky-toc" data-parent="#article" data-sections="h2" data-min-to-show="2">
+      <h2 class="ma__sticky-toc__title">Table of contents</h2><div class="ma__sticky-toc__column"><ul></ul></div></section>
+      <h2 id="first">First<span class="ma__visually-hidden"> context</span></h2><h2 id="second">Second</h2><h2>Contact</h2><h2>Related</h2></main>`, `
+      const toc = document.querySelector('.ma__sticky-toc');
+      const list = toc.querySelector('ul');
+      setTimeout(() => {
+        toc.style.display = 'block';
+        document.querySelector('main').classList.add('toc-parent');
+        document.querySelector('#first').classList.add('sticky-toc-jump-target');
+        list.innerHTML = '<li><a href="#first">First</a></li>';
+      }, 300);
+      setTimeout(() => {
+        document.querySelector('#second').classList.add('sticky-toc-jump-target');
+        list.insertAdjacentHTML('beforeend', '<li><a href="#second">Second</a></li><li><a href="#contact">Contact</a></li>');
+      }, 1700);
+      setTimeout(() => {
+        const contact = document.querySelectorAll('main > h2')[2];
+        contact.id = 'contact';
+        contact.classList.add('sticky-toc-jump-target');
+        window.tocFinished = true;
+      }, 2700);
+    `));
+    return true;
+  };
+  for (const size of [viewport, { label: 'phone', width: 360, height: 480 }]) {
+    const scenario = { label: 'delayed-toc', url: `${origin}/page`, captureTimeout: 6000 };
+    const isReference = size === viewport;
+    await capture(scenario, async page => {
+      await ready(page, scenario, size);
+      assert.equal(await page.evaluate(() => window.tocFinished), true);
+      assert.equal(await page.locator('.ma__sticky-toc__column').isVisible(), size === viewport);
+    }, size, async () => {}, isReference);
+    const state = report(scenario.label, size, isReference).state.tableOfContents[0];
+    assert.equal(state.ready, true);
+    assert.equal(state.shouldRender, true);
+    assert.deepEqual(state.links.map(link => link.target), ['#first', '#second', '#contact']);
+  }
+});
+
+test('TOCs below the minimum, including empty ones, wait for JS to hide them without requiring links', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(`<style>.ma__sticky-toc { display:none }</style>
+      <main id="short"><section class="ma__sticky-toc" data-parent="#short" data-sections="h2" data-min-to-show="2"><div class="ma__sticky-toc__column"><ul></ul></div></section><h2>First</h2><h2>Contact</h2><h2>Related</h2></main>
+      <div id="empty"><section class="ma__sticky-toc" data-parent="#empty" data-sections="h2"></section></div>
+      <nav class="ma__toc--hierarchy">Server-rendered binder contents</nav>`, `
+      setTimeout(() => {
+        document.querySelectorAll('.ma__sticky-toc').forEach(toc => { toc.style.display = 'none'; });
+        window.tocFinished = true;
+      }, 1700);
+    `));
+    return true;
+  };
+  const scenario = { label: 'short-toc', url: `${origin}/page`, captureTimeout: 5000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.equal(await page.evaluate(() => window.tocFinished), true);
+  });
+  const tocs = report(scenario.label).state.tableOfContents;
+  assert.equal(tocs.length, 2);
+  assert.ok(tocs.every(toc => toc.ready && !toc.shouldRender && !toc.links.length));
+});
+
+test('a TOC that never initializes fails at its named step with pending links in diagnostics', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(`<main><section class="ma__sticky-toc" data-parent="main" data-sections="h2" style="display:none"><div class="ma__sticky-toc__column"><ul></ul></div></section><h2 id="one">One</h2><h2 id="two">Two</h2><h2 id="three">Three</h2></main>`));
+    return true;
+  };
+  const scenario = { label: 'pending-toc', url: `${origin}/page`, captureTimeout: 800 };
+  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Readiness: table of contents/));
+  const diagnostic = report(scenario.label);
+  assert.equal(diagnostic.stage, 'table of contents');
+  assert.equal(diagnostic.state.tableOfContents[0].ready, false);
+  assert.deepEqual(diagnostic.state.tableOfContents[0].expectedTargets, ['one', 'two', 'three']);
+});

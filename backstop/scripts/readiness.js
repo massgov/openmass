@@ -275,13 +275,44 @@ async function contentIframeSnapshots(page) {
 }
 
 // Serializable browser function shared by polling and failure diagnostics.
-function snapshot() {
+function snapshot(tableOfContentsOnly = false) {
   const visible = element => element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
   const describe = element => element.id || element.className?.baseVal || element.className || element.tagName;
   const box = element => {
     const rect = element.getBoundingClientRect();
     return [rect.x, rect.y, rect.width, rect.height].map(number => Math.round(number * 10) / 10);
   };
+  // Mayflower starts with an empty, CSS-hidden TOC and populates it from the
+  // configured headings. A hidden container (or just its first link) isn't
+  // evidence that initialization has finished. Keep collapsed mobile links in
+  // this check, and use the component's own minimum-section rule.
+  const tableOfContents = [...document.querySelectorAll('.ma__sticky-toc')].map(toc => {
+    const parent = toc.dataset.parent && toc.closest(toc.dataset.parent);
+    const headings = parent && toc.dataset.sections ? [...parent.querySelectorAll(toc.dataset.sections)].filter(heading => !heading.matches('.ma__sticky-toc__title')) : [];
+    const sections = headings.map(heading => {
+      const copy = heading.cloneNode(true);
+      copy.querySelectorAll('.ma__visually-hidden').forEach(hidden => hidden.remove());
+      return { heading, title: copy.textContent.trim().toLowerCase() };
+    });
+    const count = sections.filter(section => !['related', 'contact'].includes(section.title)).length;
+    const shouldRender = count >= (Number(toc.dataset.minToShow) || 3);
+    // Contact is excluded from the minimum, but still receives a link.
+    const expected = sections.filter(section => section.title && section.title !== 'related').map(section => section.heading);
+    const anchors = [...toc.querySelectorAll('.ma__sticky-toc__column ul a')];
+    const complete = anchors.length === expected.length && expected.every((heading, index) =>
+      heading.id && heading.classList.contains('sticky-toc-jump-target') &&
+      anchors[index].getAttribute('href') === `#${heading.id}` && anchors[index].textContent.trim());
+    return {
+      parent: toc.dataset.parent, sections: toc.dataset.sections, shouldRender,
+      ready: !!parent && !!toc.dataset.sections && (shouldRender
+        ? toc.style.display === 'block' && parent.classList.contains('toc-parent') && complete
+        : toc.style.display === 'none'),
+      expectedTargets: expected.map(heading => heading.id),
+      display: getComputedStyle(toc).display, box: box(toc),
+      links: anchors.map(anchor => ({ target: anchor.getAttribute('href'), text: anchor.textContent.trim(), box: box(anchor), display: getComputedStyle(anchor).display, visibility: getComputedStyle(anchor).visibility }))
+    };
+  });
+  if (tableOfContentsOnly) return tableOfContents;
   const cache = window.__backstopImageDecodes ||= new WeakMap();
   const backgrounds = window.__backstopBackgroundDecodes ||= new Map();
   const decode = (image, key, store) => {
@@ -348,12 +379,18 @@ function snapshot() {
     fonts: document.fonts.status,
     fontErrors: [...document.fonts].filter(font => font.status === 'error').map(font => font.family),
     styles: [...document.querySelectorAll('link[rel~="stylesheet"]')].filter(link => !link.disabled && matchMedia(link.media || 'all').matches).map(link => ({ source: link.href, ready: !!link.sheet })),
-    images, banners, tableaus,
+    images, banners, tableaus, tableOfContents,
     videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, playerCheck: element.dataset.backstopVideoCheck, message: element.dataset.backstopVideoMessage, box: box(element) })),
     iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
     footer: [...document.querySelectorAll('.ma__footer-new')].map(box),
     feedback: [...document.querySelectorAll('.ma__fixed-feedback-button')].map(element => ({ display: getComputedStyle(element).display, visibility: getComputedStyle(element).visibility, box: box(element) }))
   };
+}
+
+async function tableOfContents(page) {
+  while (!(await page.evaluate(snapshot, true)).every(toc => toc.ready)) {
+    await page.waitForTimeout(200);
+  }
 }
 
 async function assets(page, scenario, stableFor = 1000) {
@@ -369,7 +406,7 @@ async function assets(page, scenario, stableFor = 1000) {
     }
     if (state.tableaus.some(viz => viz.state === 'error' || viz.state === 'timeout')) throw new Error('Tableau failed to become interactive');
     if (state.fontErrors.length) throw new Error(`Fonts failed to load: ${state.fontErrors.join(', ')}`);
-    const ready = state.images.every(image => image.state === 'ready' && image.complete !== false) && state.tableaus.every(viz => viz.state === 'ready') && state.fonts === 'loaded' && state.styles.every(style => style.ready);
+    const ready = state.images.every(image => image.state === 'ready' && image.complete !== false) && state.tableaus.every(viz => viz.state === 'ready') && state.tableOfContents.every(toc => toc.ready) && state.fonts === 'loaded' && state.styles.every(style => style.ready);
     const signature = JSON.stringify(state);
     if (!ready || signature !== lastSignature) stableSince = Date.now();
     lastSignature = signature;
@@ -409,4 +446,4 @@ async function guard(page, scenario, action) {
   }
 }
 
-module.exports = { monitor, save, warmup, navigation, styles, scrollPage, videoPlayers, tableauSnapshots, contentIframeSnapshots, snapshot, assets, guard };
+module.exports = { monitor, save, warmup, navigation, styles, scrollPage, tableOfContents, videoPlayers, tableauSnapshots, contentIframeSnapshots, snapshot, assets, guard };

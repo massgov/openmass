@@ -104,6 +104,7 @@ module.exports = async (page, scenario, viewport) => {
     });
 
     await step('lazy loading', () => readiness.scrollPage(page));
+    await step('table of contents', () => readiness.tableOfContents(page));
     await step('video placeholders', () => readiness.videoPlayers(page));
 
     await step('embeds and page elements', async () => {

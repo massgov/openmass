@@ -115,6 +115,13 @@ image geometry and page height. CSS background images and pseudo-elements are
 included. Image crop styles are preserved. The Document scenario skips stylesheet
 and footer checks because it displays a document rather than a themed HTML page.
 
+On pages with a JavaScript-generated table of contents, capture waits for every
+expected heading link and jump target. Collapsed mobile links are checked too.
+Pages below the component's minimum section count must finish initialization
+and hide the TOC. TOC links and geometry are included in the final stability
+check and diagnostics; an unfinished TOC fails at the `table of contents` step
+within the shared deadline.
+
 Tableau containers expose `data-tableau-state` as `loading`, `ready`, `error`, or
 `timeout`. The test hooks also observe public Tableau readiness callbacks/events
 on environments running older application code. A missing spinner is never used
