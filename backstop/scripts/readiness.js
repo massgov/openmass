@@ -135,6 +135,28 @@ async function scrollPage(page) {
   throw new Error('Page did not reach the bottom after 200 scroll steps');
 }
 
+async function homepageBanner(page) {
+  await page.waitForFunction(() => ['selected', 'error'].includes(window.__backstopHomepageBanner?.state));
+  const selection = await page.evaluate(() => window.__backstopHomepageBanner);
+  if (selection.state === 'error') throw new Error(selection.error);
+  await page.waitForFunction(() => {
+    const banner = document.querySelector('body.is-front #GUID935283478.ma__search-banner');
+    const image = window.drupalSettings.homepage_background_images[0];
+    if (!banner) return false;
+    const source = matchMedia('(min-width: 801px)').matches ? image.image_url : image.image_url_mobile;
+    const text = html => {
+      const node = document.createElement('div');
+      node.innerHTML = html || '';
+      return node.textContent.replace(/\s+/g, ' ').trim();
+    };
+    const creditLocation = banner.querySelector('.ma__banner-credit__image-name');
+    const creditAuthor = banner.querySelector('.ma__banner-credit__image-author');
+    return getComputedStyle(banner).backgroundImage.includes(new URL(source, document.baseURI).href) &&
+      creditLocation && creditAuthor && text(creditLocation.innerHTML) === text(image.image_location) && text(creditAuthor.innerHTML) === text(image.image_credit);
+  });
+  await page.evaluate(() => { window.__backstopHomepageBanner.state = 'ready'; });
+}
+
 async function videoPlayers(page) {
   const capture = captures.get(page);
   let index = 0;
@@ -389,6 +411,7 @@ function snapshot(tableOfContentsOnly = false) {
     fontErrors: [...document.fonts].filter(font => font.status === 'error').map(font => font.family),
     styles: [...document.querySelectorAll('link[rel~="stylesheet"]')].filter(link => !link.disabled && matchMedia(link.media || 'all').matches).map(link => ({ source: link.href, ready: !!link.sheet })),
     images, banners, tableaus, tableOfContents,
+    homepageBanner: window.__backstopHomepageBanner || null,
     stickyNavigation: [...document.querySelectorAll('.ma__sticky-nav')].map(element => ({ position: getComputedStyle(element).position, box: box(element) })),
     videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, playerCheck: element.dataset.backstopVideoCheck, message: element.dataset.backstopVideoMessage, box: box(element) })),
     iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
@@ -456,4 +479,4 @@ async function guard(page, scenario, action) {
   }
 }
 
-module.exports = { monitor, save, warmup, navigation, styles, scrollPage, tableOfContents, videoPlayers, tableauSnapshots, contentIframeSnapshots, snapshot, assets, guard };
+module.exports = { monitor, save, warmup, navigation, styles, scrollPage, homepageBanner, tableOfContents, videoPlayers, tableauSnapshots, contentIframeSnapshots, snapshot, assets, guard };

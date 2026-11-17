@@ -3,6 +3,7 @@ const readiness = require('./readiness');
 module.exports = async (page, scenario, viewport, isReference, browserContext, config = {}) => {
   const capture = readiness.monitor(page, scenario, viewport, isReference, config);
   await page.addInitScript(require('./tableau-readiness'));
+  if (scenario.label === 'Homepage') await page.addInitScript(require('./homepage-banner'));
   const banned = [
     'www.googletagmanager.com',
     'script.crazyegg.com',

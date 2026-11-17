@@ -119,6 +119,16 @@ image geometry and page height. CSS background images and pseudo-elements are
 included. Image crop styles are preserved. Downloaded documents are excluded
 from visual scenarios because Chromium's PDF viewer is not reliable here.
 
+For the Homepage scenario, a browser initialization hook limits
+`homepage_background_images` to the first image alphabetically by site-relative
+desktop image path, ignoring the hostname and query string. The site's existing
+script renders that entry's desktop/mobile image and real credits. Capture waits
+for the background and matching credit markup, then checks image decoding as
+usual. Diagnostics record the selected path and URLs. Removing an entry selects
+the next available image automatically; different image lists or credit metadata
+between environments can still produce real content differences. Review and
+regenerate references when the selected banner changes.
+
 On pages with a JavaScript-generated table of contents, capture waits for every
 expected heading link and jump target. Collapsed mobile links are checked too.
 Pages below the component's minimum section count must finish initialization

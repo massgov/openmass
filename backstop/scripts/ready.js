@@ -9,6 +9,7 @@ module.exports = async (page, scenario, viewport) => {
       document.querySelectorAll(selector).forEach(element => element.remove());
     }), scenario.removeSelectors || []);
     await step('stylesheets', () => readiness.styles(page, scenario));
+    if (scenario.label === 'Homepage') await step('homepage banner', () => readiness.homepageBanner(page));
 
     await page.addStyleTag({
       content: `
@@ -16,11 +17,6 @@ module.exports = async (page, scenario, viewport) => {
         *, *::before, *::after {
           animation-duration: 0s !important;
           transition-duration: 0s !important;
-        }
-
-        /* Mask random homepage image. */
-        body.is-front .ma__search-banner {
-          background: none !important;
         }
 
         /* Hide the focus-visible border around the mobile menu */
@@ -78,15 +74,6 @@ module.exports = async (page, scenario, viewport) => {
       // These masks cover changing homepage content. Other pages reuse the
       // same components and must retain their real content for comparison.
       if (!document.body.classList.contains('is-front')) return;
-
-      // [FREQUENTLY CHANGING CONTENT] Replace random image credit on
-      // Home page
-      document.querySelectorAll('.ma__search-banner__image-name').forEach(function (e) {
-        e.innerText = 'Good Picture';
-      });
-      document.querySelectorAll('.ma__search-banner__image-author').forEach(function (e) {
-        e.innerText = 'John Smith';
-      });
 
       // [FREQUENTLY CHANGING CONTENT] Replace link text of popular searches on
       // Home page

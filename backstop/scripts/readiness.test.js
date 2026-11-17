@@ -63,6 +63,101 @@ function report(label, size = viewport, isReference = false) {
   return JSON.parse(fs.readFileSync(path.join(directory, `${isReference ? 'reference' : 'test'}-${label}-${size.label}.json`), 'utf8'));
 }
 
+function homepageFixture(images) {
+  const renderer = fs.readFileSync(path.join(__dirname, '../../docroot/modules/custom/mass_utility/js/mass_utility.homepage_background_image.js'), 'utf8');
+  return html(`<script type="application/json" data-drupal-selector="drupal-settings-json">${JSON.stringify({ unrelatedSetting: 'preserved', homepage_background_images: images })}</script>
+    <script src="/jquery.js"></script><script src="/settings.js"></script>
+    <style>.ma__search-banner { height:200px; position:relative; background-size:cover; background-position:center } .ma__banner-credit { position:absolute; right:0; bottom:0 }</style>
+    <section class="ma__search-banner" id="GUID935283478"><style></style><span>Search homepage</span></section>`,
+  `document.body.classList.add('is-front'); Math.random = () => 0.999; ${renderer}`);
+}
+
+function serveHomepageScripts(request, response) {
+  const files = { '/jquery.js': '../../docroot/core/assets/vendor/jquery/jquery.min.js', '/settings.js': '../../docroot/core/misc/drupalSettingsLoader.js' };
+  if (!files[request.url]) return false;
+  response.writeHead(200, { 'content-type': 'application/javascript' });
+  response.end(fs.readFileSync(path.join(__dirname, files[request.url]), 'utf8'));
+  return true;
+}
+
+test('homepage selects the first image path across reordered environments, retains responsive images and real credits, and advances after removal', async () => {
+  const alpha = { image_url: 'https://z-prod.example.test/images/alpha.svg?itok=prod', image_url_mobile: 'https://z-prod.example.test/images/alpha-mobile.svg?itok=prod', image_location: '<span>Alpha &amp; Harbor</span>', image_credit: '<strong>Actual photographer</strong>' };
+  const bravo = { ...alpha, image_url: 'https://a.example.test/images/bravo.svg', image_url_mobile: 'https://a.example.test/images/bravo-mobile.svg', image_location: 'Bravo location', image_credit: 'Bravo photographer' };
+  const zulu = { ...bravo, image_url: 'https://a.example.test/images/zulu.svg', image_url_mobile: 'https://a.example.test/images/zulu-mobile.svg' };
+  let images;
+  handle = (request, response) => {
+    if (serveHomepageScripts(request, response)) return true;
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(homepageFixture(images));
+    return true;
+  };
+  const desktop = { ...viewport, width: 1024 };
+  const phone = { label: 'phone', width: 360, height: 480 };
+  const stageAlpha = { ...alpha, image_url: alpha.image_url.replace('prod', 'stage').replace('itok=prod', 'itok=stage'), image_url_mobile: alpha.image_url_mobile.replace('prod', 'stage').replace('itok=prod', 'itok=stage') };
+  let previous;
+  for (const [records, size, expected, isReference] of [
+    [[zulu, bravo, alpha], desktop, alpha, true],
+    [[stageAlpha, zulu, bravo], desktop, stageAlpha, false],
+    [[bravo, stageAlpha, zulu], phone, stageAlpha, false],
+    [[zulu, bravo], desktop, bravo, false]
+  ]) {
+    images = records;
+    const scenario = { label: 'Homepage', url: `${origin}/page`, captureTimeout: 5000 };
+    const screenshot = await capture(scenario, async page => {
+      await ready(page, scenario, size);
+      assert.equal(await page.evaluate(() => drupalSettings.homepage_background_images.length), 1);
+      assert.equal(await page.evaluate(() => drupalSettings.unrelatedSetting), 'preserved');
+      assert.equal(await page.locator('.ma__banner-credit__image-author').textContent(), expected.image_credit.replace(/<[^>]*>/g, ''));
+      if (expected !== bravo) assert.equal(await page.locator('.ma__banner-credit__image-name').textContent(), 'Alpha & Harbor');
+      const selected = size.width >= 801 ? expected.image_url : expected.image_url_mobile;
+      assert.ok((await page.locator('.ma__search-banner').evaluate(banner => getComputedStyle(banner).backgroundImage)).includes(selected));
+      const buffer = await page.screenshot({ fullPage: true });
+      const png = PNG.sync.read(buffer);
+      const offset = (190 * png.width + 10) * 4;
+      assert.deepEqual([...png.data.subarray(offset, offset + 4)], [0, 128, 0, 255], 'The real background must be visible');
+      return buffer;
+    }, size, page => page.route('https://**.example.test/**', route => route.fulfill({ contentType: 'image/svg+xml', body: svg })), isReference);
+    const selection = report('Homepage', size, isReference).state.homepageBanner;
+    assert.equal(selection.state, 'ready');
+    assert.equal(selection.path, new URL(expected.image_url).pathname);
+    if (records[0] === stageAlpha) assert.deepEqual(screenshot, previous);
+    previous = screenshot;
+  }
+});
+
+test('homepage reports empty image lists and a selected broken background rather than capturing a mask or another image', async () => {
+  let images = [];
+  handle = (request, response) => {
+    if (serveHomepageScripts(request, response)) return true;
+    if (request.url === '/page') { response.writeHead(200, { 'content-type': 'text/html' }); response.end(homepageFixture(images)); return true; }
+    if (request.url === '/broken.svg') { response.writeHead(404); response.end(); return true; }
+    return false;
+  };
+  const scenario = { label: 'Homepage', url: `${origin}/page`, captureTimeout: 4000 };
+  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Readiness: homepage banner.*No homepage banner images/));
+  assert.equal(report('Homepage').state.homepageBanner.state, 'error');
+  images = [{ image_url: `${origin}/broken.svg`, image_url_mobile: `${origin}/broken.svg`, image_location: 'Actual location', image_credit: 'Actual credit' }];
+  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Image failed to load or decode: .*HTTP 404/));
+});
+
+test('deterministic homepage selection does not change other scenarios or unrelated settings', async () => {
+  const images = ['alpha', 'zulu'].map(name => ({ image_url: `${origin}/${name}.svg`, image_url_mobile: `${origin}/${name}-mobile.svg`, image_location: name, image_credit: `${name} photographer` }));
+  handle = (request, response) => {
+    if (serveHomepageScripts(request, response)) return true;
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' }); response.end(homepageFixture(images));
+    return true;
+  };
+  const scenario = { label: 'other-banner', url: `${origin}/page`, captureTimeout: 4000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.equal(await page.evaluate(() => window.__backstopHomepageBanner), undefined);
+    assert.equal(await page.evaluate(() => drupalSettings.homepage_background_images.length), 2);
+    assert.equal(await page.locator('.ma__banner-credit__image-author').textContent(), 'zulu photographer');
+  });
+});
+
 test('warmup retries transient failures, rejects unexpected 404s, and accepts expected 404s', async () => {
   const context = await browser.newContext();
   try {
