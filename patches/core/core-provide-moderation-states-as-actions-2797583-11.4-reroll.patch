@@ -1,0 +1,1260 @@
+diff --git a/core/modules/content_moderation/config/schema/content_moderation.schema.yml b/core/modules/content_moderation/config/schema/content_moderation.schema.yml
+index 7b14efbe..28af8e1d 100644
+--- a/core/modules/content_moderation/config/schema/content_moderation.schema.yml
++++ b/core/modules/content_moderation/config/schema/content_moderation.schema.yml
+@@ -36,3 +36,14 @@ workflow.type_settings.content_moderation:
+     default_moderation_state:
+       type: string
+       label: 'Default moderation state'
++
++action.configuration.moderation_state_change:*:
++  type: action_configuration_default
++  label: 'Change moderation state'
++  mapping:
++    workflow:
++      type: string
++      label: 'The ID of the workflow'
++    state:
++      type: string
++      label: 'The ID of the state'
+diff --git a/core/modules/content_moderation/src/Plugin/Action/ModerationStateChange.php b/core/modules/content_moderation/src/Plugin/Action/ModerationStateChange.php
+new file mode 100644
+index 00000000..f9b6f653
+--- /dev/null
++++ b/core/modules/content_moderation/src/Plugin/Action/ModerationStateChange.php
+@@ -0,0 +1,288 @@
++<?php
++
++namespace Drupal\content_moderation\Plugin\Action;
++
++use Drupal\content_moderation\ModerationInformationInterface;
++use Drupal\Core\Access\AccessResult;
++use Drupal\Core\Action\ConfigurableActionBase;
++use Drupal\Core\Entity\ContentEntityInterface;
++use Drupal\Core\Entity\DependencyTrait;
++use Drupal\Core\Entity\EntityChangedInterface;
++use Drupal\Core\Entity\EntityTypeManagerInterface;
++use Drupal\Core\Entity\RevisionLogInterface;
++use Drupal\Core\Form\FormStateInterface;
++use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
++use Drupal\Core\Session\AccountInterface;
++use Drupal\workflows\Entity\Workflow;
++use Symfony\Component\DependencyInjection\ContainerInterface;
++
++/**
++ * Changes moderation_state of an entity.
++ *
++ * @Action(
++ *   id = "moderation_state_change",
++ *   deriver = "\Drupal\content_moderation\Plugin\Derivative\ModerationStateChangeDeriver"
++ * )
++ */
++class ModerationStateChange extends ConfigurableActionBase implements ContainerFactoryPluginInterface {
++
++  use DependencyTrait;
++
++  /**
++   * The moderation info service.
++   *
++   * @var \Drupal\content_moderation\ModerationInformationInterface
++   */
++  protected $moderationInfo;
++
++  /**
++   * The entity type manager.
++   *
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
++   */
++  protected $entityTypeManager;
++
++  /**
++   * The current active user.
++   *
++   * @var \Drupal\Core\Session\AccountInterface
++   */
++  protected $currentUser;
++
++  /**
++   * Moderation state change constructor.
++   *
++   * @param array $configuration
++   *   A configuration array containing information about the plugin instance.
++   * @param string $plugin_id
++   *   The plugin_id for the plugin instance.
++   * @param mixed $plugin_definition
++   *   The plugin implementation definition.
++   * @param \Drupal\content_moderation\ModerationInformationInterface $moderation_info
++   *   The moderation info service.
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *   The entity type manager service.
++   * @param \Drupal\Core\Session\AccountInterface $current_user
++   *   The current active user.
++   */
++  public function __construct(array $configuration, $plugin_id, $plugin_definition, ModerationInformationInterface $moderation_info, EntityTypeManagerInterface $entity_type_manager, AccountInterface $current_user) {
++    parent::__construct($configuration, $plugin_id, $plugin_definition);
++    $this->moderationInfo = $moderation_info;
++    $this->entityTypeManager = $entity_type_manager;
++    $this->currentUser = $current_user;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
++    return new static(
++      $configuration,
++      $plugin_id,
++      $plugin_definition,
++      $container->get('content_moderation.moderation_information'),
++      $container->get('entity_type.manager'),
++      $container->get('current_user')
++    );
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function defaultConfiguration() {
++    return [
++      'workflow' => NULL,
++      'state' => NULL,
++    ];
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
++
++    $workflow_options = [];
++    $workflows = Workflow::loadMultipleByType('content_moderation');
++
++    foreach ($workflows as $workflow) {
++      if (in_array($this->pluginDefinition['type'], $workflow->getTypePlugin()->getEntityTypes(), TRUE)) {
++        $workflow_options[$workflow->id()] = $workflow->label();
++      }
++    }
++
++    if (!$default_workflow = $form_state->getValue('workflow')) {
++      if (!empty($this->configuration['workflow'])) {
++        $default_workflow = $this->configuration['workflow'];
++      }
++      else {
++        $default_workflow = key($workflow_options);
++      }
++    }
++
++    $form['workflow'] = [
++      '#type' => 'select',
++      '#title' => $this->t('Workflow'),
++      '#options' => $workflow_options,
++      '#default_value' => $default_workflow,
++      '#required' => TRUE,
++      '#ajax' => [
++        'callback' => [static::class, 'configurationFormAjax'],
++        'wrapper' => 'edit-state-wrapper',
++      ],
++    ];
++
++    $form['workflow_submit'] = [
++      '#type' => 'submit',
++      '#value' => $this->t('Change workflow'),
++      '#limit_validation_errors' => [['workflow']],
++      '#attributes' => [
++        'class' => ['js-hide'],
++      ],
++      '#submit' => [[static::class, 'configurationFormAjaxSubmit']],
++    ];
++
++    if ($default_workflow) {
++      $state_options = [];
++      foreach ($workflows[$default_workflow]->getTypePlugin()->getStates() as $state) {
++        $state_options[$state->id()] = $this->t('Change moderation state to @state', ['@state' => $state->label()]);
++      }
++
++      $form['state-wrapper'] = [
++        '#type' => 'container',
++        '#id' => 'edit-state-wrapper',
++      ];
++
++      $form['state-wrapper']['state'] = [
++        '#type' => 'select',
++        '#title' => $this->t('State'),
++        '#options' => $state_options,
++        '#default_value' => $this->configuration['state'],
++        '#required' => TRUE,
++      ];
++    }
++
++    return $form;
++
++  }
++
++  /**
++   * Ajax callback for the configuration form.
++   *
++   * @see static::buildConfigurationForm()
++   */
++  public static function configurationFormAjax($form, FormStateInterface $form_state) {
++    return $form['state-wrapper'];
++  }
++
++  /**
++   * Submit configuration for the non-JS case.
++   *
++   * @see static::buildConfigurationForm()
++   */
++  public static function configurationFormAjaxSubmit($form, FormStateInterface $form_state) {
++    // Rebuild the form.
++    $form_state->setRebuild();
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
++    $this->configuration['workflow'] = $form_state->getValue('workflow');
++    $this->configuration['state'] = $form_state->getValue('state');
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function calculateDependencies() {
++    if (!empty($this->configuration['workflow'])) {
++      $this->addDependency('config', 'workflows.workflow.' . $this->configuration['workflow']);
++    }
++    return $this->dependencies;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function execute(?ContentEntityInterface $entity = NULL) {
++    $revision = $this->loadLatestRevision($entity);
++    // Create a new revision if the states don't match.
++    if ($revision->moderation_state->value != $this->configuration['state']) {
++      /** @var \Drupal\Core\Entity\ContentEntityStorageInterface $storage */
++      $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
++      $revision = $storage->createRevision($revision);
++    }
++    $revision->moderation_state->value = $this->configuration['state'];
++    $changed_time = time();
++    if ($revision instanceof EntityChangedInterface) {
++      $revision->setChangedTime($changed_time);
++    }
++    if ($revision instanceof RevisionLogInterface) {
++      $revision->setRevisionLogMessage('Changed moderation state to ' . $this->configuration['state']);
++      $revision->setRevisionCreationTime($changed_time);
++      $revision->setRevisionUserId($this->currentUser->id());
++    }
++    $revision->save();
++  }
++
++  /**
++   * Loads the latest revision of an entity.
++   *
++   * @param \Drupal\Core\Entity\ContentEntityInterface $entity
++   *   The content entity.
++   *
++   * @return \Drupal\Core\Entity\ContentEntityInterface
++   *   The latest revision of content entity.
++   */
++  protected function loadLatestRevision(ContentEntityInterface $entity) {
++    /** @var \Drupal\Core\Entity\ContentEntityStorageInterface $storage */
++    $storage = $this->entityTypeManager->getStorage($entity->getEntityTypeId());
++    /** @var \Drupal\Core\Entity\ContentEntityInterface $original_entity */
++    $original_entity = $storage->loadRevision($storage->getLatestRevisionId($entity->id()));
++    if (!$entity->isDefaultTranslation() && $original_entity->hasTranslation($entity->language()->getId())) {
++      $original_entity = $original_entity->getTranslation($entity->language()->getId());
++    }
++    return $original_entity;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function access($object, ?AccountInterface $account = NULL, $return_as_object = FALSE) {
++    if (!$object || !$object instanceof ContentEntityInterface) {
++      $result = AccessResult::forbidden('Not a valid entity.');
++      return $return_as_object ? $result : $result->isAllowed();
++    }
++    if ($workflow = $this->moderationInfo->getWorkflowForEntity($object)) {
++      if ($workflow->id() !== $this->configuration['workflow']) {
++        $result = AccessResult::forbidden('Not a valid workflow for this entity.');
++        $result->addCacheableDependency($workflow);
++        return $return_as_object ? $result : $result->isAllowed();
++      }
++    }
++    else {
++      $result = AccessResult::forbidden('No workflow found for the entity.');
++      return $return_as_object ? $result : $result->isAllowed();
++    }
++    $object = $this->loadLatestRevision($object);
++    // Let content moderation do its job. See content_moderation_entity_access()
++    // for more details.
++    $access = $object->access('update', $account, TRUE);
++
++    $to_state_id = $this->configuration['state'];
++    $from_state = $workflow->getTypePlugin()->getState($object->moderation_state->value);
++    // Make sure we can make the transition.
++    if ($from_state->canTransitionTo($to_state_id)) {
++      $transition = $from_state->getTransitionTo($to_state_id);
++      $result = AccessResult::allowedIfHasPermission($account, 'use ' . $workflow->id() . ' transition ' . $transition->id())
++        ->andIf($access);
++    }
++    else {
++      $result = AccessResult::forbidden('No valid transition found.');
++    }
++    $result->addCacheableDependency($workflow);
++    return $return_as_object ? $result : $result->isAllowed();
++  }
++
++}
+diff --git a/core/modules/content_moderation/src/Plugin/Derivative/ModerationStateChangeDeriver.php b/core/modules/content_moderation/src/Plugin/Derivative/ModerationStateChangeDeriver.php
+new file mode 100644
+index 00000000..7268b64b
+--- /dev/null
++++ b/core/modules/content_moderation/src/Plugin/Derivative/ModerationStateChangeDeriver.php
+@@ -0,0 +1,80 @@
++<?php
++
++namespace Drupal\content_moderation\Plugin\Derivative;
++
++use Drupal\Component\Plugin\Derivative\DeriverBase;
++use Drupal\content_moderation\ModerationInformationInterface;
++use Drupal\Core\Entity\EntityTypeManagerInterface;
++use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
++use Drupal\Core\StringTranslation\StringTranslationTrait;
++use Drupal\Core\StringTranslation\TranslationInterface;
++use Symfony\Component\DependencyInjection\ContainerInterface;
++
++/**
++ * The moderation_state change deriver.
++ */
++class ModerationStateChangeDeriver extends DeriverBase implements ContainerDeriverInterface {
++
++  use StringTranslationTrait;
++
++  /**
++   * The moderation information service.
++   *
++   * @var \Drupal\content_moderation\ModerationInformationInterface
++   */
++  protected $moderationInfo;
++
++  /**
++   * The entity type manager.
++   *
++   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
++   */
++  protected $entityTypeManager;
++
++  /**
++   * Moderation state change deriver constructor.
++   *
++   * @param \Drupal\Core\StringTranslation\TranslationInterface $string_translation
++   *   The string translation service.
++   * @param \Drupal\content_moderation\ModerationInformationInterface $moderation_information
++   *   The moderation information service.
++   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
++   *   The entity type manager.
++   */
++  public function __construct(TranslationInterface $string_translation, ModerationInformationInterface $moderation_information, EntityTypeManagerInterface $entity_type_manager) {
++    $this->stringTranslation = $string_translation;
++    $this->moderationInfo = $moderation_information;
++    $this->entityTypeManager = $entity_type_manager;
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public static function create(ContainerInterface $container, $base_plugin_id) {
++    return new static(
++      $container->get('string_translation'),
++      $container->get('content_moderation.moderation_information'),
++      $container->get('entity_type.manager')
++    );
++  }
++
++  /**
++   * {@inheritdoc}
++   */
++  public function getDerivativeDefinitions($base_plugin_definition) {
++    // Reset the discovered definitions.
++    $this->derivatives = [];
++    /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
++    $entity_types = array_filter($this->entityTypeManager->getDefinitions(), [$this->moderationInfo, 'canModerateEntitiesOfEntityType']);
++    foreach ($entity_types as $entity_type_id => $entity_type) {
++      $plugin['type'] = $entity_type_id;
++      $plugin['label'] = $this->t('Change moderation state of @entity_type', ['@entity_type' => $entity_type->getLabel()]);
++      $plugin['config_dependencies']['module'] = [
++        $entity_type->getProvider(),
++      ];
++      $this->derivatives[$entity_type_id] = $plugin + $base_plugin_definition;
++    }
++    return parent::getDerivativeDefinitions($base_plugin_definition);
++  }
++
++}
+diff --git a/core/modules/content_moderation/tests/src/Functional/ActionConfigurationTest.php b/core/modules/content_moderation/tests/src/Functional/ActionConfigurationTest.php
+new file mode 100644
+index 00000000..8710352e
+--- /dev/null
++++ b/core/modules/content_moderation/tests/src/Functional/ActionConfigurationTest.php
+@@ -0,0 +1,113 @@
++<?php
++
++namespace Drupal\Tests\content_moderation\Functional;
++
++use Drupal\system\Entity\Action;
++use Drupal\Tests\BrowserTestBase;
++use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
++use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
++
++/**
++ * Tests actions configuration by adding, editing, and deleting the action.
++ *
++ * @group content_moderation
++ */
++class ActionConfigurationTest extends BrowserTestBase {
++
++  use ContentTypeCreationTrait;
++  use ContentModerationTestTrait;
++
++  /**
++   * {@inheritdoc}
++   */
++  public static $modules = [
++    'action',
++    'node',
++    'content_moderation',
++  ];
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp() {
++    parent::setUp();
++    $this->createContentType(['type' => 'page']);
++    $workflow = $this->createEditorialWorkflow();
++    $workflow->getTypePlugin()->addEntityTypeAndBundle('node', 'page');
++    $workflow->save();
++  }
++
++  /**
++   * Tests configuration of action through administration interface.
++   */
++  public function testActionConfiguration() {
++    // Create a user with permission to view the actions administration pages.
++    $user = $this->drupalCreateUser(['administer actions']);
++    $this->drupalLogin($user);
++    $assert_session = $this->assertSession();
++
++    $edit = [
++      'action' => 'moderation_state_change:node',
++    ];
++    $this->drupalPostForm('admin/config/system/actions', $edit, t('Create'));
++    $assert_session->statusCodeEquals(200);
++
++    // Make a POST request to the individual action configuration page.
++    $edit = [];
++    $action_label = $this->randomMachineName();
++    $edit['label'] = $action_label;
++    $edit['id'] = strtolower($action_label);
++    $edit['workflow'] = 'editorial';
++    $edit['state'] = 'draft';
++    $this->submitForm($edit, t('Save'));
++    $assert_session->statusCodeEquals(200);
++
++    $action_id = $edit['id'];
++
++    // Make sure that the new complex action was saved properly.
++    $assert_session->pageTextContains(t('The action has been successfully saved.'));
++    $assert_session->pageTextContains($action_label);
++
++    // Make another POST request to the action edit page.
++    $this->clickLink(t('Configure'));
++    $assert_session->statusCodeEquals(200);
++    $assert_session->fieldValueEquals('workflow', 'editorial');
++    $assert_session->fieldValueEquals('state', 'draft');
++
++    $edit = [];
++    $new_action_label = $this->randomMachineName();
++    $edit['label'] = $new_action_label;
++    $edit['workflow'] = 'editorial';
++    $edit['state'] = 'published';
++    $this->drupalPostForm(NULL, $edit, t('Save'));
++    $assert_session->statusCodeEquals(200);
++
++    // Make sure that the action updated properly.
++    $assert_session->pageTextContains(t('The action has been successfully saved.'));
++    $assert_session->pageTextNotContains($action_label);
++    $assert_session->pageTextContains($new_action_label);
++
++    $this->clickLink(t('Configure'));
++    $assert_session->statusCodeEquals(200);
++    $assert_session->fieldValueEquals('workflow', 'editorial');
++    $assert_session->fieldValueEquals('state', 'published');
++
++    // Make sure that deletions work properly.
++    $this->drupalGet('admin/config/system/actions');
++    $this->clickLink(t('Delete'));
++    $assert_session->statusCodeEquals(200);
++    $edit = [];
++    $this->drupalPostForm(NULL, $edit, t('Delete'));
++    $assert_session->statusCodeEquals(200);
++
++    // Make sure that the action was actually deleted.
++    $assert_session->responseContains(t('The action %action has been deleted.', ['%action' => $new_action_label]));
++    $this->drupalGet('admin/config/system/actions');
++    $assert_session->statusCodeEquals(200);
++    $assert_session->pageTextNotContains($new_action_label);
++
++    $action = Action::load($action_id);
++    $this->assertFalse($action, 'Make sure the action is gone after being deleted.');
++  }
++
++}
+diff --git a/core/modules/content_moderation/tests/src/FunctionalJavascript/ActionConfigurationTest.php b/core/modules/content_moderation/tests/src/FunctionalJavascript/ActionConfigurationTest.php
+new file mode 100644
+index 00000000..2dc7626e
+--- /dev/null
++++ b/core/modules/content_moderation/tests/src/FunctionalJavascript/ActionConfigurationTest.php
+@@ -0,0 +1,128 @@
++<?php
++
++namespace Drupal\Tests\content_moderation\FunctionalJavascript;
++
++use Drupal\FunctionalJavascriptTests\JavascriptTestBase;
++use Drupal\system\Entity\Action;
++use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
++use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
++use Drupal\workflows\Entity\Workflow;
++
++/**
++ * Tests AJAX on actions configuration form.
++ *
++ * @group content_moderation
++ */
++class ActionConfigurationTest extends JavascriptTestBase {
++
++  use ContentTypeCreationTrait;
++  use ContentModerationTestTrait;
++
++  /**
++   * {@inheritdoc}
++   */
++  public static $modules = [
++    'action',
++    'node',
++    'content_moderation',
++  ];
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp() {
++    parent::setUp();
++    $this->createContentType(['type' => 'page']);
++    $this->createContentType(['type' => 'article']);
++    $workflow = $this->createEditorialWorkflow();
++    $workflow->getTypePlugin()->addEntityTypeAndBundle('node', 'page');
++    $workflow->save();
++    $workflow = Workflow::create([
++      'id' => 'moderation',
++      'label' => 'Moderation',
++      'type' => 'content_moderation',
++    ]);
++    $workflow->getTypePlugin()
++      ->addState('moderated', 'Moderated')
++      ->addEntityTypeAndBundle('node', 'article');
++    $workflow->save();
++  }
++
++  /**
++   * Tests configuration of action through administration interface.
++   */
++  public function testActionConfiguration() {
++    // Create a user with permission to view the actions administration pages.
++    $user = $this->drupalCreateUser(['administer actions']);
++    $this->drupalLogin($user);
++    $assert_session = $this->assertSession();
++
++    $edit = [
++      'action' => 'moderation_state_change:node',
++    ];
++    $this->drupalPostForm('admin/config/system/actions', $edit, t('Create'));
++    $assert_session->statusCodeEquals(200);
++    $workflow_select = $assert_session->selectExists('workflow');
++    $this->assertNotNull($workflow_select->find('named', ['option', 'editorial']));
++    $this->assertNotNull($workflow_select->find('named', ['option', 'moderation']));
++
++    $state_select = $assert_session->selectExists('state');
++    $this->assertNotNull($state_select->find('named', ['option', 'archived']));
++    $this->assertNotNull($state_select->find('named', ['option', 'draft']));
++    $this->assertNotNull($state_select->find('named', ['option', 'published']));
++    // Trigger the AJAX.
++    $workflow_select->selectOption('moderation');
++    $assert_session->assertWaitOnAjaxRequest();
++    $state_select = $assert_session->selectExists('state');
++    $this->assertNotNull($state_select->find('named', ['option', 'draft']));
++    $this->assertNotNull($state_select->find('named', ['option', 'moderated']));
++    $this->assertNotNull($state_select->find('named', ['option', 'published']));
++    // Trigger the AJAX.
++    $workflow_select->selectOption('editorial');
++    $assert_session->assertWaitOnAjaxRequest();
++    $state_select = $assert_session->selectExists('state');
++    $this->assertNotNull($state_select->find('named', ['option', 'archived']));
++    $this->assertNotNull($state_select->find('named', ['option', 'draft']));
++    $this->assertNotNull($state_select->find('named', ['option', 'published']));
++  }
++
++  /**
++   * Tests action instance creation through administration interface.
++   */
++  public function testActionCreation() {
++    // Create a user with permission to view the actions administration pages.
++    $user = $this->drupalCreateUser(['administer actions']);
++    $this->drupalLogin($user);
++    $assert_session = $this->assertSession();
++
++    $edit = [
++      'action' => 'moderation_state_change:node',
++    ];
++    $this->drupalPostForm('admin/config/system/actions', $edit, t('Create'));
++    $assert_session->statusCodeEquals(200);
++    $page = $this->getSession()->getPage();
++    $id = 'change_moderation_state_of_content';
++    $page->fillField('label', 'Change moderation state of content to draft');
++    $page->fillField('id', $id);
++    // Trigger the AJAX.
++    $page->selectFieldOption('workflow', 'editorial');
++    $assert_session->assertWaitOnAjaxRequest();
++    $page->selectFieldOption('state', 'draft');
++    // Submit the form.
++    $this->submitForm([], t('Save'));
++    $assert_session->statusCodeEquals(200);
++    $assert_session->addressEquals('admin/config/system/actions');
++
++    /** @var \Drupal\system\ActionConfigEntityInterface $action */
++    $action = Action::load($id);
++    $this->assertNotNull($action);
++
++    /** @var \Drupal\content_moderation\Plugin\Action\ModerationStateChange $plugin */
++    $plugin = $action->getPlugin();
++    // Make sure the configuration are saved correctly.
++    $configuration = $plugin->getConfiguration();
++    $this->assertEquals('editorial', $configuration['workflow']);
++    $this->assertEquals('draft', $configuration['state']);
++  }
++
++}
+diff --git a/core/modules/content_moderation/tests/src/Kernel/ActionConfigSchemaTest.php b/core/modules/content_moderation/tests/src/Kernel/ActionConfigSchemaTest.php
+new file mode 100644
+index 00000000..2089a0fc
+--- /dev/null
++++ b/core/modules/content_moderation/tests/src/Kernel/ActionConfigSchemaTest.php
+@@ -0,0 +1,92 @@
++<?php
++
++namespace Drupal\Tests\content_moderation\Kernel;
++
++use Drupal\node\Entity\NodeType;
++use Drupal\system\Entity\Action;
++use Drupal\Tests\content_moderation\Traits\ContentModerationTestTrait;
++use Drupal\Tests\SchemaCheckTestTrait;
++use Drupal\KernelTests\KernelTestBase;
++
++/**
++ * Ensures the change state action has valid config schema.
++ *
++ * @group content_moderation
++ */
++class ActionConfigSchemaTest extends KernelTestBase {
++
++  use SchemaCheckTestTrait;
++  use ContentModerationTestTrait;
++
++  /**
++   * {@inheritdoc}
++   */
++  public static $modules = [
++    'content_moderation',
++    'node',
++    'user',
++    'system',
++    'workflows',
++  ];
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp() {
++    parent::setUp();
++    $this->installEntitySchema('node');
++    $this->installSchema('node', 'node_access');
++    $this->installEntitySchema('content_moderation_state');
++    $this->installConfig('content_moderation');
++
++    $node_type = NodeType::create([
++      'type' => 'page',
++      'label' => 'Page',
++    ]);
++    $node_type->save();
++    $workflow = $this->createEditorialWorkflow();
++    $workflow->getTypePlugin()->addEntityTypeAndBundle('node', 'page');
++    $workflow->save();
++
++    $action = Action::create([
++      'id' => 'change_moderation_state_to_draft',
++      'type' => 'node',
++      'label' => t('Change moderation state to Draft'),
++      'configuration' => [
++        'workflow' => 'editorial',
++        'state' => 'draft',
++      ],
++      'plugin' => 'moderation_state_change:node',
++    ]);
++    $action->save();
++
++    $action = Action::create([
++      'id' => 'change_moderation_state_to_published',
++      'type' => 'node',
++      'label' => t('Change moderation state to Published'),
++      'configuration' => [
++        'workflow' => 'editorial',
++        'state' => 'published',
++      ],
++      'plugin' => 'moderation_state_change:node',
++    ]);
++    $action->save();
++  }
++
++  /**
++   * Tests whether the change_moderation_state action config schema is valid.
++   */
++  public function testValidActionConfigSchema() {
++
++    // Test change_moderation_state_to_draft configuration.
++    $config = $this->config('system.action.change_moderation_state_to_draft');
++    $this->assertEquals($config->get('id'), 'change_moderation_state_to_draft');
++    $this->assertConfigSchema(\Drupal::service('config.typed'), $config->getName(), $config->get());
++
++    // Test change_moderation_state_to_published configuration.
++    $config = $this->config('system.action.change_moderation_state_to_published');
++    $this->assertEquals($config->get('id'), 'change_moderation_state_to_published');
++    $this->assertConfigSchema(\Drupal::service('config.typed'), $config->getName(), $config->get());
++  }
++
++}
+diff --git a/core/modules/content_moderation/tests/src/Unit/Plugin/Action/ModerationStateChangeTest.php b/core/modules/content_moderation/tests/src/Unit/Plugin/Action/ModerationStateChangeTest.php
+new file mode 100644
+index 00000000..59ed8514
+--- /dev/null
++++ b/core/modules/content_moderation/tests/src/Unit/Plugin/Action/ModerationStateChangeTest.php
+@@ -0,0 +1,504 @@
++<?php
++
++namespace Drupal\Tests\content_moderation\Unit\Plugin\Action;
++
++use Drupal\content_moderation\ModerationInformationInterface;
++use Drupal\content_moderation\Plugin\Action\ModerationStateChange;
++use Drupal\content_moderation\Plugin\Field\ModerationStateFieldItemList;
++use Drupal\Core\Access\AccessResultAllowed;
++use Drupal\Core\Access\AccessResultForbidden;
++use Drupal\Core\DependencyInjection\ContainerBuilder;
++use Drupal\Core\Session\AccountInterface;
++use Drupal\node\NodeInterface;
++use Drupal\Tests\UnitTestCase;
++use Drupal\workflows\StateInterface;
++use Drupal\workflows\TransitionInterface;
++use Drupal\workflows\WorkflowInterface;
++use Drupal\workflows\WorkflowTypeInterface;
++
++/**
++ * @coversDefaultClass \Drupal\content_moderation\Plugin\Action\ModerationStateChange
++ * @group content_moderation
++ */
++class ModerationStateChangeTest extends UnitTestCase {
++
++  /**
++   * The mocked node.
++   *
++   * @var \Drupal\node\NodeInterface|\PHPUnit_Framework_MockObject_MockObject
++   */
++  protected $node;
++
++  /**
++   * The moderation info service.
++   *
++   * @var \Drupal\content_moderation\ModerationInformationInterface|\PHPUnit_Framework_MockObject_MockObject
++   */
++  protected $moderationInfo;
++
++  /**
++   * The moderation info service.
++   *
++   * @var \Drupal\workflows\WorkflowInterface|\PHPUnit_Framework_MockObject_MockObject
++   */
++  protected $workflow;
++
++  /**
++   * The cache contexts manager.
++   *
++   * @var \Drupal\Core\Cache\Context\CacheContextsManager|\PHPUnit_Framework_MockObject_MockObject
++   */
++  protected $cacheContextsManager;
++
++  /**
++   * {@inheritdoc}
++   */
++  protected function setUp() {
++    parent::setUp();
++
++    $this->cacheContextsManager = $this->getMockBuilder('Drupal\Core\Cache\Context\CacheContextsManager')
++      ->disableOriginalConstructor()
++      ->getMock();
++
++    $this->cacheContextsManager->method('assertValidTokens')->willReturn(TRUE);
++    $container = new ContainerBuilder();
++    $container->set('cache_contexts_manager', $this->cacheContextsManager);
++    \Drupal::setContainer($container);
++  }
++
++  /**
++   * Tests the execute method.
++   */
++  public function testExecuteModerationStateChange() {
++    $this->moderationInfo = $this->getMock(ModerationInformationInterface::class);
++
++    $this->node = $this
++      ->getMockBuilder(NodeInterface::class)
++      ->disableOriginalConstructor()
++      ->getMock();
++    $entity_type_id = $this->returnValue('node');
++    $entity_id = $this->returnValue(1);
++    $this->node->expects($this->any())
++      ->method('getEntityTypeId')
++      ->willReturn($entity_type_id);
++
++    $this->node->expects($this->any())
++      ->method('id')
++      ->willReturn($entity_id);
++
++    $this->node->expects($this->once())
++      ->method('save');
++
++    $moderation_state = $this
++      ->getMockBuilder(ModerationStateFieldItemList::class)
++      ->disableOriginalConstructor()
++      ->getMock();
++    $moderation_state->expects($this->once())
++      ->method('__set')
++      ->with('value', 'foobar');
++    $this->node->moderation_state = $moderation_state;
++
++    $this->moderationInfo->expects($this->once())
++      ->method('getLatestRevision')
++      ->with($entity_type_id, $entity_id)
++      ->will($this->returnValue($this->node));
++
++    $config = ['state' => 'foobar'];
++    $plugin = new ModerationStateChange($config, 'moderation_state_change', ['type' => 'node'], $this->moderationInfo, \Drupal::entityTypeManager());
++
++    $plugin->execute($this->node);
++  }
++
++  /**
++   * Data provider for the the access method test.
++   */
++  public function accessModerationStateChangeDataProvider() {
++    $this->moderationInfo = $this->getMock(ModerationInformationInterface::class);
++
++    $this->node = $this
++      ->getMockBuilder(NodeInterface::class)
++      ->disableOriginalConstructor()
++      ->getMock();
++
++    $entity_type_id = $this->returnValue('node');
++    $entity_id = $this->returnValue(1);
++
++    $this->node->expects($this->any())
++      ->method('getEntityTypeId')
++      ->willReturn($entity_type_id);
++
++    $this->node->expects($this->any())
++      ->method('id')
++      ->willReturn($entity_id);
++
++    $this->workflow = $this->getMock(WorkflowInterface::class);
++    $this->workflow->expects($this->any())
++      ->method('getCacheContexts')
++      ->willReturn([]);
++    $this->workflow->expects($this->any())
++      ->method('getCacheTags')
++      ->willReturn([]);
++    $this->workflow->expects($this->any())
++      ->method('getCacheMaxAge')
++      ->willReturn(0);
++
++    $moderation_info = clone $this->moderationInfo;
++
++    // No object given.
++    $data['no-object-given'] = [$moderation_info, NULL, FALSE];
++
++    // Invalid object given.
++    $moderation_info = clone $this->moderationInfo;
++
++    $data['invalid-object-given'] = [$moderation_info, new \stdClass(), FALSE];
++
++    // Object has no workflow.
++    $moderation_info = clone $this->moderationInfo;
++    $node = clone $this->node;
++
++    $moderation_info->expects($this->once())
++      ->method('getWorkflowForEntity')
++      ->with($node)
++      ->will($this->returnValue(NULL));
++
++    $data['no-workflow'] = [$moderation_info, $node, FALSE];
++
++    // Different workflow.
++    $workflow = clone $this->workflow;
++
++    $workflow->expects($this->once())
++      ->method('id')
++      ->willReturn('bar');
++
++    $moderation_info = clone $this->moderationInfo;
++    $node = clone $this->node;
++
++    $moderation_info->expects($this->once())
++      ->method('getWorkflowForEntity')
++      ->with($node)
++      ->will($this->returnValue($workflow));
++
++    $data['different-workflow'] = [$moderation_info, $node, FALSE];
++
++    // Same workflow but no node update access.
++    $workflow = clone $this->workflow;
++
++    $workflow->expects($this->once())
++      ->method('id')
++      ->willReturn('foo');
++
++    $moderation_info = clone $this->moderationInfo;
++    $node = clone $this->node;
++
++    $moderation_info->expects($this->once())
++      ->method('getWorkflowForEntity')
++      ->with($node)
++      ->will($this->returnValue($workflow));
++
++    $node->moderation_state = (object) ['value' => 'foobar'];
++
++    $moderation_info->expects($this->once())
++      ->method('getLatestRevision')
++      ->with($entity_type_id, $entity_id)
++      ->will($this->returnValue($node));
++
++    $forbidden_access = new AccessResultForbidden();
++    $node->expects($this->once())
++      ->method('access')
++      ->with('update', NULL, TRUE)
++      ->willReturn($forbidden_access);
++
++    $workflow_type = $this->getMock(WorkflowTypeInterface::class);
++    $state = $this->getMock(StateInterface::class);
++
++    $workflow_type->expects($this->once())
++      ->method('getState')
++      ->with('foobar')
++      ->willReturn($state);
++
++    $state->expects($this->once())
++      ->method('canTransitionTo')
++      ->with('bar')
++      ->willReturn(FALSE);
++
++    $workflow->expects($this->once())
++      ->method('getTypePlugin')
++      ->willReturn($workflow_type);
++
++    $data['no-update-access'] = [$moderation_info, $node, FALSE];
++
++    // Same workflow with node update access and no valid transition.
++    $workflow = clone $this->workflow;
++
++    $workflow->expects($this->once())
++      ->method('id')
++      ->willReturn('foo');
++
++    $moderation_info = clone $this->moderationInfo;
++    $node = clone $this->node;
++
++    $moderation_info->expects($this->once())
++      ->method('getWorkflowForEntity')
++      ->with($node)
++      ->will($this->returnValue($workflow));
++
++    $entity_type_id = $this->returnValue('node');
++    $entity_id = $this->returnValue(1);
++
++    $node->moderation_state = (object) ['value' => 'foobar'];
++
++    $moderation_info->expects($this->once())
++      ->method('getLatestRevision')
++      ->with($entity_type_id, $entity_id)
++      ->will($this->returnValue($node));
++
++    $allowed_access = new AccessResultAllowed();
++    $node->expects($this->once())
++      ->method('access')
++      ->with('update', NULL, TRUE)
++      ->willReturn($allowed_access);
++
++    $workflow_type = $this->getMock(WorkflowTypeInterface::class);
++    $state = $this->getMock(StateInterface::class);
++
++    $workflow_type->expects($this->once())
++      ->method('getState')
++      ->with('foobar')
++      ->willReturn($state);
++
++    $state->expects($this->once())
++      ->method('canTransitionTo')
++      ->with('bar')
++      ->willReturn(FALSE);
++
++    $workflow->expects($this->once())
++      ->method('getTypePlugin')
++      ->willReturn($workflow_type);
++
++    $data['invalid-transition'] = [$moderation_info, $node, FALSE];
++
++    // Same workflow with update access, with valid transition and no transition
++    // access.
++    $workflow = clone $this->workflow;
++    $workflow->expects($this->exactly(2))
++      ->method('id')
++      ->willReturn('foo');
++
++    $moderation_info = clone $this->moderationInfo;
++    $node = clone $this->node;
++
++    $moderation_info->expects($this->once())
++      ->method('getWorkflowForEntity')
++      ->with($node)
++      ->will($this->returnValue($workflow));
++
++    $entity_type_id = $this->returnValue('node');
++    $entity_id = $this->returnValue(1);
++
++    $node->moderation_state = (object) ['value' => 'foobar'];
++
++    $moderation_info->expects($this->once())
++      ->method('getLatestRevision')
++      ->with($entity_type_id, $entity_id)
++      ->will($this->returnValue($node));
++
++    $account = $this->getMock(AccountInterface::class);
++
++    $account->expects($this->once())
++      ->method('hasPermission')
++      ->with('use foo transition bar')
++      ->willReturn(FALSE);
++
++    $node->expects($this->once())
++      ->method('access')
++      ->with('update', $account, TRUE)
++      ->willReturn($allowed_access);
++
++    $workflow_type = $this->getMock(WorkflowTypeInterface::class);
++    $state = $this->getMock(StateInterface::class);
++
++    $workflow_type->expects($this->once())
++      ->method('getState')
++      ->with('foobar')
++      ->willReturn($state);
++
++    $state->expects($this->once())
++      ->method('canTransitionTo')
++      ->with('bar')
++      ->willReturn(TRUE);
++    $transition = $this->getMock(TransitionInterface::class);
++    $transition->expects($this->once())
++      ->method('id')
++      ->willReturn('bar');
++
++    $state->expects($this->once())
++      ->method('getTransitionTo')
++      ->with('bar')
++      ->willReturn($transition);
++
++    $workflow->expects($this->once())
++      ->method('getTypePlugin')
++      ->willReturn($workflow_type);
++
++    $data['no-transition-access'] = [$moderation_info, $node, FALSE, $account];
++
++    // Same workflow with no update access, with valid transition and transition
++    // access.
++    $workflow = clone $this->workflow;
++    $workflow->expects($this->exactly(2))
++      ->method('id')
++      ->willReturn('foo');
++
++    $moderation_info = clone $this->moderationInfo;
++    $node = clone $this->node;
++
++    $moderation_info->expects($this->once())
++      ->method('getWorkflowForEntity')
++      ->with($node)
++      ->will($this->returnValue($workflow));
++
++    $entity_type_id = $this->returnValue('node');
++    $entity_id = $this->returnValue(1);
++
++    $node->moderation_state = (object) ['value' => 'foobar'];
++
++    $moderation_info->expects($this->once())
++      ->method('getLatestRevision')
++      ->with($entity_type_id, $entity_id)
++      ->will($this->returnValue($node));
++
++    $account = $this->getMock(AccountInterface::class);
++
++    $account->expects($this->once())
++      ->method('hasPermission')
++      ->with('use foo transition bar')
++      ->willReturn(TRUE);
++
++    $node->expects($this->once())
++      ->method('access')
++      ->with('update', $account, TRUE)
++      ->willReturn($forbidden_access);
++
++    $workflow_type = $this->getMock(WorkflowTypeInterface::class);
++    $state = $this->getMock(StateInterface::class);
++
++    $workflow_type->expects($this->once())
++      ->method('getState')
++      ->with('foobar')
++      ->willReturn($state);
++
++    $state->expects($this->once())
++      ->method('canTransitionTo')
++      ->with('bar')
++      ->willReturn(TRUE);
++    $transition = $this->getMock(TransitionInterface::class);
++    $transition->expects($this->once())
++      ->method('id')
++      ->willReturn('bar');
++
++    $state->expects($this->once())
++      ->method('getTransitionTo')
++      ->with('bar')
++      ->willReturn($transition);
++
++    $workflow->expects($this->once())
++      ->method('getTypePlugin')
++      ->willReturn($workflow_type);
++
++    $data['no-update-access-transition-access'] = [
++      $moderation_info,
++      $node,
++      FALSE,
++      $account,
++    ];
++
++    // Same workflow with update access, with valid transition and transition
++    // access.
++    $workflow = clone $this->workflow;
++    $workflow->expects($this->exactly(2))
++      ->method('id')
++      ->willReturn('foo');
++
++    $moderation_info = clone $this->moderationInfo;
++    $node = clone $this->node;
++
++    $moderation_info->expects($this->once())
++      ->method('getWorkflowForEntity')
++      ->with($node)
++      ->will($this->returnValue($workflow));
++
++    $entity_type_id = $this->returnValue('node');
++    $entity_id = $this->returnValue(1);
++
++    $node->moderation_state = (object) ['value' => 'foobar'];
++
++    $moderation_info->expects($this->once())
++      ->method('getLatestRevision')
++      ->with($entity_type_id, $entity_id)
++      ->will($this->returnValue($node));
++
++    $account = $this->getMock(AccountInterface::class);
++
++    $account->expects($this->once())
++      ->method('hasPermission')
++      ->with('use foo transition bar')
++      ->willReturn(TRUE);
++
++    $node->expects($this->once())
++      ->method('access')
++      ->with('update', $account, TRUE)
++      ->willReturn($allowed_access);
++
++    $workflow_type = $this->getMock(WorkflowTypeInterface::class);
++    $state = $this->getMock(StateInterface::class);
++
++    $workflow_type->expects($this->once())
++      ->method('getState')
++      ->with('foobar')
++      ->willReturn($state);
++
++    $state->expects($this->once())
++      ->method('canTransitionTo')
++      ->with('bar')
++      ->willReturn(TRUE);
++    $transition = $this->getMock(TransitionInterface::class);
++    $transition->expects($this->once())
++      ->method('id')
++      ->willReturn('bar');
++
++    $state->expects($this->once())
++      ->method('getTransitionTo')
++      ->with('bar')
++      ->willReturn($transition);
++
++    $workflow->expects($this->once())
++      ->method('getTypePlugin')
++      ->willReturn($workflow_type);
++
++    $data['transition-access'] = [$moderation_info, $node, TRUE, $account];
++
++    return $data;
++  }
++
++  /**
++   * Tests the access method.
++   *
++   * @param \Drupal\content_moderation\ModerationInformationInterface|\PHPUnit_Framework_MockObject_MockObject $moderation_info
++   *   The moderation info service.
++   * @param \Drupal\node\NodeInterface|\PHPUnit_Framework_MockObject_MockObject|\StdClass|null $node
++   *   The mocked node.
++   * @param bool $result
++   *   The access result.
++   * @param \Drupal\Core\Session\AccountInterface|null $account
++   *   (optional) The user for which to check access, or NULL to check access
++   *   for the current user. Defaults to NULL.
++   *
++   * @dataProvider accessModerationStateChangeDataProvider
++   */
++  public function testAccessModerationStateChange(ModerationInformationInterface $moderation_info, $node, $result, AccountInterface $account = NULL) {
++    $config = ['workflow' => 'foo', 'state' => 'bar'];
++    $plugin = new ModerationStateChange($config, 'moderation_state_change', ['type' => 'node'], $moderation_info, \Drupal::entityTypeManager());
++    $this->assertEquals($result, $plugin->access($node, $account));
++  }
++
++}

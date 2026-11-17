@@ -58,11 +58,7 @@ Fixed:
     issue: DP-48403
   - description: Fix bulk file replace ExistingSite tests to reload file entities after web-process URI updates.
     issue: DP-48403
-  - description: Refresh the content moderation state-change actions patch so ModerationStateChange::access() accepts a nullable account on PHP 8.4.
-    issue: DP-48403
-  - description: Require update access on moderation state bulk actions so organization restrictions still apply, and remove actions for workflow states that no longer exist.
-    issue: DP-48403
-  - description: Fall back to the latest revision for bulk moderation when no affected revision exists, and use the current user when the action is checked without an account.
+  - description: Re-roll the production moderation state-change action patch onto Drupal 11.4 and make access() accept a nullable account for PHP 8.4.
     issue: DP-48403
   - description: Deny web access to package-lock.json and replace deprecated Views, region-list, and image-style helpers.
     issue: DP-48403
