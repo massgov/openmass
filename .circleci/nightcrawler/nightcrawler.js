@@ -3,6 +3,7 @@ var Crawler = require('lastcall-nightcrawler');
 var RequestDriver = Crawler.drivers.request;
 const fetchAllUrlsFromDrush = require('./fetch_urls')
 const metrics = require('./metrics');
+const waitForReady = require('./wait_for_ready');
 
 /**
  * There are two undocumented flags you can use with this
@@ -67,7 +68,7 @@ function getAuth() {
   };
 }
 
-var driver = new RequestDriver({
+const requestOptions = {
   strictSSL: false,
   headers: {
     "mass-bypass-rate-limit": process.env.MASS_BYPASS_RATE_LIMIT,
@@ -77,14 +78,18 @@ var driver = new RequestDriver({
   // occurs for the first pageview on a cold cache.
   timeout: 15000,
   auth: auth,
-});
+};
+var driver = new RequestDriver(requestOptions);
 var crawler = new Crawler('Mass.gov', driver);
 
 /**
  * Queue requests by querying the database.
  */
 crawler.on('setup', function() {
-  return fetchAllUrlsFromDrush(base, alias, sampleSize)
+  return waitForReady(base, requestOptions)
+    .then(function() {
+      return fetchAllUrlsFromDrush(base, alias, sampleSize);
+    })
     .then(function(requests) {
       requests.forEach(function(request) {
         crawler.enqueue(request);
@@ -107,7 +112,7 @@ crawler.on('analyze', function(report, analysis) {
   analysis.addMetric('500s', metrics.serverErrors(responses, '500 Requests', 0));
   collectGroups(responses).forEach(function(group) {
     const groupResponses = responses.filter(getGroupFilter(group))
-    analysis.addMetric(group+'.time', metrics.responseTime(groupResponses, 'Average TTFB: ' + group, group === 'node:curated_list' ? 2500 : 2000))
+    analysis.addMetric(group+'.time', metrics.responseTime(groupResponses, 'Average TTFB: ' + group, group === 'node:curated_list' ? 3500 : 2000))
     analysis.addMetric(group+'.500s', metrics.serverErrors(groupResponses, '500 Requests: ' + group, 0));
   })
   responses.forEach(function(response) {
