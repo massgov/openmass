@@ -441,3 +441,42 @@ test('scenario selectors are initialized before readiness can fail, preserving t
   assert.equal(failure.reference, success.reference);
   assert.equal(failure.fileName, 'regression_PersonBoardMember_0_document_0_desktop.png');
 });
+
+test('scrolling past feedback does not deadlock image-wrap captures, and intentionally hidden buttons remain hidden', async () => {
+  let intentionallyHidden = false;
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(`<div style="height:1800px">Page content</div><button class="ma__fixed-feedback-button" style="position:fixed;right:0;top:100px;${intentionallyHidden ? 'display:none' : ''}">Feedback</button>`, "window.addEventListener('scroll', () => { document.querySelector('.ma__fixed-feedback-button').style.visibility = scrollY > 50 ? 'hidden' : 'visible'; });"));
+    return true;
+  };
+  const scenario = { label: 'InfoDetailsImageWrapRight', url: `${origin}/page`, captureTimeout: 5000 };
+  for (const hidden of [false, true]) {
+    intentionallyHidden = hidden;
+    await capture(scenario, async page => {
+      await ready(page, scenario, viewport);
+      assert.equal(await page.evaluate(() => scrollY), 0);
+      assert.equal(await page.locator('.ma__fixed-feedback-button').isVisible(), !hidden);
+    });
+    assert.equal(report(scenario.label).outcome, 'ready');
+  }
+});
+
+test('embed timeouts identify the specific readiness check', async () => {
+  let content;
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(content));
+    return true;
+  };
+  for (const [markup, stage] of [
+    ['<div class="ma__caspio">Loading form</div>', 'Caspio embeds'],
+    ['<div class="csv-table">Loading CSV</div>', 'CSV tables']
+  ]) {
+    content = markup;
+    const scenario = { label: 'pending-embed', url: `${origin}/page`, captureTimeout: 700 };
+    await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), new RegExp(`Readiness: ${stage}`)));
+    assert.equal(report(scenario.label).stage, stage);
+  }
+});

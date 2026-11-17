@@ -319,7 +319,8 @@ function snapshot() {
     images, banners, tableaus,
     videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, box: box(element) })),
     iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
-    footer: [...document.querySelectorAll('.ma__footer-new')].map(box)
+    footer: [...document.querySelectorAll('.ma__footer-new')].map(box),
+    feedback: [...document.querySelectorAll('.ma__fixed-feedback-button')].map(element => ({ display: getComputedStyle(element).display, visibility: getComputedStyle(element).visibility, box: box(element) }))
   };
 }
 

@@ -107,21 +107,23 @@ module.exports = async (page, scenario, viewport) => {
 
     await step('embeds and page elements', async () => {
       // Wait for Caspio embeds to finish loading.
-      await page.waitForFunction(() => document.querySelectorAll('.ma__caspio form').length === document.querySelectorAll('.ma__caspio').length);
+      await step('Caspio embeds', () => page.waitForFunction(() => document.querySelectorAll('.ma__caspio form').length === document.querySelectorAll('.ma__caspio').length));
 
       // Wait for Papa.parse in the csv_field module to complete.
-      await page.waitForFunction(() => document.querySelectorAll('.csv-table').length === 0);
+      await step('CSV tables', () => page.waitForFunction(() => document.querySelectorAll('.csv-table').length === 0));
 
       // Wait for iFrame resizer.
-      await page.waitForFunction(() => document.querySelectorAll('.js-ma-responsive-iframe iframe[height=auto]').length === 0);
+      await step('iframe resizing', () => page.waitForFunction(() => document.querySelectorAll('.js-ma-responsive-iframe iframe[height=auto]').length === 0));
 
       // Wait for sticky nav to shift.
-      const stickyNavs = await page.locator('.ma__sticky-nav').count();
-      if (stickyNavs > 0) {
-        // Remove active class.
-        await page.evaluate(() => { for (const link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
-        await page.waitForSelector('.ma__sticky-nav');
-      }
+      await step('sticky navigation', async () => {
+        const stickyNavs = await page.locator('.ma__sticky-nav').count();
+        if (stickyNavs > 0) {
+          // Remove active class.
+          await page.evaluate(() => { for (const link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
+          await page.waitForSelector('.ma__sticky-nav');
+        }
+      });
 
       switch (scenario.label) {
         case 'InfoDetails1':
@@ -131,15 +133,19 @@ module.exports = async (page, scenario, viewport) => {
         case 'InfoDetailsImageNoWrapRight':
         case 'InfoDetailsImageLeftAlign':
         case 'InfoDetailsImageRightAlign':
-          await page.waitForSelector('.ma__fixed-feedback-button');
+          // Scrolling to the inline feedback form hides the floating button.
+          // Wait for its markup; visibility is settled after returning to top.
+          await step('feedback button markup', () => page.locator('.ma__fixed-feedback-button').waitFor({ state: 'attached' }));
           break;
         case 'OrgElectedOfficial':
         case 'ExpansionOfAccordions1':
-          await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
-          await page.waitForSelector('.ma__sticky-nav');
+          await step('organization sticky navigation', async () => {
+            await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
+            await page.waitForSelector('.ma__sticky-nav');
+          });
           break;
         case 'ServiceDetails':
-          await page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor();
+          await step('service iframe button', () => page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor());
           break;
         case 'CampaignLandingHeaderSolidColor':
         case 'CampaignLandingHeaderVideo':
@@ -164,11 +170,13 @@ module.exports = async (page, scenario, viewport) => {
       // Wait for any layout shift that nudges the footer.
 
       if (scenario.label !== '404' && scenario.label !== 'Document') {
-        await page.locator('.ma__footer-new').waitFor();
-        await page.locator('.ma__footer-new__navlinks').first().waitFor();
-        await page.locator('.ma__footer-new__copyright').first().waitFor();
-        await page.locator('.ma__footer-new__logo').first().waitFor();
-        await page.locator('.ma__footer-new__container').waitFor();
+        await step('footer', async () => {
+          await page.locator('.ma__footer-new').waitFor();
+          await page.locator('.ma__footer-new__navlinks').first().waitFor();
+          await page.locator('.ma__footer-new__copyright').first().waitFor();
+          await page.locator('.ma__footer-new__logo').first().waitFor();
+          await page.locator('.ma__footer-new__container').waitFor();
+        });
       }
     });
     await step('video players', () => readiness.videoPlayers(page));
