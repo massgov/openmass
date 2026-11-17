@@ -36,6 +36,9 @@ function monitor(page, scenario, viewport, isReference, config = {}) {
     const request = response.request();
     if (request.resourceType() === 'stylesheet') capture.stylesheets.set(response.url(), { status: response.status(), contentType: response.headers()['content-type'] || '' });
     if (request.isNavigationRequest() && request.frame() === page.mainFrame()) {
+      // A previous attempt's failed CSS must not invalidate the next document
+      // while its replacement stylesheet is still loading.
+      capture.stylesheets.clear();
       capture.navigation = { status: response.status(), url: safeUrl(response.url()) };
     }
     if (response.status() >= 400) capture.requests.push({ type: request.resourceType(), status: response.status(), url: safeUrl(response.url()) });

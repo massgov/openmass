@@ -156,14 +156,15 @@ test('CI preflight requires consecutive successful stylesheet checks after a fai
     if (request.url === '/') { response.writeHead(200, { 'content-type': 'text/html' }); response.end(html()); return true; }
     if (request.url === '/style.css') {
       stylesheets++;
-      response.writeHead(stylesheets === 1 ? 503 : 200, { 'content-type': 'text/css', 'cache-control': 'no-store' });
+      response.writeHead(stylesheets === 1 ? 404 : 200, { 'content-type': 'text/css', 'cache-control': 'no-store' });
       response.end('body { color: black; }');
       return true;
     }
     return false;
   };
-  const { stdout } = await promisify(execFile)(process.execPath, [path.join(__dirname, 'preflight.js'), '--target=tugboat', `--tugboat=${origin}`]);
-  assert.equal(stylesheets, 3);
+  const { stdout, stderr } = await promisify(execFile)(process.execPath, [path.join(__dirname, 'preflight.js'), '--target=tugboat', `--tugboat=${origin}`]);
+  assert.equal(stylesheets, 3, stderr);
+  assert.match(stderr, /Preflight attempt 1 failed/);
   assert.match(stdout, /two consecutive document and stylesheet checks/);
 });
 
