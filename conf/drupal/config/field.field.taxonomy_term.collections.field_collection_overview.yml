@@ -1,0 +1,24 @@
+uuid: 5d412474-1ddc-4079-9d24-f7089258b4f0
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_collection_overview
+    - filter.format.basic_html
+    - taxonomy.vocabulary.collections
+  module:
+    - text
+id: taxonomy_term.collections.field_collection_overview
+field_name: field_collection_overview
+entity_type: taxonomy_term
+bundle: collections
+label: 'Collection Overview'
+description: 'Add an optional overview that will appear below the Collection short description (if it exists). Keep this as short as possible.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_formats:
+    - basic_html
+field_type: text_long
