@@ -120,6 +120,14 @@ Tableau containers expose `data-tableau-state` as `loading`, `ready`, `error`, o
 on environments running older application code. A missing spinner is never used
 as proof that a visualization is ready.
 
+After Tableau becomes interactive, Backstop captures each visible visualization
+iframe while it is in view and overlays that bitmap for the final full-page
+screenshot. This avoids Chromium omitting offscreen cross-origin charts from
+full-page captures. The original iframe stays in the layout and the viewport
+size is preserved. This only changes the test browser; it does not change the
+site or replace Tableau with sample data. Diagnostics include a snapshot count
+for each Tableau container.
+
 Vimeo and YouTube player requests are allowed. Visible video embeds must render
 a player before capture; their preview images/posters and fonts must finish
 loading, and HTML video playback is paused for a stable screenshot. A provider

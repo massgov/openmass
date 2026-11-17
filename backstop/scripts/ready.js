@@ -176,6 +176,10 @@ module.exports = async (page, scenario, viewport) => {
     // banner parallax/crops. Always settle at the capture's starting position.
     await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
     await page.mouse.move(viewport.width - 1, 0);
-    return step('images, fonts, Tableau and layout', () => readiness.assets(page, scenario));
+    const state = await step('images, fonts, Tableau and layout', () => readiness.assets(page, scenario));
+    if (!state.tableaus.length) return state;
+    await step('Tableau chart screenshots', () => readiness.tableauSnapshots(page));
+    await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
+    return step('final layout', () => readiness.assets(page, scenario));
   });
 };

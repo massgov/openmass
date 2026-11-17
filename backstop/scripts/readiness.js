@@ -159,6 +159,43 @@ async function videoPlayers(page) {
   }
 }
 
+async function tableauSnapshots(page) {
+  const frames = page.locator('.ma_tableau_container iframe');
+  for (const iframe of await frames.all()) {
+    if (!await iframe.isVisible() || await iframe.getAttribute('data-backstop-tableau-snapshot')) continue;
+    await iframe.scrollIntoViewIfNeeded();
+    const frame = await (await iframe.elementHandle()).contentFrame();
+    if (!frame) throw new Error('Tableau frame was not attached');
+    await assets(frame, { label: 'Document' }, 500);
+    await frame.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    // Chromium can omit offscreen cross-origin frames from a full-page shot
+    // even after FirstInteractive. Capture the real chart while it is visible.
+    const bitmap = await iframe.screenshot({ animations: 'disabled', timeout: 10000 });
+    await iframe.evaluate(async (element, source) => {
+      // The v3 iframe may live in an open shadow root.
+      let owner = element;
+      while (!owner.closest('.ma_tableau_container') && owner.getRootNode().host) owner = owner.getRootNode().host;
+      const container = owner.closest('.ma_tableau_container');
+      if (!container) throw new Error('Tableau container was not found');
+      const rect = element.getBoundingClientRect();
+      const image = document.createElement('img');
+      image.src = source;
+      image.alt = '';
+      image.setAttribute('aria-hidden', 'true');
+      image.dataset.backstopTableauSnapshot = 'true';
+      image.style.cssText = `all: initial; position: absolute; left: 0; top: 0; width: ${rect.width}px; height: ${rect.height}px; z-index: 1; pointer-events: none;`;
+      container.appendChild(image);
+      await image.decode();
+      const origin = image.getBoundingClientRect();
+      image.style.left = `${rect.left - origin.left}px`;
+      image.style.top = `${rect.top - origin.top}px`;
+      // Retain the iframe in the flow, including its dimensions and selectors.
+      element.style.setProperty('opacity', '0', 'important');
+      element.dataset.backstopTableauSnapshot = 'true';
+    }, `data:image/png;base64,${bitmap.toString('base64')}`);
+  }
+}
+
 // Serializable browser function shared by polling and failure diagnostics.
 function snapshot() {
   const visible = element => element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
@@ -183,7 +220,7 @@ function snapshot() {
     }
     return entry.state;
   };
-  const images = [...document.images].filter(visible).map(image => ({
+  const images = [...document.images].filter(image => visible(image) && (image.currentSrc || image.getAttribute('src'))).map(image => ({
     element: describe(image), source: image.currentSrc || image.src,
     state: decode(image, image, cache), complete: image.complete,
     natural: [image.naturalWidth, image.naturalHeight], box: box(image),
@@ -208,7 +245,7 @@ function snapshot() {
       const style = getComputedStyle(element, pseudo);
       if (pseudo && (style.content === 'none' || style.content === 'normal')) continue;
       if (style.backgroundImage === 'none') continue;
-      const sources = [...style.backgroundImage.matchAll(/url\((?:"([^"]*)"|'([^']*)'|([^)]*))\)/g)].map(match => match[1] || match[2] || match[3]);
+      const sources = [...style.backgroundImage.matchAll(/url\((?:"([^"]*)"|'([^']*)'|([^)]*))\)/g)].map(match => match[1] || match[2] || match[3]).filter(Boolean);
       for (const source of sources) {
         let entry = backgrounds.get(source);
         if (!entry) {
@@ -225,7 +262,8 @@ function snapshot() {
     }
   }
   const tableaus = [...document.querySelectorAll('.ma_tableau_container')].filter(visible).map(element => ({
-    element: describe(element), state: element.querySelector('.ma_tableau_error') ? 'error' : element.dataset.tableauState || 'loading', box: box(element)
+    element: describe(element), state: element.querySelector('.ma_tableau_error') ? 'error' : element.dataset.tableauState || 'loading', box: box(element),
+    snapshots: element.querySelectorAll('img[data-backstop-tableau-snapshot]').length
   }));
   return {
     height: document.documentElement.scrollHeight,
@@ -288,4 +326,4 @@ async function guard(page, scenario, action) {
   }
 }
 
-module.exports = { monitor, save, warmup, navigation, styles, scrollPage, videoPlayers, snapshot, assets, guard };
+module.exports = { monitor, save, warmup, navigation, styles, scrollPage, videoPlayers, tableauSnapshots, snapshot, assets, guard };

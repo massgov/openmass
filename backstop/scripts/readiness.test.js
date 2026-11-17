@@ -7,6 +7,7 @@ const { promisify } = require('node:util');
 const { execFile } = require('node:child_process');
 const { before: beforeTests, after, test } = require('node:test');
 const { chromium } = require('playwright');
+const { PNG } = require('pngjs');
 const beforeCapture = require('./before');
 const ready = require('./ready');
 const readiness = require('./readiness');
@@ -305,4 +306,42 @@ test('a blank video player fails readiness instead of silently passing', async (
     page => page.route('https://player.vimeo.com/**', route => route.fulfill({ contentType: 'text/html', body: '<body>Loading</body>' })));
   assert.equal(report(scenario.label).outcome, 'readiness-failure');
   assert.equal(report(scenario.label).stage, 'video players');
+});
+
+test('full-page captures include real cross-origin Tableau pixels without changing layout or viewport', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div style="height:900px"></div>' +
+      '<div class="ma_tableau_container" data-tableau-state="ready" style="margin-left:80px;width:300px"><iframe style="display:block;border:0" width="300" height="160" src="https://public.tableau.com/views/fixture/red"></iframe></div>' +
+      '<div style="height:900px"></div>' +
+      '<div class="ma_tableau_container" data-tableau-state="ready" style="position:relative;margin-left:120px;width:300px"><iframe style="display:block;border:0" width="300" height="800" src="https://public.tableau.com/views/fixture/blue"></iframe></div>'));
+    return true;
+  };
+  const scenario = { label: 'tableau-pixels', url: `${origin}/page`, captureTimeout: 10000 };
+  await capture(scenario, async page => {
+    const rectangles = () => page.locator('.ma_tableau_container').evaluateAll(nodes => nodes.map(node => {
+      const { x, y, width, height } = node.getBoundingClientRect();
+      return { x, y, width, height };
+    }));
+    const original = await rectangles();
+    await ready(page, scenario, viewport);
+    assert.deepEqual(await rectangles(), original);
+    assert.deepEqual(page.viewportSize(), { width: viewport.width, height: viewport.height });
+    const pixels = PNG.sync.read(await page.screenshot({ fullPage: true }));
+    const expected = [[200, 30, 60, 255], [30, 60, 200, 255]];
+    const snapshots = page.locator('img[data-backstop-tableau-snapshot]');
+    assert.equal(await snapshots.count(), 2);
+    for (let index = 0; index < 2; index++) {
+      const rect = await snapshots.nth(index).boundingBox();
+      assert.equal(rect.x, original[index].x);
+      assert.equal(rect.y, original[index].y);
+      const offset = ((Math.round(rect.y) + (index === 0 ? 60 : 700)) * pixels.width + Math.round(rect.x) + 50) * 4;
+      assert.deepEqual([...pixels.data.subarray(offset, offset + 4)], expected[index]);
+    }
+  }, viewport, page => page.route('https://public.tableau.com/**', route => route.fulfill({
+    contentType: 'text/html',
+    body: `<style>body{margin:0}</style><canvas width="300" height="${route.request().url().endsWith('/red') ? 160 : 800}"></canvas><img width="1" height="1"><div style="background-image:url('');width:1px;height:1px"></div><script>const context=document.querySelector('canvas').getContext('2d');context.fillStyle='white';context.fillRect(0,0,300,800);context.fillStyle='${route.request().url().endsWith('/red') ? 'rgb(200,30,60)' : 'rgb(30,60,200)'}';context.fillRect(25,20,80,750);</script>`
+  })));
+  assert.deepEqual(report(scenario.label).state.tableaus.map(viz => viz.snapshots), [1, 1]);
 });
