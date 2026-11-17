@@ -249,13 +249,126 @@ test('lazy v3 waits for every non-bubbling FirstInteractive event, and missing e
   assert.equal(report(scenario.label).outcome, 'readiness-failure');
 });
 
-test('diagnostics remove URL credentials and token query parameters', () => {
+test('removing a Tableau placeholder during a failed token fetch does not stop the next visualization loading', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div id="removed" class="ma_tableau_container"><div id="first" class="ma_tableau_placeholder" data-token-url="/first"></div></div><div id="retained" class="ma_tableau_container"><div id="second" class="ma_tableau_placeholder" data-token-url="/second"></div></div>'));
+    return true;
+  };
+  const scenario = { label: 'removed-tableau', url: `${origin}/page`, captureTimeout: 5000 };
+  await capture(scenario, async page => {
+    await page.evaluate(() => {
+      window.Drupal = { behaviors: {}, t: text => text };
+      window.drupalSettings = { massTableau: { lazy: false, settleDelay: 0 } };
+      window.once = (id, selector, context) => [...context.querySelectorAll(selector)];
+      window.fetch = url => url === '/first'
+        ? new Promise(resolve => { window.failFirstToken = () => resolve({ ok: false, status: 503 }); })
+        : Promise.resolve({ ok: true, json: async () => ({ token: 'fixture-token' }) });
+      customElements.define('tableau-viz', class extends HTMLElement {
+        connectedCallback() { setTimeout(() => this.dispatchEvent(new Event('firstinteractive')), 0); }
+      });
+    });
+    await page.addScriptTag({ path: path.join(__dirname, '../../docroot/themes/custom/mass_theme/overrides/js/tableau_token_handler.js') });
+    await page.evaluate(() => Drupal.behaviors.tableauTokenHandler.attach(document));
+    await page.waitForFunction(() => typeof window.failFirstToken === 'function');
+    await page.evaluate(() => { document.querySelector('#first').remove(); window.failFirstToken(); });
+    await page.waitForFunction(() => document.querySelector('#retained').dataset.tableauState === 'ready', undefined, { timeout: 2000 });
+    await page.locator('#removed').evaluate(element => element.remove());
+    await ready(page, scenario, viewport);
+  });
+  assert.equal(report(scenario.label).outcome, 'ready');
+  assert.deepEqual(report(scenario.label).errors, []);
+});
+
+test('diagnostics remove URL credentials and repeated sensitive query parameters', () => {
   const page = { on() {} };
-  readiness.monitor(page, { label: 'secret', url: 'https://user:password@example.com/page?token=jwt-secret&width=800' }, viewport, false, { diagnosticsPath: directory });
+  readiness.monitor(page, { label: 'secret', url: 'https://user:password@example.com/page?token=jwt-secret&token=second-secret&api_key=key-secret&width=800' }, viewport, false, { diagnosticsPath: directory });
   readiness.save(page, { outcome: 'ready' });
   const text = JSON.stringify(report('secret'));
-  assert.doesNotMatch(text, /password|jwt-secret|user:/);
+  assert.doesNotMatch(text, /password|jwt-secret|second-secret|key-secret|user:/);
   assert.match(text, /width=800/);
+});
+
+test('CircleCI forced references capture the requested reference site without publishing a shared baseline', async () => {
+  const yaml = require('js-yaml');
+  const config = yaml.load(fs.readFileSync(path.join(__dirname, '../../.circleci/config.yml'), 'utf8'));
+  const job = config.jobs.backstop_test;
+  const invocation = config.workflows.backstop_compare.jobs.find(step => step.backstop_test).backstop_test;
+  const forced = job.steps.find(step => step.when?.condition === '<< parameters.force-reference >>').when.steps;
+  const command = forced.find(step => step.run?.name === 'Capture Backstop Reference Screenshots').run.command;
+  const root = fs.mkdtempSync(path.join(directory, 'ci-reference-'));
+  const cwd = path.join(root, 'backstop');
+  const executable = path.join(root, 'node_modules/.bin/backstop');
+  fs.mkdirSync(cwd, { recursive: true });
+  fs.mkdirSync(path.dirname(executable), { recursive: true });
+  fs.writeFileSync(executable, '#!/usr/bin/env node\nconsole.log(JSON.stringify(process.argv.slice(2)));\n', { mode: 0o755 });
+  for (const [reference, target, tugboat] of [['prod', 'test', ''], ['test', 'tugboat', 'https://preview.example.test/?a=1&b=2']]) {
+    const pipeline = { reference, target, tugboat, list: 'all', viewport: 'desktop', 'force-reference': true, cachebuster: false };
+    const parameters = Object.fromEntries(Object.entries(job.parameters).map(([name, definition]) => {
+      const key = invocation[name]?.match(/^<< pipeline\.parameters\.([\w-]+) >>$/)?.[1];
+      return [name, key ? pipeline[key] : definition.default];
+    }));
+    assert.equal(parameters['force-reference'], true);
+    assert.equal(parameters.reference, reference);
+    const expanded = command.replace(/<< parameters\.([\w-]+) >>/g, (_, key) => parameters[key]);
+    const { stdout } = await promisify(execFile)('bash', ['-eu', '-c', expanded], { cwd, env: { ...process.env, CACHEBUSTER: '' } });
+    const args = JSON.parse(stdout);
+    assert.ok(args.includes(`--target=${reference}`), stdout);
+    assert.ok(!args.includes(`--target=${target}`), stdout);
+    assert.ok(args.includes(`--tugboat=${tugboat}`), stdout);
+  }
+  assert.ok(!JSON.stringify(job).includes('Save Build Number'));
+  // A standalone snapshot may also explicitly opt out of publishing its build.
+  const snapshot = config.jobs.backstop_reference;
+  const snapshotInvocation = config.workflows.backstop_snapshot.jobs.find(step => step.backstop_reference).backstop_reference;
+  const pipeline = { target: 'prod', list: 'all', viewport: 'all', 'save-build': false };
+  const parameters = Object.fromEntries(Object.entries(snapshot.parameters).map(([name, definition]) => {
+    const key = snapshotInvocation[name]?.match(/^<< pipeline\.parameters\.([\w-]+) >>$/)?.[1];
+    return [name, key ? pipeline[key] : definition.default];
+  }));
+  const publish = snapshot.steps.find(step => step.run?.name === 'Save Build Number').run.command
+    .replace(/<< parameters\.([\w-]+) >>/g, (_, key) => parameters[key]);
+  const bin = path.dirname(executable);
+  fs.writeFileSync(path.join(bin, 'curl'), '#!/bin/sh\necho publishing-shared-baseline\n', { mode: 0o755 });
+  const { stdout } = await promisify(execFile)('bash', ['-eu', '-c', publish], { cwd, env: { ...process.env, PATH: `${bin}:${process.env.PATH}` } });
+  assert.equal(stdout, '', 'save-build=false must prevent the shared-baseline update');
+});
+
+test('homepage content masks preserve real content on other pages', async () => {
+  let homepage = false;
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div class="ma__split-columns__column"><div class="ma__rich-text">Important page content</div></div><div class="ma__featured-item__title-container"><span>Feature title</span></div><div class="ma__press-listing__secondary-item"><div class="ma__press-teaser__details">Press details</div></div>', homepage ? "document.body.classList.add('is-front');" : ''));
+    return true;
+  };
+  const scenario = { label: 'content-masks', url: `${origin}/page`, captureTimeout: 4000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.equal(await page.locator('.ma__rich-text').textContent(), 'Important page content');
+    assert.equal(await page.locator('.ma__featured-item__title-container').textContent(), 'Feature title');
+    assert.equal(await page.locator('.ma__press-teaser__details').textContent(), 'Press details');
+  });
+  homepage = true;
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.match(await page.locator('.ma__rich-text').textContent(), /News title/);
+  });
+});
+
+test('video placeholders follow delayed iframe resizing without changing page layout', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<iframe width="320" height="180" src="https://player.vimeo.com/video/123"></iframe>', "setTimeout(() => { document.querySelector('iframe').height = '260'; }, 700);"));
+    return true;
+  };
+  const scenario = { label: 'resized-video', url: `${origin}/page`, captureTimeout: 5000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.deepEqual(await page.locator('[data-backstop-video-placeholder]').boundingBox(), await page.locator('iframe').boundingBox());
+  }, viewport, page => page.route('https://player.vimeo.com/**', route => route.fulfill({ contentType: 'text/html', body: '<button>Play</button>' })));
 });
 
 test('video UI checks are independent of identical visual placeholders in reference and test captures', async () => {
@@ -620,10 +733,13 @@ test('horizontal sticky navigation stays below the banner without covering conte
       .page-banner { height:200px; background:#ccc }
       .ma__sticky-nav--horizontal { position:relative; margin-top:-20px; margin-bottom:20px; height:50px }
       .ma__sticky-nav--horizontal[data-sticky=middle], .ma__sticky-nav--horizontal[data-sticky=bottom] { position:fixed; top:0; bottom:auto; margin:0 }
-      </style><div class="pre-content"><div class="page-banner">Banner</div><div class="ma__details__sticky-nav"><nav class="ma__sticky-nav ma__sticky-nav--horizontal" data-sticky="top"><a href="#featured">Featured</a></nav></div></div>
+      .ma__sticky-nav::before { content:'false'; display:none }
+      @media(max-width:480px) { .ma__sticky-nav::before { content:'true' } }
+      </style><div class="pre-content"><div class="page-banner">Banner</div><div class="ma__details__sticky-nav"><nav class="ma__sticky-nav ma__sticky-nav--horizontal" data-sticky="top"><span class="ma__sticky-nav__link is-title">Table of Contents</span><a class="ma__sticky-nav__link is-active" href="#featured">Featured</a><a class="ma__sticky-nav__link" href="#last">Last section</a></nav></div></div>
       <main id="featured" style="height:1800px">Featured items</main>`, `
       window.addEventListener('scroll', () => {
         document.querySelector('nav').dataset.sticky = scrollY > 0 ? 'middle' : 'top';
+        document.querySelector('a[href="#last"]').classList.add('is-active');
       });
     `));
     return true;
@@ -638,6 +754,8 @@ test('horizontal sticky navigation stays below the banner without covering conte
       assert.equal(nav.y, banner.y + banner.height - 20);
       assert.ok(content.y >= nav.y + nav.height);
       assert.equal(await page.evaluate(() => scrollY), 0);
+      assert.equal(await page.locator('.ma__sticky-nav__link.is-active:not(.is-title)').count(), 0);
+      assert.equal(await page.locator('.is-title.is-active').count(), size.width <= 480 ? 1 : 0);
     }, size);
     const nav = report(scenario.label, size).state.stickyNavigation[0];
     assert.equal(nav.position, 'relative');

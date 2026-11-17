@@ -75,6 +75,10 @@ module.exports = async (page, scenario, viewport) => {
         window.dataLayer.hide.end();
       }
 
+      // These masks cover changing homepage content. Other pages reuse the
+      // same components and must retain their real content for comparison.
+      if (!document.body.classList.contains('is-front')) return;
+
       // [FREQUENTLY CHANGING CONTENT] Replace random image credit on
       // Home page
       document.querySelectorAll('.ma__search-banner__image-name').forEach(function (e) {
@@ -83,6 +87,7 @@ module.exports = async (page, scenario, viewport) => {
       document.querySelectorAll('.ma__search-banner__image-author').forEach(function (e) {
         e.innerText = 'John Smith';
       });
+
       // [FREQUENTLY CHANGING CONTENT] Replace link text of popular searches on
       // Home page
       document.querySelectorAll('.ma__search-banner__links .ma__link-list__item a').forEach(function (e) {
@@ -100,18 +105,6 @@ module.exports = async (page, scenario, viewport) => {
       document.querySelectorAll('.ma__split-columns__column > .ma__rich-text').forEach(function (e) {
         e.innerHTML = '<article style="background-color: #888;"><span style="display: block; width: 100%; max-width: 100%; height: auto;">&nbsp;</span></article><h5>News title</h5>Teaser text';
       });
-
-      // [FREQUENTLY CHANGING CONTENT] Replace Updates From The Baker-Polito
-      // Administration item title on governor's page.
-      document.querySelectorAll('.ma__featured-item__title-container .ma__featured-item__title span').forEach(function (e) {
-        e.innerText = 'Featured item title';
-      });
-
-      // [FREQUENTLY CHANGING CONTENT] Replace teaser content in Recent news &
-      // announcements item on governor's page.
-      document.querySelectorAll('.ma__press-listing__secondary-item .ma__press-teaser__details').forEach(function (e) {
-        e.innerText = 'Press teaser details';
-      });
     });
 
     await step('lazy loading', () => readiness.scrollPage(page));
@@ -127,16 +120,6 @@ module.exports = async (page, scenario, viewport) => {
 
       // Wait for iFrame resizer.
       await step('iframe resizing', () => page.waitForFunction(() => [...document.querySelectorAll('.js-ma-responsive-iframe iframe[height=auto]')].every(iframe => iframe.dataset.backstopVideoState === 'placeholder')));
-
-      // Wait for sticky nav to shift.
-      await step('sticky navigation', async () => {
-        const stickyNavs = await page.locator('.ma__sticky-nav').count();
-        if (stickyNavs > 0) {
-          // Remove active class.
-          await page.evaluate(() => { for (const link of document.querySelectorAll('.ma__sticky-nav__link')) { link.classList.remove('is-active'); } });
-          await page.waitForSelector('.ma__sticky-nav');
-        }
-      });
 
       switch (scenario.label) {
         case 'InfoDetails1':
@@ -175,7 +158,7 @@ module.exports = async (page, scenario, viewport) => {
 
       // Wait for any layout shift that nudges the footer.
 
-      if (scenario.label !== '404' && scenario.label !== 'Document') {
+      if (scenario.expectedStatus !== 404) {
         await step('footer', async () => {
           await page.locator('.ma__footer-new').waitFor();
           await page.locator('.ma__footer-new__navlinks').first().waitFor();
@@ -187,13 +170,27 @@ module.exports = async (page, scenario, viewport) => {
     });
     // Footer interactions and lazy loading can leave the page scrolled, changing
     // banner parallax/crops. Always settle at the capture's starting position.
-    await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
-    await page.mouse.move(viewport.width - 1, 0);
+    await step('capture position', () => resetCapturePosition(page, viewport));
     const state = await step('images, fonts, Tableau and layout', () => readiness.assets(page, scenario));
     const iframeCount = await step('content iframes', () => readiness.contentIframeSnapshots(page));
     if (!state.tableaus.length && !iframeCount) return state;
     if (state.tableaus.length) await step('Tableau chart screenshots', () => readiness.tableauSnapshots(page));
-    await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
+    await step('final capture position', () => resetCapturePosition(page, viewport));
     return step('final layout', () => readiness.assets(page, scenario));
   });
 };
+
+async function resetCapturePosition(page, viewport) {
+  await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));
+  await page.mouse.move(viewport.width - 1, 0);
+  // Let scroll handlers run before resetting their active section. Mayflower
+  // exposes its mobile breakpoint through ::before; keep the collapsed title
+  // active at that breakpoint so clearing section links doesn't hide the label.
+  await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => {
+    document.querySelectorAll('.ma__sticky-nav').forEach(nav => {
+      const mobile = getComputedStyle(nav, '::before').content.replace(/"/g, '') !== 'false';
+      nav.querySelectorAll('.ma__sticky-nav__link').forEach(link => link.classList.toggle('is-active', mobile && link.classList.contains('is-title')));
+    });
+    resolve();
+  }))));
+}

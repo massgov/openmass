@@ -5,7 +5,7 @@ const readiness = require('./readiness');
 
 async function preflight() {
   const representative = config.scenarios.find(scenario => scenario.label === 'Homepage') ||
-    config.scenarios.find(scenario => (scenario.expectedStatus ?? 200) === 200 && scenario.label !== 'Document');
+    config.scenarios.find(scenario => (scenario.expectedStatus ?? 200) === 200);
   if (!representative) throw new Error('No representative page configured for readiness checks');
   const scenario = { ...representative, label: `preflight-${representative.label}`, captureTimeout: 120000 };
   const browser = await chromium.launch({ headless: true, args: config.engineOptions.args });

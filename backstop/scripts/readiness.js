@@ -104,7 +104,7 @@ async function navigation(page, scenario, { attempts = 3, delay = 1000 } = {}) {
 }
 
 async function styles(page, scenario) {
-  if (scenario.label === 'Document') return;
+  if (scenario.skipStylesheets) return;
   while (true) {
     const links = await page.evaluate(() => [...document.querySelectorAll('link[rel~="stylesheet"]')]
       .filter(link => !link.disabled && matchMedia(link.media || 'all').matches)
@@ -170,19 +170,27 @@ async function videoPlayers(page) {
     }, { check, message });
     await iframe.evaluate(element => {
       if (element.dataset.backstopVideoState === 'placeholder') return;
-      const rect = element.getBoundingClientRect();
       const placeholder = document.createElement('div');
       placeholder.dataset.backstopVideoPlaceholder = 'true';
       placeholder.setAttribute('role', 'img');
       placeholder.setAttribute('aria-label', 'Video');
-      placeholder.style.cssText = `all: initial; position: absolute; left: 0; top: 0; width: ${rect.width}px; height: ${rect.height}px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #eee; border: 1px solid #ccc; color: #555; font: 14px Arial, sans-serif; pointer-events: none; z-index: 1;`;
+      placeholder.style.cssText = 'all: initial; position: absolute; left: 0; top: 0; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #eee; border: 1px solid #ccc; color: #555; font: 14px Arial, sans-serif; pointer-events: none; z-index: 1;';
       const icon = document.createElement('span');
       icon.style.cssText = 'all: initial; width: 0; height: 0; border-top: 16px solid transparent; border-bottom: 16px solid transparent; border-left: 25px solid #555;';
       placeholder.append(icon, document.createTextNode('Video'));
       element.parentElement.appendChild(placeholder);
-      const origin = placeholder.getBoundingClientRect();
-      placeholder.style.left = `${rect.left - origin.left}px`;
-      placeholder.style.top = `${rect.top - origin.top}px`;
+      const align = () => {
+        const rect = element.getBoundingClientRect();
+        placeholder.style.width = `${rect.width}px`;
+        placeholder.style.height = `${rect.height}px`;
+        placeholder.style.left = '0px';
+        placeholder.style.top = '0px';
+        const origin = placeholder.getBoundingClientRect();
+        placeholder.style.left = `${rect.left - origin.left}px`;
+        placeholder.style.top = `${rect.top - origin.top}px`;
+      };
+      new ResizeObserver(align).observe(element);
+      align();
       // Keep the original frame and its layout; no provider content is needed.
       element.style.setProperty('opacity', '0', 'important');
       element.dataset.backstopVideoState = 'placeholder';
@@ -202,7 +210,8 @@ async function tableauSnapshots(page) {
 }
 
 async function frameSnapshot(iframe, frame, containerSelector, marker) {
-  await assets(frame, { label: 'Document' }, 500);
+  // External frames aren't part of our monitored document/CSS responses.
+  await assets(frame, { skipStylesheets: true }, 500);
   await frame.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   // Capture cross-origin content while visible: Chromium may omit it from
   // the full-page shot even when the embedded application has finished loading.

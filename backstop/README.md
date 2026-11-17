@@ -90,15 +90,19 @@ drush ma:ci:backstop-compare --reference=prod --target=test
 If you want to run a specific branch you're working on to test changes, you can
 use the `--ci-branch` parameter.
 ```
-drush ma:ci:backstop-snapshot --target=prod --ci-branch=dp-26913-run-backstop-js-locally
+drush ma:ci:backstop-snapshot --target=prod --ci-branch=your-branch
 ```
 
 To create new references and test them in the same job, you can force new reference
 images to be created by adding `--force-reference` e.g. to test changes you've been
 making to backstop related code:
 ```
-drush ma:ci:backstop-compare --reference=prod --target=prod --force-reference --ci-branch=dp-26913-run-backstop-js-locally
+drush ma:ci:backstop-compare --reference=prod --target=test --force-reference --ci-branch=your-branch
 ```
+
+With `--force-reference`, references come from `--reference` and test screenshots
+come from `--target` (`test` means stage.mass.gov). These references stay within
+the comparison job and do not update the shared production baseline.
 
 ## Capture readiness and diagnostics
 
@@ -112,8 +116,8 @@ can be overridden per scenario). Within that deadline it checks active linked
 stylesheets, visits each viewport to trigger lazy content, returns to the top,
 and waits for image decoding, fonts, Tableau readiness, and one second of stable
 image geometry and page height. CSS background images and pseudo-elements are
-included. Image crop styles are preserved. The Document scenario skips stylesheet
-and footer checks because it displays a document rather than a themed HTML page.
+included. Image crop styles are preserved. Downloaded documents are excluded
+from visual scenarios because Chromium's PDF viewer is not reliable here.
 
 On pages with a JavaScript-generated table of contents, capture waits for every
 expected heading link and jump target. Collapsed mobile links are checked too.
@@ -155,6 +159,7 @@ controls without clicking Play. It records `playerCheck: rendered` or
 `playerCheck: unverified` in diagnostics and logs, and saves a player screenshot
 when controls render. Provider HTTP errors or timeouts produce warnings while
 visual comparison continues. Media requests to video providers are blocked.
+Placeholders follow iframe resizing while keeping the original page layout.
 This verifies player UI separately from video playback and keeps comparisons
 independent of provider challenges, poster changes, and playback. Regenerate
 references with this behavior before comparing.
