@@ -18,7 +18,10 @@ module.exports = async (page, scenario, viewport, isReference, browserContext, c
   await page.route('**/*', (route) => {
     const url = route.request().url();
     const matches = banned.filter(ban => url.includes(ban));
-    if (matches.length) {
+    // Load the player UI for its diagnostic check, but don't stream video.
+    const videoMedia = route.request().resourceType() === 'media' &&
+      /(^|\.)(vimeo\.com|vimeocdn\.com|youtube\.com|youtube-nocookie\.com|googlevideo\.com)$/.test(new URL(url).hostname);
+    if (matches.length || videoMedia) {
       capture.blocked.add(url);
       return route.abort();
     }

@@ -104,6 +104,7 @@ module.exports = async (page, scenario, viewport) => {
     });
 
     await step('lazy loading', () => readiness.scrollPage(page));
+    await step('video placeholders', () => readiness.videoPlayers(page));
 
     await step('embeds and page elements', async () => {
       // Wait for Caspio embeds to finish loading.
@@ -113,7 +114,7 @@ module.exports = async (page, scenario, viewport) => {
       await step('CSV tables', () => page.waitForFunction(() => document.querySelectorAll('.csv-table').length === 0));
 
       // Wait for iFrame resizer.
-      await step('iframe resizing', () => page.waitForFunction(() => document.querySelectorAll('.js-ma-responsive-iframe iframe[height=auto]').length === 0));
+      await step('iframe resizing', () => page.waitForFunction(() => [...document.querySelectorAll('.js-ma-responsive-iframe iframe[height=auto]')].every(iframe => iframe.dataset.backstopVideoState === 'placeholder')));
 
       // Wait for sticky nav to shift.
       await step('sticky navigation', async () => {
@@ -179,7 +180,6 @@ module.exports = async (page, scenario, viewport) => {
         });
       }
     });
-    await step('video players', () => readiness.videoPlayers(page));
     // Footer interactions and lazy loading can leave the page scrolled, changing
     // banner parallax/crops. Always settle at the capture's starting position.
     await page.evaluate(() => window.scrollTo({ top: 0, left: 0, behavior: 'instant' }));

@@ -48,19 +48,19 @@ after(async () => {
   fs.rmSync(directory, { recursive: true, force: true });
 });
 
-async function capture(scenario, action, size = viewport, prepare = async () => {}) {
+async function capture(scenario, action, size = viewport, prepare = async () => {}, isReference = false) {
   const context = await browser.newContext({ viewport: size });
   const page = await context.newPage();
   try {
     await prepare(page);
-    await beforeCapture(page, scenario, size, false, context, { diagnosticsPath: directory });
+    await beforeCapture(page, scenario, size, isReference, context, { diagnosticsPath: directory });
     await page.goto(scenario.url, { waitUntil: 'domcontentloaded' });
     return await action(page);
   } finally { await context.close(); }
 }
 
-function report(label, size = viewport) {
-  return JSON.parse(fs.readFileSync(path.join(directory, `test-${label}-${size.label}.json`), 'utf8'));
+function report(label, size = viewport, isReference = false) {
+  return JSON.parse(fs.readFileSync(path.join(directory, `${isReference ? 'reference' : 'test'}-${label}-${size.label}.json`), 'utf8'));
 }
 
 test('warmup retries transient failures, rejects unexpected 404s, and accepts expected 404s', async () => {
@@ -177,7 +177,7 @@ test('a broken banner image fails decoding instead of becoming a visual mismatch
     return false;
   };
   const scenario = { label: 'broken-image', url: `${origin}/page`, captureTimeout: 3000 };
-  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Image failed to load or decode/));
+  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Image failed to load or decode: .*HTTP 404/));
   assert.equal(report(scenario.label).outcome, 'readiness-failure');
 });
 
@@ -258,54 +258,65 @@ test('diagnostics remove URL credentials and token query parameters', () => {
   assert.match(text, /width=800/);
 });
 
-test('Vimeo and YouTube embeds load, wait for their posters, and keep analytics blocked', async () => {
-  for (const provider of ['https://player.vimeo.com/video/123', 'https://www.youtube.com/embed/123']) {
-    let playerRequests = 0;
-    let posterRequests = 0;
+test('video UI checks are independent of identical visual placeholders in reference and test captures', async () => {
+  for (const provider of ['https://player.vimeo.com/video/123', 'https://www.youtube.com/embed/123', 'https://www.youtube-nocookie.com/embed/123']) {
+    let previous;
+    let mediaRequests = 0;
     handle = (request, response) => {
       if (request.url !== '/page') return false;
       response.writeHead(200, { 'content-type': 'text/html' });
       response.end(html(`<iframe width="320" height="180" src="${provider}"></iframe><script src="https://www.googletagmanager.com/gtm.js"></script>`));
       return true;
     };
-    const scenario = { label: 'video-player', url: `${origin}/page`, captureTimeout: 7000 };
-    await capture(scenario, async page => {
-      await ready(page, scenario, viewport);
-      const frame = await (await page.locator('iframe').elementHandle()).contentFrame();
-      assert.equal(await frame.locator('video').evaluate(video => video.paused), true);
-      assert.equal(await page.evaluate(() => window.analyticsRan), undefined);
-    }, viewport, async page => {
-      // Registered before beforeCapture: its routing policy must allow the
-      // actual provider request through, or this fixture is never reached.
-      await page.route(`${new URL(provider).origin}/**`, async route => {
-        if (route.request().url().endsWith('/poster.svg')) {
-          posterRequests++;
-          await new Promise(resolve => setTimeout(resolve, 400));
-          return route.fulfill({ contentType: 'image/svg+xml', body: svg });
+    const scenario = { label: 'video-player', url: `${origin}/page`, captureTimeout: 10000 };
+    for (const isReference of [true, false]) {
+      const screenshot = await capture(scenario, async page => {
+        const original = await page.locator('iframe').boundingBox();
+        await ready(page, scenario, viewport);
+        const placeholder = page.locator('[data-backstop-video-placeholder]');
+        assert.equal(await placeholder.count(), 1);
+        assert.deepEqual(await placeholder.boundingBox(), original);
+        assert.equal(await page.evaluate(() => window.analyticsRan), undefined);
+        if (isReference) {
+          const frame = await (await page.locator('iframe').elementHandle()).contentFrame();
+          assert.equal(await frame.evaluate(() => window.playClicked), undefined);
+          assert.equal(await frame.locator('video').evaluate(video => video.paused), true);
         }
-        playerRequests++;
-        return route.fulfill({ contentType: 'text/html', body: '<style>body{margin:0}video{width:320px;height:140px}</style><video poster="/poster.svg"></video><script>setTimeout(() => { const button = document.createElement("button"); button.setAttribute("aria-label", "Play video"); button.textContent = "Play"; document.body.appendChild(button); }, 300);</script>' });
-      });
-      await page.route('https://www.googletagmanager.com/**', route => route.fulfill({ contentType: 'text/javascript', body: 'window.analyticsRan = true;' }));
-    });
-    assert.ok(playerRequests > 0);
-    assert.ok(posterRequests > 0);
-    assert.equal(report(scenario.label).state.videoPlayers[0].state, 'ready');
+        return page.screenshot({ fullPage: true });
+      }, viewport, async page => {
+        await page.route(`${new URL(provider).origin}/**`, route => route.fulfill({
+          status: isReference ? 200 : 401, contentType: 'text/html',
+          body: isReference ? '<video preload="auto" src="https://cdn.vimeocdn.com/never-play.mp4"></video><button aria-label="Play video" onclick="window.playClicked=true">Play</button>' : '<body>Provider challenge</body>'
+        }));
+        await page.route('https://cdn.vimeocdn.com/**', route => { mediaRequests++; return route.fulfill({ contentType: 'video/mp4', body: '' }); });
+        await page.route('https://www.googletagmanager.com/**', route => route.fulfill({ contentType: 'text/javascript', body: 'window.analyticsRan = true;' }));
+      }, isReference);
+      const result = report(scenario.label, viewport, isReference);
+      assert.equal(result.outcome, 'ready');
+      assert.equal(result.state.videoPlayers[0].state, 'placeholder');
+      assert.equal(result.state.videoPlayers[0].playerCheck, isReference ? 'rendered' : 'unverified');
+      if (!isReference) assert.match(result.state.videoPlayers[0].message, /HTTP 401/);
+      if (previous) assert.deepEqual(screenshot, previous);
+      previous = screenshot;
+    }
+    assert.equal(mediaRequests, 0, 'Video bytes must not be requested from the provider');
   }
 });
 
-test('a blank video player fails readiness instead of silently passing', async () => {
+test('a blank player is reported as unverified while its placeholder allows the page comparison', async () => {
   handle = (request, response) => {
     if (request.url !== '/page') return false;
     response.writeHead(200, { 'content-type': 'text/html' });
-    response.end(html('<iframe width="320" height="180" src="https://player.vimeo.com/video/123"></iframe>'));
+    response.end(html('<div class="js-ma-responsive-iframe"><iframe width="320" height="auto" src="https://player.vimeo.com/video/123"></iframe></div>'));
     return true;
   };
-  const scenario = { label: 'blank-video', url: `${origin}/page`, captureTimeout: 1200 };
-  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Readiness: video players/), viewport,
+  const scenario = { label: 'blank-video', url: `${origin}/page`, captureTimeout: 10000 };
+  await capture(scenario, page => ready(page, scenario, viewport), viewport,
     page => page.route('https://player.vimeo.com/**', route => route.fulfill({ contentType: 'text/html', body: '<body>Loading</body>' })));
-  assert.equal(report(scenario.label).outcome, 'readiness-failure');
-  assert.equal(report(scenario.label).stage, 'video players');
+  const result = report(scenario.label);
+  assert.equal(result.outcome, 'ready');
+  assert.equal(result.state.videoPlayers[0].state, 'placeholder');
+  assert.equal(result.state.videoPlayers[0].playerCheck, 'unverified');
 });
 
 test('full-page captures include real cross-origin Tableau pixels without changing layout or viewport', async () => {
@@ -346,7 +357,7 @@ test('full-page captures include real cross-origin Tableau pixels without changi
   assert.deepEqual(report(scenario.label).state.tableaus.map(viz => viz.snapshots), [1, 1]);
 });
 
-test('regular content iframe HTTP and network failures are reported instead of captured as blank content', async () => {
+test('regular content iframe server and network failures are reported instead of captured as blank content', async () => {
   handle = (request, response) => {
     if (request.url !== '/page') return false;
     response.writeHead(200, { 'content-type': 'text/html' });
@@ -354,7 +365,7 @@ test('regular content iframe HTTP and network failures are reported instead of c
     return true;
   };
   const scenario = { label: 'failed-iframe', url: `${origin}/page`, captureTimeout: 5000 };
-  for (const status of [404, 500, 'abort']) {
+  for (const status of [500, 'abort']) {
     await capture(scenario, async page => {
       await assert.rejects(ready(page, scenario, viewport), status === 'abort' ? /Navigation failed/ : new RegExp(`HTTP ${status}`));
       assert.equal(await page.locator('img[data-backstop-iframe-snapshot]').count(), 0);
@@ -365,6 +376,42 @@ test('regular content iframe HTTP and network failures are reported instead of c
     assert.equal(result.stage, 'content iframes');
     assert.equal(result.state.iframes[0].state, 'error');
     if (status !== 'abort') assert.equal(result.state.iframes[0].status, String(status));
+  }
+});
+
+test('a rendered iframe 404 page appears in both reference and test screenshots', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<div style="height:1200px"></div><div class="ma__iframe__container js-ma-responsive-iframe" style="margin-left:30px"><iframe title="Missing document" style="display:block;border:0" width="300" height="200" src="https://frames.example.test/missing"></iframe></div>'));
+    return true;
+  };
+  const scenario = { label: 'iframe-404', url: `${origin}/page`, captureTimeout: 8000 };
+  let previous;
+  for (const isReference of [true, false]) {
+    const screenshot = await capture(scenario, async page => {
+      await ready(page, scenario, viewport);
+      const snapshot = page.locator('img[data-backstop-iframe-snapshot]');
+      assert.equal(await snapshot.count(), 1);
+      const rect = await snapshot.boundingBox();
+      const buffer = await page.screenshot({ fullPage: true });
+      const image = PNG.sync.read(buffer);
+      const offset = ((Math.round(rect.y) + 120) * image.width + Math.round(rect.x) + 20) * 4;
+      assert.deepEqual([...image.data.subarray(offset, offset + 4)], [240, 220, 210, 255]);
+      const frame = await (await page.locator('iframe').elementHandle()).contentFrame();
+      assert.equal(await frame.locator('h1').textContent(), '404 Not Found');
+      return buffer;
+    }, viewport, page => page.route('https://frames.example.test/**', route => route.fulfill({
+      status: 404, contentType: 'text/html',
+      body: '<style>body{margin:0;background:rgb(240,220,210)}</style><h1>404 Not Found</h1><p>This document does not exist.</p>'
+    })), isReference);
+    const result = report(scenario.label, viewport, isReference);
+    assert.equal(result.outcome, 'ready');
+    assert.equal(result.state.iframes[0].status, '404');
+    assert.equal(result.state.iframes[0].state, 'error-page');
+    assert.equal(result.state.iframes[0].snapshot, true);
+    if (previous) assert.deepEqual(screenshot, previous);
+    previous = screenshot;
   }
 });
 

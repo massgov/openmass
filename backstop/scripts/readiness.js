@@ -136,29 +136,57 @@ async function scrollPage(page) {
 }
 
 async function videoPlayers(page) {
+  const capture = captures.get(page);
+  let index = 0;
   for (const iframe of await page.locator(videoSelector).all()) {
     if (!await iframe.isVisible()) continue;
-    const source = await iframe.getAttribute('src');
-    await iframe.evaluate(element => { element.dataset.backstopVideoState = 'loading'; });
+    if (await iframe.getAttribute('data-backstop-video-state') === 'placeholder') continue;
+    index++;
+    const source = safeUrl(await iframe.evaluate(element => element.src));
+    let check = 'unverified';
+    let message;
     try {
       await iframe.scrollIntoViewIfNeeded();
       const frame = await (await iframe.elementHandle()).contentFrame();
-      if (!frame) throw new Error('Video frame was not attached');
-      // An iframe load event can describe the initial blank document. Require
-      // a rendered player, then wait for its preview images and fonts as well.
-      await frame.waitForFunction(() => {
-        const visible = element => element.getClientRects().length && getComputedStyle(element).visibility !== 'hidden';
-        return [...document.querySelectorAll('video')].some(video => visible(video) && video.readyState >= 2) ||
-          [...document.querySelectorAll('button, [role="button"]')].some(button => visible(button) && /\b(play|pause)\b/i.test(button.getAttribute('aria-label') || button.title || button.textContent));
-      }, null, { timeout: 30000 });
+      if (!frame) throw new Error('Frame not attached');
+      const response = capture.frameResponses.get(frame);
+      if (response?.error) throw new Error(`Navigation failed (${response.error})`);
+      if (response?.status >= 400) throw new Error(`HTTP ${response.status}`);
+      await frame.getByRole('button', { name: /\b(play|pause)\b/i }).first().waitFor({ state: 'visible', timeout: 5000 });
       await frame.evaluate(() => document.querySelectorAll('video').forEach(video => video.pause()));
-      // The enclosing page's stylesheet monitor doesn't apply across frames.
-      await assets(frame, { label: 'Document' }, 500);
-      await iframe.evaluate(element => { element.dataset.backstopVideoState = 'ready'; });
+      check = 'rendered';
+      message = 'Player controls rendered; playback was not tested';
+      fs.mkdirSync(capture.directory, { recursive: true });
+      await iframe.screenshot({ path: path.join(capture.directory, `${capture.name}-video-${index}.png`), timeout: 2000 }).catch(() => {});
     } catch (error) {
-      await iframe.evaluate(element => { element.dataset.backstopVideoState = 'error'; }).catch(() => {});
-      throw new Error(`Video player did not render: ${safeUrl(source)} (${error.name})`);
+      const failure = capture.requests.findLast(request => request.url === source && request.status);
+      message = failure ? `HTTP ${failure.status}` : error.name === 'TimeoutError' ? 'Player controls were not visible within 5 seconds' : safeMessage(error.message);
     }
+    const log = check === 'rendered' ? console.log : console.warn;
+    log(`[Video check] ${capture.scenario}: ${source} — ${check}: ${message}`);
+    await iframe.evaluate((element, result) => {
+      element.dataset.backstopVideoCheck = result.check;
+      element.dataset.backstopVideoMessage = result.message;
+    }, { check, message });
+    await iframe.evaluate(element => {
+      if (element.dataset.backstopVideoState === 'placeholder') return;
+      const rect = element.getBoundingClientRect();
+      const placeholder = document.createElement('div');
+      placeholder.dataset.backstopVideoPlaceholder = 'true';
+      placeholder.setAttribute('role', 'img');
+      placeholder.setAttribute('aria-label', 'Video');
+      placeholder.style.cssText = `all: initial; position: absolute; left: 0; top: 0; width: ${rect.width}px; height: ${rect.height}px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; background: #eee; border: 1px solid #ccc; color: #555; font: 14px Arial, sans-serif; pointer-events: none; z-index: 1;`;
+      const icon = document.createElement('span');
+      icon.style.cssText = 'all: initial; width: 0; height: 0; border-top: 16px solid transparent; border-bottom: 16px solid transparent; border-left: 25px solid #555;';
+      placeholder.append(icon, document.createTextNode('Video'));
+      element.parentElement.appendChild(placeholder);
+      const origin = placeholder.getBoundingClientRect();
+      placeholder.style.left = `${rect.left - origin.left}px`;
+      placeholder.style.top = `${rect.top - origin.top}px`;
+      // Keep the original frame and its layout; no provider content is needed.
+      element.style.setProperty('opacity', '0', 'important');
+      element.dataset.backstopVideoState = 'placeholder';
+    });
   }
 }
 
@@ -222,8 +250,10 @@ async function contentIframeSnapshots(page) {
         const response = capture.frameResponses.get(frame);
         if (response?.status) await iframe.evaluate((element, status) => { element.dataset.backstopIframeStatus = status; }, String(response.status));
         if (response?.error) throw new Error(`Navigation failed (${response.error})`);
-        if (response?.status >= 400) throw new Error(`HTTP ${response.status}`);
-        if ((response?.status >= 200 && response.status < 300 && frame.url() !== 'about:blank') || await iframe.getAttribute('srcdoc') !== null) break;
+        // Capture a rendered 404 page as content so it appears in the visual
+        // comparison. Server errors and failed navigation still stop capture.
+        if (response?.status >= 400 && response.status !== 404) throw new Error(`HTTP ${response.status}`);
+        if ((response?.status >= 200 && (response.status < 300 || response.status === 404) && frame.url() !== 'about:blank') || await iframe.getAttribute('srcdoc') !== null) break;
         await page.waitForTimeout(100);
       }
       await frame.waitForFunction(() => {
@@ -233,7 +263,9 @@ async function contentIframeSnapshots(page) {
           (document.body.innerText.trim().length > 0 || [...document.querySelectorAll('img[src], canvas, svg, video, input, button')].some(visible));
       });
       await frameSnapshot(iframe, frame, '.js-ma-responsive-iframe, .ma__iframe__container', 'backstopIframeSnapshot');
-      await iframe.evaluate(element => { element.dataset.backstopIframeState = 'ready'; });
+      await iframe.evaluate(element => {
+        element.dataset.backstopIframeState = element.dataset.backstopIframeStatus === '404' ? 'error-page' : 'ready';
+      });
     } catch (error) {
       await iframe.evaluate(element => { element.dataset.backstopIframeState = 'error'; }).catch(() => {});
       throw new Error(`Content iframe failed: ${safeUrl(source)} (${safeMessage(error.message)})`);
@@ -317,7 +349,7 @@ function snapshot() {
     fontErrors: [...document.fonts].filter(font => font.status === 'error').map(font => font.family),
     styles: [...document.querySelectorAll('link[rel~="stylesheet"]')].filter(link => !link.disabled && matchMedia(link.media || 'all').matches).map(link => ({ source: link.href, ready: !!link.sheet })),
     images, banners, tableaus,
-    videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, box: box(element) })),
+    videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, playerCheck: element.dataset.backstopVideoCheck, message: element.dataset.backstopVideoMessage, box: box(element) })),
     iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
     footer: [...document.querySelectorAll('.ma__footer-new')].map(box),
     feedback: [...document.querySelectorAll('.ma__fixed-feedback-button')].map(element => ({ display: getComputedStyle(element).display, visibility: getComputedStyle(element).visibility, box: box(element) }))
@@ -331,7 +363,10 @@ async function assets(page, scenario, stableFor = 1000) {
     await styles(page, scenario);
     const state = await page.evaluate(snapshot);
     const failedImage = state.images.find(image => image.state === 'error');
-    if (failedImage) throw new Error(`Image failed to load or decode: ${safeUrl(failedImage.source)}`);
+    if (failedImage) {
+      const failure = captures.get(page)?.requests.findLast(request => request.url === safeUrl(failedImage.source));
+      throw new Error(`Image failed to load or decode: ${safeUrl(failedImage.source)}${failure?.status ? ` (HTTP ${failure.status})` : failure?.error ? ` (${failure.error})` : ''}`);
+    }
     if (state.tableaus.some(viz => viz.state === 'error' || viz.state === 'timeout')) throw new Error('Tableau failed to become interactive');
     if (state.fontErrors.length) throw new Error(`Fonts failed to load: ${state.fontErrors.join(', ')}`);
     const ready = state.images.every(image => image.state === 'ready' && image.complete !== false) && state.tableaus.every(viz => viz.state === 'ready') && state.fonts === 'loaded' && state.styles.every(style => style.ready);
