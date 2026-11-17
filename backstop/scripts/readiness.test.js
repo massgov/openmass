@@ -611,3 +611,36 @@ test('a TOC that never initializes fails at its named step with pending links in
   assert.equal(diagnostic.state.tableOfContents[0].ready, false);
   assert.deepEqual(diagnostic.state.tableOfContents[0].expectedTargets, ['one', 'two', 'three']);
 });
+
+test('horizontal sticky navigation stays below the banner without covering content at different viewport heights', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(`<style>
+      .page-banner { height:200px; background:#ccc }
+      .ma__sticky-nav--horizontal { position:relative; margin-top:-20px; margin-bottom:20px; height:50px }
+      .ma__sticky-nav--horizontal[data-sticky=middle], .ma__sticky-nav--horizontal[data-sticky=bottom] { position:fixed; top:0; bottom:auto; margin:0 }
+      </style><div class="pre-content"><div class="page-banner">Banner</div><div class="ma__details__sticky-nav"><nav class="ma__sticky-nav ma__sticky-nav--horizontal" data-sticky="top"><a href="#featured">Featured</a></nav></div></div>
+      <main id="featured" style="height:1800px">Featured items</main>`, `
+      window.addEventListener('scroll', () => {
+        document.querySelector('nav').dataset.sticky = scrollY > 0 ? 'middle' : 'top';
+      });
+    `));
+    return true;
+  };
+  for (const size of [viewport, { ...viewport, height: 1100 }, { label: 'phone', width: 360, height: 480 }]) {
+    const scenario = { label: 'OrgElectedOfficial', url: `${origin}/page`, captureTimeout: 5000 };
+    await capture(scenario, async page => {
+      await ready(page, scenario, size);
+      const banner = await page.locator('.page-banner').boundingBox();
+      const nav = await page.locator('nav').boundingBox();
+      const content = await page.locator('main').boundingBox();
+      assert.equal(nav.y, banner.y + banner.height - 20);
+      assert.ok(content.y >= nav.y + nav.height);
+      assert.equal(await page.evaluate(() => scrollY), 0);
+    }, size);
+    const nav = report(scenario.label, size).state.stickyNavigation[0];
+    assert.equal(nav.position, 'relative');
+    assert.equal(nav.box[1], 180);
+  }
+});

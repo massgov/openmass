@@ -33,13 +33,24 @@ module.exports = async (page, scenario, viewport) => {
           display: none !important;
         }
 
-        /* Make sure sticky nav stays at the top */
-        /* @todo it'd be better to add a class to this which disables to functionality */
+        /* Keep vertical section navigation anchored during full-page capture. */
         .ma__sticky-nav {
           top: auto !important;
           bottom: -15px !important;
           position: absolute !important;
           z-index: 80;
+        }
+
+        /* Horizontal navigation belongs below its banner in the normal flow.
+           Absolute positioning anchors it to the viewport and covers content.
+           Preserve the component's top-state margins even after scroll JS runs. */
+        .ma__sticky-nav.ma__sticky-nav--horizontal {
+          position: relative !important;
+          top: auto !important;
+          bottom: auto !important;
+          left: auto !important;
+          margin-top: -20px !important;
+          margin-bottom: 20px !important;
         }
 
         .ma__details__sticky-nav.stuck {
@@ -138,13 +149,6 @@ module.exports = async (page, scenario, viewport) => {
           // Scrolling to the inline feedback form hides the floating button.
           // Wait for its markup; visibility is settled after returning to top.
           await step('feedback button markup', () => page.locator('.ma__fixed-feedback-button').waitFor({ state: 'attached' }));
-          break;
-        case 'OrgElectedOfficial':
-        case 'ExpansionOfAccordions1':
-          await step('organization sticky navigation', async () => {
-            await page.evaluate(() => document.querySelector('.ma__sticky-nav').setAttribute('data-sticky', 'bottom'));
-            await page.waitForSelector('.ma__sticky-nav');
-          });
           break;
         case 'ServiceDetails':
           await step('service iframe button', () => page.frameLocator('.ma__iframe__container.js-ma-responsive-iframe iframe').first().locator('button').waitFor());

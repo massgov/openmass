@@ -122,6 +122,10 @@ and hide the TOC. TOC links and geometry are included in the final stability
 check and diagnostics; an unfinished TOC fails at the `table of contents` step
 within the shared deadline.
 
+Horizontal sticky navigation stays in normal flow below its banner during
+capture, including after lazy-loading scrolls. Its geometry is included in the
+layout stability check so it cannot float over the page content.
+
 Tableau containers expose `data-tableau-state` as `loading`, `ready`, `error`, or
 `timeout`. The test hooks also observe public Tableau readiness callbacks/events
 on environments running older application code. A missing spinner is never used

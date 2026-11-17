@@ -380,6 +380,7 @@ function snapshot(tableOfContentsOnly = false) {
     fontErrors: [...document.fonts].filter(font => font.status === 'error').map(font => font.family),
     styles: [...document.querySelectorAll('link[rel~="stylesheet"]')].filter(link => !link.disabled && matchMedia(link.media || 'all').matches).map(link => ({ source: link.href, ready: !!link.sheet })),
     images, banners, tableaus, tableOfContents,
+    stickyNavigation: [...document.querySelectorAll('.ma__sticky-nav')].map(element => ({ position: getComputedStyle(element).position, box: box(element) })),
     videoPlayers: [...document.querySelectorAll('iframe[data-backstop-video-state]')].map(element => ({ source: element.src, state: element.dataset.backstopVideoState, playerCheck: element.dataset.backstopVideoCheck, message: element.dataset.backstopVideoMessage, box: box(element) })),
     iframes: [...document.querySelectorAll('.js-ma-responsive-iframe iframe, .ma__iframe__container iframe')].map(element => ({ source: element.src, title: element.title, state: element.dataset.backstopIframeState || 'loading', status: element.dataset.backstopIframeStatus, snapshot: !!element.dataset.backstopIframeSnapshot, box: box(element) })),
     footer: [...document.querySelectorAll('.ma__footer-new')].map(box),
