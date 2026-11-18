@@ -1,28 +1,12 @@
 const fs = require('node:fs');
 const path = require('node:path');
+const { safeUrl, safeMessage, redact } = require('./diagnostic-utils');
 
 const captures = new WeakMap();
 const transient = status => status === 408 || status === 429 || status >= 500;
 const pause = ms => new Promise(resolve => setTimeout(resolve, ms));
 const videoSelector = 'iframe[src*="player.vimeo.com/video/"], iframe[src*="youtube.com/embed/"], iframe[src*="youtube-nocookie.com/embed/"]';
 const contentIframeSelector = '.js-ma-responsive-iframe iframe, .ma__iframe__container iframe';
-
-function safeUrl(value) {
-  try {
-    const url = new URL(value);
-    url.username = '';
-    url.password = '';
-    for (const key of url.searchParams.keys()) {
-      if (/token|key|auth|password|signature|secret/i.test(key)) url.searchParams.set(key, '[redacted]');
-    }
-    return url.href;
-  } catch { return '[invalid URL]'; }
-}
-
-function safeMessage(message) {
-  return message.replace(/https?:\/\/[^\s)]+/g, safeUrl)
-    .replace(/eyJ[\w-]+\.[\w-]+\.[\w-]+/g, '[redacted token]');
-}
 
 function monitor(page, scenario, viewport, isReference, config = {}) {
   const capture = {
@@ -65,10 +49,7 @@ function save(page, details) {
   capture.finished = true;
   fs.mkdirSync(capture.directory, { recursive: true });
   const { directory, name, blocked, finished, stylesheets, frameResponses, ...diagnostic } = capture;
-  fs.writeFileSync(path.join(directory, `${name}.json`), JSON.stringify({ ...diagnostic, ...details }, (key, value) => {
-    return typeof value === 'string' && /^(https?:|data:)/.test(value)
-      ? (value.startsWith('data:') ? '[inline image]' : safeUrl(value)) : value;
-  }, 2));
+  fs.writeFileSync(path.join(directory, `${name}.json`), JSON.stringify({ ...diagnostic, ...details }, redact, 2));
 }
 
 async function warmup(context, url, expectedStatus = 200, { attempts = 3, delay = 1000, timeout = 15000 } = {}) {
@@ -389,6 +370,7 @@ function snapshot(tableOfContentsOnly = false) {
   };
   const images = [...document.images].filter(image => visible(image) && (image.currentSrc || image.getAttribute('src')?.trim())).map(image => ({
     element: describe(image), source: image.currentSrc || image.src,
+    fallbackSource: image.closest('picture') || image.hasAttribute('srcset') ? image.src : undefined,
     state: decode(image, image, cache), complete: image.complete,
     natural: [image.naturalWidth, image.naturalHeight], box: box(image),
     fit: getComputedStyle(image).objectFit, position: getComputedStyle(image).objectPosition

@@ -247,6 +247,133 @@ test('missing CSS is a readiness failure with HTTP diagnostics', async () => {
   assert.ok(result.requests.some(request => request.type === 'stylesheet' && request.status === 404));
 });
 
+test('readiness leaves responsive fallback URLs, source rules, crop and layout unchanged', async () => {
+  const requests = new Map();
+  handle = (request, response) => {
+    if (request.url.endsWith('.svg')) {
+      requests.set(request.url, (requests.get(request.url) || 0) + 1);
+      response.writeHead(200, { 'content-type': 'image/svg+xml' });
+      response.end(request.url === '/final-wide.svg' ? svg.replace(/green/g, 'blue') : svg);
+      return true;
+    }
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<picture><source media="(min-width:801px)" srcset="/wide.svg 1x"><img id="hero" src="/small.svg" width="300" height="100" style="object-fit:cover;object-position:25% 50%;visibility:visible!important"></picture><img id="density" src="/small.svg" srcset="/density.svg 1x" width="160" height="40">', "setTimeout(() => { document.querySelector('source').srcset = '/final-wide.svg 1x'; }, 500);"));
+    return true;
+  };
+  const scenario = { label: 'responsive-paint', url: `${origin}/page`, captureTimeout: 5000 };
+  for (const size of [{ ...viewport, width: 1024 }, { label: 'phone', width: 360, height: 480 }]) {
+    requests.clear();
+    await capture(scenario, async page => {
+      const original = await page.locator('#hero').boundingBox();
+      await ready(page, scenario, size);
+      assert.deepEqual(await page.locator('#hero').boundingBox(), original);
+      assert.deepEqual(await page.locator('#hero').evaluate(image => [image.style.visibility, image.style.getPropertyPriority('visibility')]), ['visible', 'important']);
+      assert.equal(await page.locator('source').getAttribute('media'), '(min-width:801px)');
+      assert.equal(await page.locator('source').getAttribute('srcset'), '/final-wide.svg 1x');
+      assert.equal(await page.locator('#density').getAttribute('srcset'), '/density.svg 1x');
+      assert.equal(await page.locator('#density').evaluate(image => image.src), `${origin}/small.svg`);
+      const expected = size.width >= 801 ? '/final-wide.svg' : '/small.svg';
+      assert.equal(await page.locator('#hero').evaluate(image => image.src), `${origin}/small.svg`);
+      const png = PNG.sync.read(await page.screenshot({ fullPage: true }));
+      const offset = ((Math.round(original.y) + 50) * png.width + Math.round(original.x) + 50) * 4;
+      assert.deepEqual([...png.data.subarray(offset, offset + 4)], size.width >= 801 ? [0, 0, 255, 255] : [0, 128, 0, 255]);
+      assert.equal(requests.get(expected), 1);
+      assert.equal(await page.evaluate(() => window.__backstopImageDiagnosticSnapshot), undefined);
+    }, size);
+    const image = report(scenario.label, size).state.images.find(image => image.element === 'hero');
+    assert.equal(image.fallbackSource, `${origin}/small.svg`);
+    assert.equal(image.fit, 'cover');
+    assert.equal(image.position, '25% 50%');
+  }
+  assert.equal(fs.existsSync(path.join(directory, 'test-responsive-paint-desktop-images.json')), false);
+});
+
+test('focused image diagnostics record actual screenshot boundaries, source changes and requests without changing the capture or leaking credentials', async () => {
+  const raster = new PNG({ width: 16, height: 8 });
+  raster.data.fill(255);
+  const image = PNG.sync.write(raster);
+  handle = (request, response) => {
+    const pathname = new URL(request.url, origin).pathname;
+    if (pathname.endsWith('.png')) {
+      response.writeHead(pathname === '/missing.png' ? 404 : 200, { 'content-type': 'image/png', 'content-length': image.length, 'set-cookie': 'private-cookie=do-not-save', 'x-private-header': 'private-response-secret' });
+      response.end(image);
+      return true;
+    }
+    if (pathname !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<picture><source media="(min-width:801px)" srcset="/wide.png?token=private-wide-token 1x"><img id="hero" src="/small.png?auth=private-small-token" width="300" height="100" style="object-fit:cover"></picture><input value="private-field-secret">'));
+    return true;
+  };
+  const size = { ...viewport, width: 1024 };
+  const scenario = { label: 'image-observer', url: `${origin.replace('http://', 'http://private-user:private-password@')}/page`, imageDiagnostics: '#hero', captureTimeout: 5000 };
+  let calls = 0;
+  let originalResult;
+  await capture(scenario, async page => {
+    await ready(page, scenario, size);
+    const result = await page.screenshot({ fullPage: true, path: path.join(directory, 'actual-capture.png') });
+    assert.equal(calls, 1, 'Diagnostics must not take extra screenshots');
+    assert.equal(result, originalResult, 'Return the original screenshot buffer');
+    assert.equal(await page.locator('#hero').getAttribute('src'), '/small.png?auth=private-small-token');
+  }, size, async page => {
+    await page.context().setExtraHTTPHeaders({ 'x-private-request': 'private-request-secret' });
+    await page.route('**/failed.png', route => route.abort('failed'));
+    const screenshot = page.screenshot.bind(page);
+    // Model a viewport/source switch inside the underlying capture operation.
+    page.screenshot = async options => {
+      calls++;
+      await page.setViewportSize({ width: 360, height: 480 });
+      await page.locator('#hero').evaluate(image => image.decode());
+      await page.evaluate(async () => {
+        for (const url of ['/missing.png', '/failed.png']) {
+          const image = new Image(); image.src = url; await image.decode().catch(() => {});
+        }
+      });
+      originalResult = await screenshot(options);
+      return originalResult;
+    };
+  });
+  const text = fs.readFileSync(path.join(directory, 'test-image-observer-desktop-images.json'), 'utf8');
+  assert.doesNotMatch(text, /private-(?:user|password|wide-token|small-token|request-secret|response-secret|field-secret)|private-cookie|do-not-save/);
+  const diagnostic = JSON.parse(text);
+  assert.equal(diagnostic.readOnly, true);
+  assert.equal(diagnostic.screenshots.length, 1);
+  const shot = diagnostic.screenshots[0];
+  assert.equal(shot.before.viewport.width, 1024);
+  assert.equal(shot.after.viewport.width, 360);
+  assert.match(shot.before.images[0].currentSrc, /wide\.png/);
+  assert.match(shot.after.images[0].currentSrc, /small\.png/);
+  assert.equal(shot.before.images[0].sources[0].matches, true);
+  assert.equal(shot.after.images[0].sources[0].matches, false);
+  assert.ok(shot.finishedAt >= shot.startedAt);
+  assert.ok(diagnostic.events.some(event => event.viewport.width === 360));
+  assert.equal(diagnostic.requests.length, 4, 'Reading response bodies must not send additional image requests');
+  assert.ok(diagnostic.requests.some(request => request.status === 404));
+  assert.ok(diagnostic.requests.some(request => request.error));
+  assert.equal(diagnostic.assets.length, 2);
+  for (const asset of diagnostic.assets) {
+    assert.deepEqual(fs.readFileSync(path.join(directory, asset.file)), image);
+    assert.match(asset.sha256, /^[a-f0-9]{64}$/);
+  }
+});
+
+test('image diagnostic logging preserves the original screenshot failure', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' }); response.end(html('<img id="hero" width="100" height="40" src="/image.svg">'));
+    return true;
+  };
+  const scenario = { label: 'failed-image-capture', url: `${origin}/page`, imageDiagnostics: '#hero', captureTimeout: 4000 };
+  const failure = new Error('Original screenshot failure');
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    await assert.rejects(page.screenshot({ fullPage: true }), error => error === failure);
+  }, viewport, async page => { page.screenshot = async () => { throw failure; }; });
+  const diagnostic = JSON.parse(fs.readFileSync(path.join(directory, 'test-failed-image-capture-desktop-images.json'), 'utf8'));
+  assert.equal(diagnostic.screenshots[0].error, failure.message);
+  assert.ok(diagnostic.screenshots[0].after.images.length);
+});
+
 test('CI preflight requires consecutive successful stylesheet checks after a failed stylesheet', async () => {
   let stylesheets = 0;
   handle = (request, response) => {

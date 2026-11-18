@@ -119,6 +119,27 @@ image geometry and page height. CSS background images and pseudo-elements are
 included. Image crop styles are preserved. Downloaded documents are excluded
 from visual scenarios because Chromium's PDF viewer is not reliable here.
 
+Responsive image markup is left intact. Readiness diagnostics record both the
+selected `source` and original `fallbackSource`.
+
+The `microsite5` scenario temporarily enables focused, read-only image
+diagnostics via `imageDiagnostics: ".ma__key-message__inline-image img"`.
+There is no image-source rewrite or visibility/repaint workaround. The next
+normal CircleCI comparison automatically collects diagnostics for that page.
+Use `--force-reference` to collect fresh reference and test evidence together
+without updating the shared production baseline.
+
+Look under `backstop/diagnostics/` in the job artifacts for
+`test-microsite5-desktop-images.json` (and `reference-...-images.json` when
+capturing references). It contains image state immediately before and after
+Backstop's original full-page screenshot, a bounded source/viewport-change
+timeline, browser version/platform, matching picture media queries, and image
+request statuses/timings. Up to six received raster image files (8 MiB each)
+are saved alongside the JSON with SHA-256 hashes. Only already-received bodies
+are read, after capture; no preliminary screenshots or extra image requests
+are made. Request headers, cookies, form values, and page HTML are not recorded;
+credentials and sensitive URL query parameters are redacted.
+
 For the Homepage scenario, a browser initialization hook limits
 `homepage_background_images` to the first image alphabetically by site-relative
 desktop image path, ignoring the hostname and query string. The site's existing
