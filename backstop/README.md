@@ -23,22 +23,17 @@ they look the same.
 ## Options
 
 ```
---target=local  # Choose an enviornment to target(feature#, test, or prod)
-                # `local` is default
---list=all	    # Choose a json page to run with backstop
-                # `all` is default
---viewport=all  # Options are desktop, tablet, phone, or all (default)
+--target=local  # Choose local, test (stage), prod (default), feature#, or tugboat.
+--list=all      # The supported scenario list (default).
+--viewport=all  # Default viewports: all (default) or desktop.
 
 --cachebuster   # Appends a cache busting query string to URLs of pages to be tested.
 ```
 
-- `pages.json` is the list pages that are tested when Backstop is run. This is
-  the default option. There are currently 39 pages, which is about as many pages
-  as we want the default option to include. If there are too many pages
-  included, the risk of failed test runs increases.
-- `all.json` has additional pages to test a larger number of pages -- for
-  example, additional displays for some content types. There are currently 57
-  total (this includes the default pages). To use this option, add `--list=all`
+Scenarios are defined in `all.json`. Individual scenarios can override the
+default viewports through their `screens` or `viewports` settings.
+`--cachebuster` is off by default. It adds a random query parameter to page URLs;
+image and stylesheet URLs keep their normal cache behavior.
 
 ## Usage
 
@@ -54,7 +49,7 @@ they look the same.
   screen captures of production pages with
   `ddev backstop reference --target=prod --list=all`
   Reference screenshots can also be captured from a Tugboat environment with
-  `ddev backstop test -- --target=tugboat --viewport=desktop --tugboat=https://pr1109-3njbhyjchfr06gmuwiojlcdcxrimpaox.tugboat.qa/`
+  `ddev backstop reference --target=tugboat --viewport=desktop --tugboat=https://your-preview.tugboat.qa/`
 - Take screen captures of local pages to compare
   `ddev backstop test --target=local --list=all`
 - Open the report from the comparison
@@ -62,15 +57,10 @@ they look the same.
 
 ## Modifying Tests
 
-You can change the pages that are captured by editing the `pages.json` file in
+You can change the pages that are captured by editing the `all.json` file in
 this directory. We _do not_ want to test every page on the site, as this type of
 testing is very slow, but it is good to have one or two "representative samples"
 of all the different page variations on the site.
-
-If you need other "representative samples" of content types, please use
-the `all.json` file. By `Copy + Paste` all or some of the lines into
-the `pages.json`. The `all.json` file includes a few more of the QAG pages that
-were created for testing purposes.
 
 ## Running Backstop in CircleCI
 
@@ -80,8 +70,8 @@ Backstop directly in the pinned `cimg/node:24.22.1-browsers` executor. Local
 runs use the same project dependencies and Chromium build inside DDEV's web
 container instead of maintaining a separate Backstop image.
 
-`drush ma:backstop-snapshot` will run Backstop and store the screenshots to be
-used later by `drush ma:backstop-compare` e.g.
+`drush ma:ci:backstop-snapshot` will run Backstop and store the screenshots to be
+used later by `drush ma:ci:backstop-compare` e.g.
 ```
 drush ma:ci:backstop-snapshot --target=prod
 drush ma:ci:backstop-compare --reference=prod --target=test
@@ -132,24 +122,6 @@ media-based picture sources; width-based candidate selection within a `srcset`
 is still handled by the browser.
 Readiness diagnostics retain both the selected `source` and original
 `fallbackSource`.
-
-The `microsite5` scenario temporarily enables focused, read-only image
-diagnostics via `imageDiagnostics: ".ma__key-message__inline-image img"`.
-The next normal CircleCI comparison automatically collects diagnostics for that
-page, including attribute changes made by the capture hook.
-Use `--force-reference` to collect fresh reference and test evidence together
-without updating the shared production baseline.
-
-Look under `backstop/diagnostics/` in the job artifacts for
-`test-microsite5-desktop-images.json` (and `reference-...-images.json` when
-capturing references). It contains image state immediately before and after
-Backstop's original full-page screenshot, a bounded source/viewport-change
-timeline, browser version/platform, matching picture media queries, and image
-request statuses/timings. Up to six received raster image files (8 MiB each)
-are saved alongside the JSON with SHA-256 hashes. Only already-received bodies
-are read, after capture; no preliminary screenshots or extra image requests
-are made. Request headers, cookies, form values, and page HTML are not recorded;
-credentials and sensitive URL query parameters are redacted.
 
 For the Homepage scenario, a browser initialization hook limits
 `homepage_background_images` to the first image alphabetically by site-relative

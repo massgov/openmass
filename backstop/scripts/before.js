@@ -3,11 +3,6 @@ const readiness = require('./readiness');
 module.exports = async (page, scenario, viewport, isReference, browserContext, config = {}) => {
   const capture = readiness.monitor(page, scenario, viewport, isReference, config);
   require('./responsive-image-capture')(page);
-  if (scenario.imageDiagnostics) {
-    await require('./image-diagnostics')(page, {
-      selector: scenario.imageDiagnostics, directory: capture.directory, name: capture.name
-    });
-  }
   await page.addInitScript(require('./tableau-readiness'));
   if (scenario.label === 'Homepage') await page.addInitScript(require('./homepage-banner'));
   const banned = [
