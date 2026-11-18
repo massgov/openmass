@@ -76,7 +76,11 @@ if (getenv('DOCKER_ENV') === 'devel') {
 // Drupal is not bootstrapped enough to know what modules are enabled, so
 // technically we can only autoload classes in /vendor/.
 require_once __DIR__ . '../../../../docroot/modules/custom/mass_utility/src/DebugCachability.php';
-if (isset($GLOBALS['request']) && $GLOBALS['request']->headers->get(DebugCachability::HEADER, FALSE)) {
+// Symfony Runtime creates the request after this file loads, so the incoming
+// header has to be read from the web server. $GLOBALS['request'] covers the
+// legacy front controller, which set that global first.
+$debug_cache_header = $_SERVER['HTTP_X_REQUEST_DEBUG_CACHABILITY_HEADERS'] ?? '';
+if ((isset($GLOBALS['request']) && $GLOBALS['request']->headers->get(DebugCachability::HEADER, FALSE)) || $debug_cache_header) {
   $settings['container_yamls'][] = $app_root . '/sites/debug_cacheability_headers.services.yml';
 }
 

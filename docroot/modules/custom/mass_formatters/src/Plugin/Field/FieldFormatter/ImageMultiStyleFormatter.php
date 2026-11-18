@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\breakpoint\BreakpointManagerInterface;
+use Drupal\image\ImageDerivativeUtilities;
 use Drupal\image\Plugin\Field\FieldFormatter\ImageFormatterBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -47,6 +48,13 @@ class ImageMultiStyleFormatter extends ImageFormatterBase implements ContainerFa
   protected $breakpointManager;
 
   /**
+   * Image style option builder.
+   *
+   * @var \Drupal\image\ImageDerivativeUtilities
+   */
+  protected $imageDerivativeUtilities;
+
+  /**
    * Constructs an ImageFormatter object.
    *
    * @param string $plugin_id
@@ -69,12 +77,15 @@ class ImageMultiStyleFormatter extends ImageFormatterBase implements ContainerFa
    *   The image style storage.
    * @param \Drupal\breakpoint\BreakpointManagerInterface $breakpoint_manager
    *   The breakpoint manager service.
+   * @param \Drupal\image\ImageDerivativeUtilities $image_derivative_utilities
+   *   Image style option builder.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AccountInterface $current_user, EntityStorageInterface $image_style_storage, BreakpointManagerInterface $breakpoint_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, AccountInterface $current_user, EntityStorageInterface $image_style_storage, BreakpointManagerInterface $breakpoint_manager, ImageDerivativeUtilities $image_derivative_utilities) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->currentUser = $current_user;
     $this->imageStyleStorage = $image_style_storage;
     $this->breakpointManager = $breakpoint_manager;
+    $this->imageDerivativeUtilities = $image_derivative_utilities;
   }
 
   /**
@@ -91,7 +102,8 @@ class ImageMultiStyleFormatter extends ImageFormatterBase implements ContainerFa
       $configuration['third_party_settings'],
       $container->get('current_user'),
       $container->get('entity_type.manager')->getStorage('image_style'),
-      $container->get('breakpoint.manager')
+      $container->get('breakpoint.manager'),
+      $container->get(ImageDerivativeUtilities::class)
     );
   }
 
@@ -119,7 +131,7 @@ class ImageMultiStyleFormatter extends ImageFormatterBase implements ContainerFa
       ];
       return $element;
     }
-    $image_styles = image_style_options(FALSE);
+    $image_styles = $this->imageDerivativeUtilities->styleOptions(FALSE);
     $image_styles_values = $this->getSetting('image_styles');
     $element['image_styles'] = [
       '#type' => 'fieldset',
@@ -158,7 +170,7 @@ class ImageMultiStyleFormatter extends ImageFormatterBase implements ContainerFa
   public function settingsSummary() {
     $summary = [];
 
-    $image_styles = image_style_options(FALSE);
+    $image_styles = $this->imageDerivativeUtilities->styleOptions(FALSE);
     // Unset possible 'No defined styles' option.
     unset($image_styles['']);
     // Styles could be lost because of enabled/disabled modules that defines

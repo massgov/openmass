@@ -93,7 +93,7 @@ class MediaEntityDocumentNormalizer extends ContentEntityNormalizer {
   /**
    * {@inheritdoc}
    */
-  public function normalize($object, $format = NULL, array $context = []): float|array|\ArrayObject|bool|int|string|null {
+  public function normalize($object, $format = NULL, array $context = []): array {
     $attributes = parent::normalize($object, $format, $context);
     /** @var \Drupal\taxonomy\TermStorage $term_storage */
     $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
