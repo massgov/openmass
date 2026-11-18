@@ -119,13 +119,24 @@ image geometry and page height. CSS background images and pseudo-elements are
 included. Image crop styles are preserved. Downloaded documents are excluded
 from visual scenarios because Chromium's PDF viewer is not reliable here.
 
-Responsive image markup is left intact. Readiness diagnostics record both the
-selected `source` and original `fallbackSource`.
+Responsive images load and settle using their original markup at each test
+viewport. For the full-page screenshot only, the capture hook holds `picture`
+source media queries to their current match results, then restores the original
+queries in a `finally` block. Chromium can briefly resize the viewport to
+1 × 1 inside screenshot capture, selecting a low-resolution mobile fallback
+after readiness has already passed. This browser workaround preserves the real
+selected source, crop, and layout; image URLs, `srcset`, `sizes`, and resolution
+descriptors stay intact. It does not substitute a predetermined image or take
+an extra screenshot. Viewport-only screenshots are unaffected. This addresses
+media-based picture sources; width-based candidate selection within a `srcset`
+is still handled by the browser.
+Readiness diagnostics retain both the selected `source` and original
+`fallbackSource`.
 
 The `microsite5` scenario temporarily enables focused, read-only image
 diagnostics via `imageDiagnostics: ".ma__key-message__inline-image img"`.
-There is no image-source rewrite or visibility/repaint workaround. The next
-normal CircleCI comparison automatically collects diagnostics for that page.
+The next normal CircleCI comparison automatically collects diagnostics for that
+page, including attribute changes made by the capture hook.
 Use `--force-reference` to collect fresh reference and test evidence together
 without updating the shared production baseline.
 

@@ -289,6 +289,74 @@ test('readiness leaves responsive fallback URLs, source rules, crop and layout u
   assert.equal(fs.existsSync(path.join(directory, 'test-responsive-paint-desktop-images.json')), false);
 });
 
+test('picture media choices survive a capture-time viewport shrink without changing image URLs, density, crop or layout', async () => {
+  handle = (request, response) => {
+    if (request.url.endsWith('.svg')) {
+      response.writeHead(200, { 'content-type': 'image/svg+xml' });
+      response.end(request.url === '/wide.svg' ? svg.replace(/green/g, 'blue') : svg);
+      return true;
+    }
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<picture><source media="(min-width:801px)" srcset="/wide.svg 1x"><img id="hero" src="/small.svg" width="300" height="100" style="object-fit:cover;object-position:25% 50%"></picture><picture><source media="(min-width:801px)" srcset="/double.svg 2x"><img id="density" src="/small.svg" width="160" height="40"></picture><div style="height:1800px"></div>'));
+    return true;
+  };
+  for (const size of [{ ...viewport, width: 1024 }, { label: 'phone', width: 360, height: 480 }]) {
+    const scenario = { label: 'picture-capture', url: `${origin}/page`, captureTimeout: 5000 };
+    const state = page => page.evaluate(() => [...document.images].map(image => ({
+      markup: image.parentElement.outerHTML, source: image.currentSrc, width: image.naturalWidth,
+      box: JSON.stringify(image.getBoundingClientRect())
+    })));
+    let calls = 0;
+    await capture(scenario, async page => {
+      await ready(page, scenario, size);
+      const before = await state(page);
+      const png = PNG.sync.read(await page.screenshot({ fullPage: true }));
+      await page.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
+      assert.deepEqual(await state(page), before, 'Original markup, selection and geometry must be restored');
+      const offset = (50 * png.width + 50) * 4;
+      assert.deepEqual([...png.data.subarray(offset, offset + 4)], size.width >= 801 ? [0, 0, 255, 255] : [0, 128, 0, 255]);
+      assert.equal(calls, 1, 'No preliminary screenshots');
+    }, size, async page => {
+      const screenshot = page.screenshot.bind(page);
+      page.screenshot = async options => {
+        calls++;
+        const selected = await page.locator('img').evaluateAll(images => images.map(image => [image.currentSrc, image.naturalWidth]));
+        assert.deepEqual(await page.locator('source').evaluateAll(sources => sources.map(source => source.media)), [size.width >= 801 ? 'all' : 'not all', size.width >= 801 ? 'all' : 'not all']);
+        await page.setViewportSize({ width: 1, height: 1 });
+        await page.locator('img').evaluateAll(images => Promise.all(images.map(image => image.decode())));
+        assert.deepEqual(await page.locator('img').evaluateAll(images => images.map(image => [image.currentSrc, image.naturalWidth])), selected);
+        await page.setViewportSize({ width: size.width, height: size.height });
+        return screenshot(options);
+      };
+    });
+  }
+});
+
+test('picture media queries are restored after a screenshot error and viewport captures remain untouched', async () => {
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html('<picture><source media="(min-width:1px)" srcset="/wide.svg"><img src="/small.svg" width="100" height="40"></picture>'));
+    return true;
+  };
+  const failure = new Error('Screenshot failed');
+  const result = Buffer.from('viewport screenshot');
+  const scenario = { label: 'failed-picture-capture', url: `${origin}/page`, captureTimeout: 5000 };
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.equal(await page.screenshot({ fullPage: false }), result);
+    await assert.rejects(page.screenshot({ fullPage: true }), error => error === failure);
+    assert.equal(await page.locator('source').getAttribute('media'), '(min-width:1px)');
+  }, viewport, async page => {
+    page.screenshot = async options => {
+      assert.equal(await page.locator('source').getAttribute('media'), options.fullPage ? 'all' : '(min-width:1px)');
+      if (options.fullPage) throw failure;
+      return result;
+    };
+  });
+});
+
 test('focused image diagnostics record actual screenshot boundaries, source changes and requests without changing the capture or leaking credentials', async () => {
   const raster = new PNG({ width: 16, height: 8 });
   raster.data.fill(255);
@@ -309,13 +377,10 @@ test('focused image diagnostics record actual screenshot boundaries, source chan
   const scenario = { label: 'image-observer', url: `${origin.replace('http://', 'http://private-user:private-password@')}/page`, imageDiagnostics: '#hero', captureTimeout: 5000 };
   let calls = 0;
   let originalResult;
-  await capture(scenario, async page => {
-    await ready(page, scenario, size);
-    const result = await page.screenshot({ fullPage: true, path: path.join(directory, 'actual-capture.png') });
-    assert.equal(calls, 1, 'Diagnostics must not take extra screenshots');
-    assert.equal(result, originalResult, 'Return the original screenshot buffer');
-    assert.equal(await page.locator('#hero').getAttribute('src'), '/small.png?auth=private-small-token');
-  }, size, async page => {
+  // Exercise the read-only observer independently of the capture workaround.
+  const context = await browser.newContext({ viewport: size });
+  const page = await context.newPage();
+  try {
     await page.context().setExtraHTTPHeaders({ 'x-private-request': 'private-request-secret' });
     await page.route('**/failed.png', route => route.abort('failed'));
     const screenshot = page.screenshot.bind(page);
@@ -332,7 +397,15 @@ test('focused image diagnostics record actual screenshot boundaries, source chan
       originalResult = await screenshot(options);
       return originalResult;
     };
-  });
+    const monitored = readiness.monitor(page, scenario, size, false, { diagnosticsPath: directory });
+    await require('./image-diagnostics')(page, { selector: scenario.imageDiagnostics, directory: monitored.directory, name: monitored.name });
+    await page.goto(scenario.url, { waitUntil: 'domcontentloaded' });
+    await ready(page, scenario, size);
+    const result = await page.screenshot({ fullPage: true, path: path.join(directory, 'actual-capture.png') });
+    assert.equal(calls, 1, 'Diagnostics must not take extra screenshots');
+    assert.equal(result, originalResult, 'Return the original screenshot buffer');
+    assert.equal(await page.locator('#hero').getAttribute('src'), '/small.png?auth=private-small-token');
+  } finally { await context.close(); }
   const text = fs.readFileSync(path.join(directory, 'test-image-observer-desktop-images.json'), 'utf8');
   assert.doesNotMatch(text, /private-(?:user|password|wide-token|small-token|request-secret|response-secret|field-secret)|private-cookie|do-not-save/);
   const diagnostic = JSON.parse(text);
