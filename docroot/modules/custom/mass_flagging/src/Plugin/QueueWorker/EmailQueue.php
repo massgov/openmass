@@ -19,7 +19,7 @@ class EmailQueue extends QueueWorkerBase {
    */
   public function processItem($data) {
     $mailManager = \Drupal::service('plugin.manager.mail');
-    $mailManager->mail('mass_flagging', 'email_queue', $data['user']->getEmail(), 'en', $data['params'], $send = TRUE);
+    $mailManager->mail('mass_flagging', 'email_queue', $data['user']->getEmail(), 'en', $data['params'], NULL, TRUE);
   }
 
 }
