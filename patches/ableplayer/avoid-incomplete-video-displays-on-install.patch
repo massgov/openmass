@@ -1,0 +1,47 @@
+--- a/ableplayer.module
++++ b/ableplayer.module
+@@ -162,8 +162,9 @@
+ /**
+  * Implements hook_modules_installed().
+  */
+-function ableplayer_modules_installed($modules) {
+-  if (!in_array('ableplayer', $modules)) {
++function ableplayer_modules_installed($modules, $is_syncing = FALSE) {
++  // Configuration imports provide their own media fields and displays.
++  if (!in_array('ableplayer', $modules) || $is_syncing) {
+     return;
+   }
+ 
+@@ -244,18 +245,22 @@
+   $factory = \Drupal::configFactory();
+ 
+   $video_entity_form_display = $factory->getEditable('core.entity_form_display.media.video.default');
+-  $video_entity_form_display->set('content.field_ableplayer_media_caption.type', 'media_library_widget');
+-  $video_entity_form_display->save();
++  if (!$video_entity_form_display->isNew()) {
++    $video_entity_form_display->set('content.field_ableplayer_media_caption.type', 'media_library_widget');
++    $video_entity_form_display->save();
++  }
+ 
+   $video_entity_view_display = $factory->getEditable('core.entity_view_display.media.video.default');
+-  $video_entity_view_display->set('content.field_media_video_file.type', 'ableplayer_video');
+-  $video_entity_view_display->set('content.field_media_video_file.settings', [
+-    'controls' => FALSE,
+-    'autoplay' => FALSE,
+-    'loop' => FALSE,
+-    'multiple_file_display_type' => 'tags',
+-  ]);
+-  $video_entity_view_display->save();
++  if (!$video_entity_view_display->isNew()) {
++    $video_entity_view_display->set('content.field_media_video_file.type', 'ableplayer_video');
++    $video_entity_view_display->set('content.field_media_video_file.settings', [
++      'controls' => FALSE,
++      'autoplay' => FALSE,
++      'loop' => FALSE,
++      'multiple_file_display_type' => 'tags',
++    ]);
++    $video_entity_view_display->save();
++  }
+ }
+ 
+ /**

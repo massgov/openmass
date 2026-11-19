@@ -1,0 +1,29 @@
+uuid: bea26356-a7bf-4c88-926f-f48be832d5dc
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.ableplayer_caption
+    - media.type.able_player_caption
+  module:
+    - file
+_core:
+  default_config_hash: OFzR6-FWZTLB1Q5FC3fuphBYxudNHJdJA40IOCQwvos
+id: media.able_player_caption.ableplayer_caption
+field_name: ableplayer_caption
+entity_type: media
+bundle: able_player_caption
+label: File
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: vtt
+  max_filesize: ''
+  description_field: false
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file
