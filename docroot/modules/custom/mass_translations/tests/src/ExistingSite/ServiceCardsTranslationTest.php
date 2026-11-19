@@ -71,6 +71,7 @@ class ServiceCardsTranslationTest extends MassExistingSiteBase {
     $langcode = array_rand($langcodes);
     $translation = $node->addTranslation($langcode, [
         'title' => $node->label() . ' Translation ' . $langcode,
+        'moderation_state' => MassModeration::PUBLISHED,
         'field_api_serv_card_description' => $node->field_api_serv_card_description->value . ' Translation ' . $langcode
       ],
     );
