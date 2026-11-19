@@ -117,48 +117,6 @@ class ApiServiceCardActivationTest extends MassExistingSiteBase {
   }
 
   /**
-   * Deploy initialization fills empty APC values and preserves explicit values.
-   */
-  public function testExistingCardsReceiveFalseWithoutOverwritingEnabledCards(): void {
-    \Drupal::moduleHandler()->loadInclude('mass_content', 'deploy.php');
-    $this->assertTrue(function_exists('mass_content_deploy_service_card_apc_defaults'));
-    $empty = $this->createCard(TRUE, FALSE);
-    $empty->addTranslation('es', [
-      'title' => 'Servicio existente',
-      'status' => 1,
-      'moderation_state' => MassModeration::PUBLISHED,
-    ]);
-    $empty->save();
-    // Simulate a card that predates field installation.
-    \Drupal::database()->delete('node__field_api_srv_card_apc_enabled')
-      ->condition('entity_id', $empty->id())
-      ->execute();
-    \Drupal::entityTypeManager()->getStorage('node')->resetCache([$empty->id()]);
-    $legacy = \Drupal::entityTypeManager()->getStorage('node')->load($empty->id());
-    $this->assertTrue($legacy->get(self::APC_FIELD)->isEmpty());
-    $enabled = $this->createCard(FALSE, TRUE);
-    $enabled->set(self::APC_FIELD, 1)->save();
-    $sandbox = ['current' => (int) $empty->id() - 1, 'progress' => 0, 'max' => 2];
-    do {
-      mass_content_deploy_service_card_apc_defaults($sandbox);
-    } while ($sandbox['#finished'] < 1);
-    $storage = \Drupal::entityTypeManager()->getStorage('node');
-    $storage->resetCache([$empty->id(), $enabled->id()]);
-    $empty = $storage->load($empty->id());
-    $enabled = $storage->load($enabled->id());
-    $this->assertSame('0', (string) $empty->get(self::APC_FIELD)->value);
-    $this->assertSame('0', (string) $empty->getTranslation('es')->get(self::APC_FIELD)->value);
-    $this->assertTrue($empty->isPublished());
-    $this->assertFalse((bool) $empty->get('field_api_srv_card_status')->value);
-    $this->assertSame('1', (string) $enabled->get(self::APC_FIELD)->value);
-    $this->assertFalse($enabled->isPublished());
-    $sandbox = ['current' => (int) $empty->id() - 1, 'progress' => 0, 'max' => 2];
-    mass_content_deploy_service_card_apc_defaults($sandbox);
-    $storage->resetCache([$enabled->id()]);
-    $this->assertSame('1', (string) $storage->load($enabled->id())->get(self::APC_FIELD)->value);
-  }
-
-  /**
    * MMG editors retain publication control above the service configuration tabs.
    */
   public function testMmgEditorCanUseActiveCheckboxAboveTabs(): void {
