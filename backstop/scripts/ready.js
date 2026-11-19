@@ -65,12 +65,6 @@ module.exports = async (page, scenario, viewport) => {
     });
 
     await page.evaluate(async () => {
-      // Undo the Google Optimize page-hiding snippet so we can access the page
-      // before the 2s timeout. See https://developers.google.com/optimize.
-      if (window.dataLayer && window.dataLayer.hide && window.dataLayer.hide.end) {
-        window.dataLayer.hide.end();
-      }
-
       // These masks cover changing homepage content. Other pages reuse the
       // same components and must retain their real content for comparison.
       if (!document.body.classList.contains('is-front')) return;
