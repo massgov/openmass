@@ -104,9 +104,15 @@ function getAuth() {
   // Trim leading and trailing quotes off of the auth variables.
   // This works around docker-compose's handling of environment
   // variables with quotes.
+  const variables = ['LOWER_ENVIR_AUTH_USER', 'LOWER_ENVIR_AUTH_PASS'];
+  const values = variables.map(name => (process.env[name] ?? '').replace(/(^["']|["']$)/g, ''));
+  const missing = variables.filter((name, index) => !values[index]);
+  if (missing.length) {
+    throw new Error(`Missing Backstop HTTP authentication for target "${target}": ${missing.join(', ')}. For ddev backstop, add these variables to .ddev/.env. See backstop/README.md.`);
+  }
   return {
-    username: process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
-    password: process.env.LOWER_ENVIR_AUTH_PASS.replace(/(^["']|["']$)/g, '')
+    username: values[0],
+    password: values[1]
   }
 }
 

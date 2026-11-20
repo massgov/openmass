@@ -503,6 +503,48 @@ test('diagnostics remove URL credentials and repeated sensitive query parameters
   assert.match(text, /width=800/);
 });
 
+test('Backstop authentication reports missing protected-target credentials without exposing values and permits public references', async () => {
+  const env = { ...process.env };
+  delete env.LOWER_ENVIR_AUTH_USER;
+  delete env.LOWER_ENVIR_AUTH_PASS;
+  const script = `const config = require(${JSON.stringify(path.join(__dirname, '../backstop'))}); const url = new URL(config.scenarios[0].url); console.log(JSON.stringify({ host: url.hostname, user: url.username, pass: url.password }));`;
+  const load = (target, values = {}) => promisify(execFile)(process.execPath, ['-e', script, '--', `--target=${target}`], { env: { ...env, ...values } });
+  for (const values of [{}, { LOWER_ENVIR_AUTH_USER: 'private-fixture-user' }, { LOWER_ENVIR_AUTH_USER: '\"\"', LOWER_ENVIR_AUTH_PASS: 'private-fixture-pass' }]) {
+    await assert.rejects(load('feature1', values), error => {
+      assert.match(error.stderr, /Missing Backstop HTTP authentication for target "feature1"/);
+      assert.match(error.stderr, /LOWER_ENVIR_AUTH_(USER|PASS)/);
+      assert.doesNotMatch(error.stderr, /private-fixture/);
+      return true;
+    });
+  }
+  const { stdout } = await load('feature1', { LOWER_ENVIR_AUTH_USER: '\"fixture-user\"', LOWER_ENVIR_AUTH_PASS: "'fixture-pass'" });
+  assert.deepEqual(JSON.parse(stdout), { host: 'feature1.edit.mass.gov', user: 'fixture-user', pass: 'fixture-pass' });
+  const production = await load('prod');
+  assert.deepEqual(JSON.parse(production.stdout), { host: 'www.mass.gov', user: '', pass: '' });
+});
+
+test('local Backstop authentication loads its env file and preserves nonempty existing credentials', async () => {
+  const root = fs.mkdtempSync(path.join(directory, 'backstop-auth-'));
+  fs.mkdirSync(path.join(root, 'backstop'));
+  fs.mkdirSync(path.join(root, '.ddev'));
+  const bin = path.join(root, 'node_modules/.bin');
+  fs.mkdirSync(bin, { recursive: true });
+  fs.writeFileSync(path.join(root, '.ddev/.env'), 'LOWER_ENVIR_AUTH_USER="fixture-user"\nLOWER_ENVIR_AUTH_PASS="fixture password #1"\n');
+  fs.writeFileSync(path.join(bin, 'playwright'), '#!/usr/bin/env bash\nexit 0\n', { mode: 0o755 });
+  fs.writeFileSync(path.join(bin, 'backstop'), '#!/usr/bin/env node\nconsole.log(JSON.stringify({ userMatches: process.env.LOWER_ENVIR_AUTH_USER === process.env.BACKSTOP_TEST_EXPECTED_USER, passMatches: process.env.LOWER_ENVIR_AUTH_PASS === "fixture password #1", args: process.argv.slice(2), cwd: process.cwd() }));\n', { mode: 0o755 });
+  const command = path.join(__dirname, '../../.ddev/commands/web/backstop');
+  const env = { ...process.env, DDEV_APPROOT: root, BACKSTOP_TEST_EXPECTED_USER: 'fixture-user' };
+  delete env.LOWER_ENVIR_AUTH_USER;
+  delete env.LOWER_ENVIR_AUTH_PASS;
+  for (const values of [{}, { LOWER_ENVIR_AUTH_USER: '', LOWER_ENVIR_AUTH_PASS: '' }, { LOWER_ENVIR_AUTH_USER: 'existing-user', BACKSTOP_TEST_EXPECTED_USER: 'existing-user' }]) {
+    const { stdout } = await promisify(execFile)('bash', [command, 'test', '--target=feature1', '--cachebuster'], { env: { ...env, ...values } });
+    assert.deepEqual(JSON.parse(stdout), {
+      userMatches: true, passMatches: true,
+      args: ['--config=backstop.js', 'test', '--target=feature1', '--cachebuster'], cwd: path.join(root, 'backstop')
+    });
+  }
+});
+
 test('CircleCI forced references capture the requested reference site without publishing a shared baseline', async () => {
   const yaml = require('js-yaml');
   const config = yaml.load(fs.readFileSync(path.join(__dirname, '../../.circleci/config.yml'), 'utf8'));

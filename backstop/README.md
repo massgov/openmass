@@ -37,8 +37,19 @@ image and stylesheet URLs keep their normal cache behavior.
 
 ## Usage
 
-- If testing an Acquia environment, make sure the `LOWER_ENVIR_AUTH_USER` and
-  `LOWER_ENVIR_AUTH_PASS` environment variables are set up in your `.env` file.
+- For protected environments (`test`, `feature1`, etc.), add the HTTP Basic
+  credentials used by the browser login to the gitignored `.ddev/.env` file:
+
+  ```dotenv
+  LOWER_ENVIR_AUTH_USER="your-http-username"
+  LOWER_ENVIR_AUTH_PASS="your-http-password"
+  ```
+
+  `ddev backstop` reads this file on each run; no restart is required. Existing
+  nonempty container environment values take precedence. These credentials are
+  separate from SSH keys configured by `ddev auth ssh`. Production references do not
+  require these credentials. If reference generation succeeded and the test
+  stopped on missing credentials, keep those references and rerun only the test.
 - BackstopJS runs in DDEV's web container using the versions pinned in
   `package.json` and `yarn.lock`. Run `ddev yarn install --frozen-lockfile`
   before the first test. The `ddev backstop` command downloads the matching
