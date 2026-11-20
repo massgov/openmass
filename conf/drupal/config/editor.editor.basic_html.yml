@@ -6,7 +6,6 @@ dependencies:
     - filter.format.basic_html
   module:
     - ckeditor5
-    - mass_inline_message
 format: basic_html
 editor: ckeditor5
 settings:
@@ -139,12 +138,12 @@ settings:
           search: '<\/font>'
           replace: ''
         -
-          enabled: true
+          enabled: false
           weight: -3
           search: '<span[^>]*>'
           replace: ''
         -
-          enabled: true
+          enabled: false
           weight: -2
           search: '<\/span>'
           replace: ''
@@ -190,7 +189,6 @@ settings:
         - '<h5 id>'
         - '<h6 id>'
         - '<drupal-entity data-entity-type data-entity-substitution data-embed-button>'
-        - '<mass-inline-message data-title data-type>'
         - '<kbd>'
         - '<samp>'
     ckeditor5_style:
