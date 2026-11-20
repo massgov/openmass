@@ -34,6 +34,8 @@ references:
   install_node: &install_node
     node/install:
       node-version: "24.22.1"
+      # Use bundled npm instead of upgrading it to the latest release.
+      install-npm: false
 
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
   yarn_install: &yarn_install
