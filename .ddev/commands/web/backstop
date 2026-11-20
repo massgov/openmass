@@ -23,4 +23,11 @@ fi
 "${playwright_bin}" install chromium
 
 cd "${project_root}/backstop"
-exec "${backstop_bin}" --config=backstop.js "$@"
+# Load project HTTP credentials for this command; preserve variables already
+# supplied by the container or caller. This does not require a DDEV restart.
+for backstop_auth_variable in LOWER_ENVIR_AUTH_USER LOWER_ENVIR_AUTH_PASS; do
+  if [[ -z "${!backstop_auth_variable:-}" ]]; then
+    unset "${backstop_auth_variable}"
+  fi
+done
+exec node --env-file-if-exists="${project_root}/.ddev/.env" "${backstop_bin}" --config=backstop.js "$@"

@@ -69,6 +69,19 @@ commands:
           paths:
             - ~/.cache/ms-playwright
 
+  backstop_preflight:
+    description: Require two successful document and stylesheet checks before capture
+    parameters:
+      target:
+        type: string
+      tugboat:
+        type: string
+        default: ""
+    steps:
+      - run:
+          name: Wait for Backstop target readiness
+          command: node backstop/scripts/preflight.js --target="<< parameters.target >>" --tugboat="<< parameters.tugboat >>"
+
   git_configure_user:
     steps:
       - run: git config --global user.email "circleci@example.com"
@@ -95,7 +108,7 @@ parameters:
   # These params for currently used in drush ma:backstop. target is declared later.
   reference:
     type: string
-    default: ""
+    default: "prod"
   tugboat:
     type: string
     default: ""
@@ -477,6 +490,8 @@ jobs:
     steps:
       - checkout
       - install_backstop
+      - backstop_preflight:
+          target: << parameters.target >>
       - run:
           name: "Setup environment variables"
           command: |
@@ -496,6 +511,8 @@ jobs:
           destination: backstop-<< parameters.target >>-<< parameters.list >>-<< parameters.viewport >>-latest
       - store_artifacts:
           path: backstop/reference
+      - store_artifacts:
+          path: backstop/diagnostics
       - run:
           name: Save Build Number
           command: |
@@ -539,6 +556,9 @@ jobs:
     steps:
       - checkout
       - install_backstop
+      - backstop_preflight:
+          target: << parameters.target >>
+          tugboat: << parameters.tugboat >>
       - run:
           name: "Setup environment variables"
           command: |
@@ -548,11 +568,14 @@ jobs:
       - when:
           condition: << parameters.force-reference >>
           steps:
+            - backstop_preflight:
+                target: << parameters.reference >>
+                tugboat: << parameters.tugboat >>
             - run:
                 name: Capture Backstop Reference Screenshots
                 working_directory: backstop
                 command: |
-                  ../node_modules/.bin/backstop reference --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> ${CACHEBUSTER} --config backstop.js
+                  ../node_modules/.bin/backstop reference --target="<< parameters.reference >>" --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat="<< parameters.tugboat >>" ${CACHEBUSTER} --config backstop.js
       - unless:
           condition: << parameters.force-reference >>
           steps:
@@ -606,7 +629,7 @@ jobs:
             - run:
                 name: Backstop test (Tugboat target)
                 working_directory: backstop
-                command: ../node_modules/.bin/backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat=<< parameters.tugboat >> ${CACHEBUSTER}
+                command: ../node_modules/.bin/backstop --config=backstop.js test --target=<< parameters.target >> --list=<< parameters.list >> --viewport=<< parameters.viewport >> --tugboat="<< parameters.tugboat >>" ${CACHEBUSTER}
       - unless:
           condition: << parameters.tugboat >>
           steps:
@@ -1180,6 +1203,7 @@ workflows:
           list: << pipeline.parameters.list >>
           viewport: << pipeline.parameters.viewport >>
           cachebuster: << pipeline.parameters.cachebuster >>
+          save-build: << pipeline.parameters.save-build >>
 
   backstop_compare:
     when:
@@ -1188,11 +1212,13 @@ workflows:
         - equal: [ backstop_compare, << pipeline.parameters.trigger_workflow >> ]
     jobs:
       - backstop_test:
+          reference: << pipeline.parameters.reference >>
           target: << pipeline.parameters.target >>
           list: << pipeline.parameters.list >>
           viewport: << pipeline.parameters.viewport >>
           tugboat: << pipeline.parameters.tugboat >>
           cachebuster: << pipeline.parameters.cachebuster >>
+          force-reference: << pipeline.parameters.force-reference >>
 
 # Nightly deploy develop branch (with the latest Mayflower develop branch) to the CD environment, runs at 11:00PM EST.
 # Add the backstop one in here
