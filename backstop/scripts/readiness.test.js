@@ -190,6 +190,43 @@ test('warmup retries transient failures, rejects unexpected 404s, and accepts ex
   } finally { await context.close(); }
 });
 
+test('authentication survives absolute redirects in warmup and browser navigation without reaching another origin', async () => {
+  const authorization = `Basic ${Buffer.from('fixture-user:fixture-pass').toString('base64')}`;
+  const authenticatedPaths = [];
+  const foreignHeaders = [];
+  const foreign = http.createServer((request, response) => {
+    foreignHeaders.push(request.headers.authorization);
+    response.writeHead(401, { 'www-authenticate': 'Basic realm="Other origin"' }); response.end();
+  });
+  await new Promise(resolve => foreign.listen(0, '127.0.0.1', resolve));
+  handle = (request, response) => {
+    if (!['/auth-start', '/auth-final'].includes(request.url)) return false;
+    if (request.headers.authorization !== authorization) {
+      response.writeHead(401, { 'www-authenticate': 'Basic realm="Protected fixture"' }); response.end(); return true;
+    }
+    authenticatedPaths.push(request.url);
+    if (request.url === '/auth-start') { response.writeHead(301, { location: `${origin}/auth-final` }); response.end(); }
+    else { response.writeHead(200, { 'content-type': 'text/html' }); response.end(html('<h1>Protected content</h1>')); }
+    return true;
+  };
+  try {
+    const url = new URL(`${origin}/auth-start`);
+    url.username = 'fixture-user'; url.password = 'fixture-pass';
+    const scenario = { label: 'protected-redirect', url: url.href, captureTimeout: 5000 };
+    await capture(scenario, async page => {
+      await ready(page, scenario, viewport);
+      assert.equal(await page.locator('h1').textContent(), 'Protected content');
+      assert.ok(authenticatedPaths.filter(path => path === '/auth-final').length >= 2, 'Both warmup and browser must follow the authenticated redirect');
+      const response = await page.context().request.get(`http://127.0.0.1:${foreign.address().port}/`);
+      assert.equal(response.status(), 401);
+      await response.dispose();
+    });
+    assert.ok(foreignHeaders.length);
+    assert.ok(foreignHeaders.every(value => value === undefined), 'Credentials must stay scoped to their origin');
+    assert.equal(report(scenario.label).outcome, 'ready');
+  } finally { await new Promise(resolve => foreign.close(resolve)); }
+});
+
 test('browser navigation is checked independently of warmup and can recover from a transient 500', async () => {
   let requests = 0;
   handle = (request, response) => {
@@ -521,6 +558,22 @@ test('Backstop authentication reports missing protected-target credentials witho
   assert.deepEqual(JSON.parse(stdout), { host: 'feature1.edit.mass.gov', user: 'fixture-user', pass: 'fixture-pass' });
   const production = await load('prod');
   assert.deepEqual(JSON.parse(production.stdout), { host: 'www.mass.gov', user: '', pass: '' });
+});
+
+test('Backstop cachebusters preserve queries and decision-tree fragments, and credentials handle reserved characters', async () => {
+  const script = `const config = require(${JSON.stringify(path.join(__dirname, '../backstop'))}); console.log(JSON.stringify(config.scenarios.filter(s => ['DecisionTreeBranch', 'OrgsUpcomingEvents'].includes(s.label)).map(s => ({ label: s.label, url: s.url }))));`;
+  const { stdout } = await promisify(execFile)(process.execPath, ['-e', script, '--', '--target=feature1', '--cachebuster'], {
+    env: { ...process.env, LOWER_ENVIR_AUTH_USER: 'fixture%40@user', LOWER_ENVIR_AUTH_PASS: 'fixture:%#/?pass' }
+  });
+  for (const scenario of JSON.parse(stdout)) {
+    const url = new URL(scenario.url);
+    assert.equal(decodeURIComponent(url.username), 'fixture%40@user');
+    assert.equal(decodeURIComponent(url.password), 'fixture:%#/?pass');
+    assert.equal(url.hostname, 'feature1.edit.mass.gov');
+    assert.ok(url.searchParams.get('cachebuster'));
+    if (scenario.label === 'DecisionTreeBranch') assert.equal(url.hash, '#s=125376');
+    else assert.equal(url.searchParams.get('_page'), '1');
+  }
 });
 
 test('local Backstop authentication loads its env file and preserves nonempty existing credentials', async () => {

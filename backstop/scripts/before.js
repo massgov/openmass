@@ -35,6 +35,15 @@ module.exports = async (page, scenario, viewport, isReference, browserContext, c
   }
 
   const url = new URL(isReference && scenario.referenceUrl || scenario.url);
+  if (url.username || url.password) {
+    // URL credentials can be dropped by an absolute redirect. Configure both
+    // browser navigation and its request client, scoped to this origin only.
+    await browserContext.setHTTPCredentials({
+      username: decodeURIComponent(url.username),
+      password: decodeURIComponent(url.password),
+      origin: url.origin
+    });
+  }
   await browserContext.addCookies([
     {
       name: 'im-bypass',

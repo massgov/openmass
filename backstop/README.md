@@ -34,6 +34,7 @@ Scenarios are defined in `all.json`. Individual scenarios can override the
 default viewports through their `screens` or `viewports` settings.
 `--cachebuster` is off by default. It adds a random query parameter to page URLs;
 image and stylesheet URLs keep their normal cache behavior.
+Existing query parameters and decision-tree fragments are preserved.
 
 ## Usage
 
@@ -111,6 +112,8 @@ Reference and test captures use the same readiness checks. Each page must return
 its configured `expectedStatus` (200 by default; the intentional 404 scenario
 sets 404). Warmup and actual browser navigation retry transient failures up to
 three times. Unexpected 4xx responses and persistent server errors fail capture.
+Protected targets use origin-scoped HTTP credentials for both browser navigation
+and warmup requests so same-origin redirects retain authentication.
 
 `ready.js` has a shared 90-second deadline (`captureTimeout`, in milliseconds,
 can be overridden per scenario). Within that deadline it checks active linked

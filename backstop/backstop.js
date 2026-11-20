@@ -34,7 +34,7 @@ const scenarios = pages.map(function(page) {
       break;
     case 'test':
       auth = getAuth();
-      base = `https://${auth.username}:${auth.password}@stage.mass.gov`;
+      base = 'https://stage.mass.gov';
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
@@ -45,13 +45,14 @@ const scenarios = pages.map(function(page) {
       break;
     default:
       auth = getAuth();
-      base = `https://${auth.username}:${auth.password}@${target}.edit.mass.gov`;
+      base = `https://${target}.edit.mass.gov`;
   }
   const url = new URL(`${base}${page.url}`);
-  let separator = "?";
-  if (url.search !== "") {
-    separator = "&";
+  if (auth) {
+    url.username = encodeURIComponent(auth.username);
+    url.password = encodeURIComponent(auth.password);
   }
+  if (withCache) url.searchParams.set('cachebuster', Math.random().toString(36).substring(7));
   if (page.screens !== undefined) {
     if (page.screens.length > 0 && page.viewports === undefined) {
       page.viewports = page.screens.map(function (screen) {
@@ -94,7 +95,7 @@ const scenarios = pages.map(function(page) {
     // Backstop applies its default after onReadyScript. Set it now so engine
     // failures use the same reference filename as successful document captures.
     selectors: page.selectors?.length ? page.selectors : ['document'],
-    url: withCache ? `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}` : `${base}${page.url}`,
+    url: url.href,
     misMatchThreshold: 0.1,
     removeSelectors,
   }
