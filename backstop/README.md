@@ -133,6 +133,17 @@ the next available image automatically; different image lists or credit metadata
 between environments can still produce real content differences. Review and
 regenerate references when the selected banner changes.
 
+Homepage News & updates keeps its real card markup, linked headings, image
+wrappers, formatting, and responsive CSS. Only headline/summary text and image
+URLs/alt text are normalized. Every card uses the `embedded_full_width` family
+image for file UUID `e974845e-0c05-4922-9018-be0017198dd7` on the target host.
+Fixed headlines and summaries of different lengths exercise text wrapping.
+The expected rich-text card structure is validated before normalization;
+missing images, linked headings, or summaries fail at the `homepage news`
+step. The replacement image must pass the normal image readiness checks.
+Other homepage rich text and all non-homepage content are left intact.
+Refresh homepage references when adopting this change from the gray boxes.
+
 On pages with a JavaScript-generated table of contents, capture waits for every
 expected heading link and jump target. Collapsed mobile links are checked too.
 Pages below the component's minimum section count must finish initialization

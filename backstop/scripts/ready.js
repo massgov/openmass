@@ -80,14 +80,9 @@ module.exports = async (page, scenario, viewport) => {
       document.querySelectorAll('.ma__stacked-row__section .ma__key-actions .ma__callout-link .ma__callout-link__container .ma__callout-link__text').forEach(function (e) {
         e.innerText = 'Featured service link text';
       });
-
-      // [FREQUENTLY CHANGING CONTENT] Kill News & updates on Home page (show a
-      // gray box instead)
-      document.querySelectorAll('.ma__split-columns__column > .ma__rich-text').forEach(function (e) {
-        e.innerHTML = '<article style="background-color: #888;"><span style="display: block; width: 100%; max-width: 100%; height: auto;">&nbsp;</span></article><h5>News title</h5>Teaser text';
-      });
     });
 
+    await step('homepage news', () => require('./homepage-news')(page));
     await step('lazy loading', () => readiness.scrollPage(page));
     await step('table of contents', () => readiness.tableOfContents(page));
     await step('video placeholders', () => readiness.videoPlayers(page));

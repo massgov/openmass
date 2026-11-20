@@ -19,6 +19,7 @@ let handle;
 let directory;
 const viewport = { label: 'desktop', width: 800, height: 600 };
 const svg = '<svg xmlns="http://www.w3.org/2000/svg" width="800" height="200"><path fill="green" d="M0 0h400v200H0z"/><path fill="blue" d="M400 0h400v200H400z"/></svg>';
+const homepageNewsImagePath = '/files/styles/embedded_full_width/public/images/2026-11/familyusinglaptop_homepage_cropped.jpg?itok=WXoKykp5';
 const footer = '<footer class="ma__footer-new"><div class="ma__footer-new__container"><div class="ma__footer-new__navlinks">Links</div><div class="ma__footer-new__copyright">Copyright</div><div class="ma__footer-new__logo">Logo</div></div></footer>';
 const html = (content = '', script = '') => `<!doctype html><html><head><link rel="stylesheet" href="/style.css"></head><body>${content}${footer}<script>${script}</script></body></html>`;
 
@@ -29,7 +30,7 @@ beforeTests(async () => {
     if (request.url === '/style.css') {
       response.writeHead(200, { 'content-type': 'text/css' });
       response.end('body { margin: 0; font-family: sans-serif; } .banner { height: 100px; background: url(/background.svg) center/cover; }');
-    } else if (request.url.endsWith('.svg')) {
+    } else if (request.url.endsWith('.svg') || request.url === homepageNewsImagePath) {
       response.writeHead(200, { 'content-type': 'image/svg+xml' });
       response.end(svg);
     } else {
@@ -68,8 +69,17 @@ function homepageFixture(images) {
   return html(`<script type="application/json" data-drupal-selector="drupal-settings-json">${JSON.stringify({ unrelatedSetting: 'preserved', homepage_background_images: images })}</script>
     <script src="/jquery.js"></script><script src="/settings.js"></script>
     <style>.ma__search-banner { height:200px; position:relative; background-size:cover; background-position:center } .ma__banner-credit { position:absolute; right:0; bottom:0 }</style>
-    <section class="ma__search-banner" id="GUID935283478"><style></style><span>Search homepage</span></section>`,
+    <section class="ma__search-banner" id="GUID935283478"><style></style><span>Search homepage</span></section>${homepageNewsFixture()}`,
   `document.body.classList.add('is-front'); Math.random = () => 0.999; ${renderer}`);
+}
+
+function homepageNewsFixture(version = 'original') {
+  return `<section class="ma__stacked-row__section"><h2 id="news--updates">News &amp; updates</h2>
+    <div class="ma__split-columns__container">${[0, 1, 2].map(index => `<div class="ma__split-columns__column"><div class="ma__rich-text" dir="auto">
+      <div class="full-width embedded-entity" data-entity-uuid="${version}-${index}"><img class="ma__image" src="/${version}-${index}.svg" alt="${version} image ${index}"></div>
+      <h3 id="${version}-title-${index}"><a href="/${version}-story-${index}"><span class="news-title">${version} headline ${index}</span><span class="ma__visually-hidden"> (external link)</span></a></h3>
+      ${index === 0 ? `${version} summary ${index}` : `<p class="summary"><span>${version} summary ${index}</span> with <a href="/${version}-details-${index}">more information</a>.</p>`}
+    </div></div>`).join('')}</div></section>`;
 }
 
 function serveHomepageScripts(request, response) {
@@ -543,21 +553,101 @@ test('homepage content masks preserve real content on other pages', async () => 
   handle = (request, response) => {
     if (request.url !== '/page') return false;
     response.writeHead(200, { 'content-type': 'text/html' });
-    response.end(html('<div class="ma__split-columns__column"><div class="ma__rich-text">Important page content</div></div><div class="ma__featured-item__title-container"><span>Feature title</span></div><div class="ma__press-listing__secondary-item"><div class="ma__press-teaser__details">Press details</div></div>', homepage ? "document.body.classList.add('is-front');" : ''));
+    response.end(html('<div class="ma__split-columns__column"><div class="ma__rich-text" id="unrelated">Important page content</div></div><div class="ma__featured-item__title-container"><span>Feature title</span></div><div class="ma__press-listing__secondary-item"><div class="ma__press-teaser__details">Press details</div></div>' + homepageNewsFixture(), homepage ? "document.body.classList.add('is-front');" : ''));
     return true;
   };
   const scenario = { label: 'content-masks', url: `${origin}/page`, captureTimeout: 4000 };
   await capture(scenario, async page => {
     await ready(page, scenario, viewport);
-    assert.equal(await page.locator('.ma__rich-text').textContent(), 'Important page content');
+    assert.equal(await page.locator('#unrelated').textContent(), 'Important page content');
+    assert.equal(await page.locator('.news-title').first().textContent(), 'original headline 0');
     assert.equal(await page.locator('.ma__featured-item__title-container').textContent(), 'Feature title');
     assert.equal(await page.locator('.ma__press-teaser__details').textContent(), 'Press details');
   });
   homepage = true;
   await capture(scenario, async page => {
     await ready(page, scenario, viewport);
-    assert.match(await page.locator('.ma__rich-text').textContent(), /News title/);
+    assert.equal(await page.locator('#unrelated').textContent(), 'Important page content');
+    assert.equal((await page.locator('.news-title').first().textContent()).trim(), 'Latest news from Massachusetts');
   });
+});
+
+test('homepage news preserves DOM nodes, classes, links and responsive layout while normalizing reference and test content', async () => {
+  let version = 'reference';
+  let imageLoaded = false;
+  handle = (request, response) => {
+    if (request.url === homepageNewsImagePath) {
+      setTimeout(() => {
+        imageLoaded = true;
+        response.writeHead(200, { 'content-type': 'image/svg+xml' }); response.end(svg);
+      }, 300);
+      return true;
+    }
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(`<style>
+      .ma__split-columns__container { display:grid; grid-template-columns:repeat(3,1fr); gap:20px }
+      .ma__image { display:block; width:100%; height:auto }
+      .ma__visually-hidden { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0) }
+      @media(max-width:480px) { .ma__split-columns__container { grid-template-columns:1fr } }
+      </style>${homepageNewsFixture(version)}`, "document.body.classList.add('is-front');"));
+    return true;
+  };
+  const structure = page => page.evaluate(() => [...document.querySelectorAll('.ma__stacked-row__section *')].map(element => ({
+    tag: element.tagName,
+    attributes: [...element.attributes].filter(attribute => !['src', 'alt'].includes(attribute.name)).map(attribute => [attribute.name, attribute.value])
+  })));
+  for (const size of [viewport, { label: 'phone', width: 360, height: 480 }]) {
+    let previous;
+    for (const isReference of [true, false]) {
+      version = isReference ? 'reference' : 'test';
+      imageLoaded = false;
+      const scenario = { label: 'homepage-news', url: `${origin}/page`, captureTimeout: 5000 };
+      const screenshot = await capture(scenario, async page => {
+        const before = await structure(page);
+        await page.evaluate(() => { window.originalNewsNodes = [...document.querySelectorAll('.ma__stacked-row__section *')]; });
+        await ready(page, scenario, size);
+        assert.ok(imageLoaded, 'The replacement image must finish loading before capture');
+        assert.deepEqual(await structure(page), before);
+        assert.equal(await page.evaluate(() => [...document.querySelectorAll('.ma__stacked-row__section *')].every((node, index) => node === window.originalNewsNodes[index])), true);
+        const images = await page.locator('.ma__image').evaluateAll(images => images.map(image => ({ source: image.currentSrc, alt: image.alt, complete: image.complete, natural: image.naturalWidth })));
+        assert.equal(images.length, 3);
+        assert.ok(images.every(image => image.source.endsWith(homepageNewsImagePath) && image.complete && image.natural > 0 && image.alt === 'A happy family gathered around an open laptop.'));
+        assert.equal(await page.locator('.ma__visually-hidden').first().textContent(), ' (external link)');
+        assert.equal(await page.locator('.summary a').evaluateAll(links => links.every(link => link.textContent.trim())), true);
+        const columns = await page.locator('.ma__split-columns__column').evaluateAll(columns => columns.map(column => ({ x: column.getBoundingClientRect().x, y: column.getBoundingClientRect().y })));
+        if (size.width > 480) assert.equal(columns[0].y, columns[1].y);
+        else { assert.equal(columns[0].x, columns[1].x); assert.ok(columns[1].y > columns[0].y); }
+        assert.equal(await page.locator('h5, article[style]').count(), 0);
+        return page.screenshot({ fullPage: true });
+      }, size, async () => {}, isReference);
+      if (previous) assert.deepEqual(screenshot, previous, 'Different news content must produce the same fixture screenshot');
+      previous = screenshot;
+      assert.equal(report(scenario.label, size, isReference).outcome, 'ready');
+    }
+  }
+});
+
+test('missing homepage news structure fails instead of being rebuilt or hidden', async () => {
+  let content;
+  handle = (request, response) => {
+    if (request.url !== '/page') return false;
+    response.writeHead(200, { 'content-type': 'text/html' });
+    response.end(html(content, "document.body.classList.add('is-front');"));
+    return true;
+  };
+  for (const script of [
+    'document.querySelector(".ma__stacked-row__section").remove()',
+    'document.querySelector(".ma__image").remove()',
+    'document.querySelector("h3").remove()',
+    'document.querySelector(".ma__rich-text").lastChild.textContent = ""',
+    'document.querySelector(".ma__split-columns__container").replaceChildren()'
+  ]) {
+    content = homepageNewsFixture() + `<script>${script}</script>`;
+    const scenario = { label: 'missing-homepage-news', url: `${origin}/page`, captureTimeout: 3000 };
+    await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Readiness: homepage news/));
+    assert.equal(report(scenario.label).stage, 'homepage news');
+  }
 });
 
 test('video placeholders follow delayed iframe resizing without changing page layout', async () => {
