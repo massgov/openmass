@@ -402,3 +402,39 @@ function mass_content_deploy_tableau_embed_type_update(&$sandbox) {
     return t('All tableau_embed paragraphs have been updated with the "default" value in field_tableau_embed_type and reflected in the referencing nodes.');
   }
 }
+
+/**
+ * Initialize profile collection to disabled on existing service cards.
+ */
+function mass_content_deploy_service_card_apc_defaults(&$sandbox) {
+  $storage = \Drupal::entityTypeManager()->getStorage('node');
+  $query = $storage->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('type', 'api_service_card');
+
+  if (empty($sandbox)) {
+    $sandbox['progress'] = 0;
+    $sandbox['current'] = 0;
+    $count = clone $query;
+    $sandbox['max'] = $count->count()->execute();
+  }
+
+  $ids = $query->condition('nid', $sandbox['current'], '>')
+    ->sort('nid')
+    ->range(0, 50)
+    ->execute();
+
+  foreach ($storage->loadMultiple($ids) as $node) {
+    if ($node->get('field_api_srv_card_apc_enabled')->isEmpty()) {
+      $node->set('field_api_srv_card_apc_enabled', 0);
+      $node->save();
+    }
+    $sandbox['current'] = $node->id();
+    $sandbox['progress']++;
+  }
+
+  $sandbox['#finished'] = empty($ids) || empty($sandbox['max']) ? 1 : min(1, $sandbox['progress'] / $sandbox['max']);
+  if ($sandbox['#finished'] >= 1) {
+    return t('Profile collection has been disabled on existing service cards without an explicit value.');
+  }
+}
