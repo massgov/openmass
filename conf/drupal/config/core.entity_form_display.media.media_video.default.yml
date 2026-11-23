@@ -4,12 +4,20 @@ status: true
 dependencies:
   config:
     - field.field.media.media_video.field_media_video_embed_field
+    - field.field.media.media_video.field_video_audio_description
+    - field.field.media.media_video.field_video_captions
+    - field.field.media.media_video.field_video_chapters
     - field.field.media.media_video.field_video_description
+    - field.field.media.media_video.field_video_descriptions
+    - field.field.media.media_video.field_video_sign_language
     - field.field.media.media_video.field_video_transcript
+    - field.field.media.media_video.field_video_transcript_enabled
     - media.type.media_video
   module:
     - allowed_formats
     - content_moderation
+    - link
+    - mass_media
     - maxlength
     - text
     - video_embed_field
@@ -30,6 +38,26 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_video_audio_description:
+    type: link_default
+    weight: 14
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_video_captions:
+    type: mass_media_video_track
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_video_chapters:
+    type: mass_media_video_track
+    weight: 12
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   field_video_description:
     type: text_textarea
     weight: 4
@@ -46,6 +74,28 @@ content:
         maxlength_js_label: 'Content limited to @limit characters, remaining: <strong>@remaining</strong>'
         maxlength_js_enforce: false
         maxlength_js_truncate_html: false
+  field_video_descriptions:
+    type: mass_media_video_track
+    weight: 13
+    region: content
+    settings:
+      progress_indicator: throbber
+    third_party_settings: {  }
+  field_video_sign_language:
+    type: link_default
+    weight: 15
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_video_transcript_enabled:
+    type: boolean_checkbox
+    weight: 11
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 2

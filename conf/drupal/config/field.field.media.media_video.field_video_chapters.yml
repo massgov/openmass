@@ -1,0 +1,27 @@
+uuid: 96b904c1-e66d-4d43-a376-8f04192a31b2
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_chapters
+    - media.type.media_video
+  module:
+    - mass_media
+id: media.media_video.field_video_chapters
+field_name: field_video_chapters
+entity_type: media
+bundle: media_video
+label: Chapters
+description: 'Upload a WebVTT (.vtt) file containing chapter titles and timestamps to let viewers jump between sections.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: 'video-accessibility/[date:custom:Y]-[date:custom:m]'
+  file_extensions: vtt
+  max_filesize: '2 MB'
+  description_field: true
+field_type: mass_media_video_track

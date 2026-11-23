@@ -1,0 +1,27 @@
+uuid: fe658327-5974-4b65-a15a-4af5f2ab4b72
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_descriptions
+    - media.type.media_video
+  module:
+    - mass_media
+id: media.media_video.field_video_descriptions
+field_name: field_video_descriptions
+entity_type: media
+bundle: media_video
+label: 'Audio descriptions (.vtt)'
+description: 'Upload timed descriptions of important visual information, one WebVTT (.vtt) file per language. The player can read them aloud and include them in the interactive transcript. Match the language to the corresponding captions. Leave Audio-described video URL empty to use spoken WebVTT descriptions. If both are supplied, this player uses the alternate video for description playback and includes the WebVTT text in the interactive transcript.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:file'
+  handler_settings: {  }
+  file_directory: 'video-accessibility/[date:custom:Y]-[date:custom:m]'
+  file_extensions: vtt
+  max_filesize: '2 MB'
+  description_field: true
+field_type: mass_media_video_track
