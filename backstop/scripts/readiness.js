@@ -49,7 +49,11 @@ function save(page, details) {
   capture.finished = true;
   fs.mkdirSync(capture.directory, { recursive: true });
   const { directory, name, blocked, finished, stylesheets, frameResponses, ...diagnostic } = capture;
-  fs.writeFileSync(path.join(directory, `${name}.json`), JSON.stringify({ ...diagnostic, ...details }, redact, 2));
+  const imageErrors = (details.state?.images || []).filter(image => image.state === 'error').map(image => {
+    const failure = capture.requests.findLast(request => request.url === safeUrl(image.source));
+    return { element: image.element, source: image.source, status: failure?.status, error: failure?.error || 'Image failed to load or decode' };
+  });
+  fs.writeFileSync(path.join(directory, `${name}.json`), JSON.stringify({ ...diagnostic, ...details, imageErrors }, redact, 2));
 }
 
 async function warmup(context, url, expectedStatus = 200, { attempts = 3, delay = 1000, timeout = 15000 } = {}) {
@@ -441,14 +445,11 @@ async function assets(page, scenario, stableFor = 1000) {
   while (true) {
     await styles(page, scenario);
     const state = await page.evaluate(snapshot);
-    const failedImage = state.images.find(image => image.state === 'error');
-    if (failedImage) {
-      const failure = captures.get(page)?.requests.findLast(request => request.url === safeUrl(failedImage.source));
-      throw new Error(`Image failed to load or decode: ${safeUrl(failedImage.source)}${failure?.status ? ` (HTTP ${failure.status})` : failure?.error ? ` (${failure.error})` : ''}`);
-    }
     if (state.tableaus.some(viz => viz.state === 'error' || viz.state === 'timeout')) throw new Error('Tableau failed to become interactive');
     if (state.fontErrors.length) throw new Error(`Fonts failed to load: ${state.fontErrors.join(', ')}`);
-    const ready = state.images.every(image => image.state === 'ready' && image.complete !== false) && state.tableaus.every(viz => viz.state === 'ready') && state.tableOfContents.every(toc => toc.ready) && state.fonts === 'loaded' && state.styles.every(style => style.ready);
+    // A confirmed failure is settled browser output for visual comparison.
+    // Pending requests/decodes must still finish before measuring stable layout.
+    const ready = state.images.every(image => (image.state === 'ready' || image.state === 'error') && image.complete !== false) && state.tableaus.every(viz => viz.state === 'ready') && state.tableOfContents.every(toc => toc.ready) && state.fonts === 'loaded' && state.styles.every(style => style.ready);
     const signature = JSON.stringify(state);
     if (!ready || signature !== lastSignature) stableSince = Date.now();
     lastSignature = signature;

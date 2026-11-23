@@ -111,7 +111,8 @@ the comparison job and do not update the shared production baseline.
 Reference and test captures use the same readiness checks. Each page must return
 its configured `expectedStatus` (200 by default; the intentional 404 scenario
 sets 404). Warmup and actual browser navigation retry transient failures up to
-three times. Unexpected 4xx responses and persistent server errors fail capture.
+three times. Unexpected document 4xx responses and persistent document server
+errors fail capture.
 Protected targets use origin-scoped HTTP credentials for both browser navigation
 and warmup requests so same-origin redirects retain authentication.
 
@@ -122,6 +123,11 @@ and waits for image decoding, fonts, Tableau readiness, and one second of stable
 image geometry and page height. CSS background images and pseudo-elements are
 included. Image crop styles are preserved. Downloaded documents are excluded
 from visual scenarios because Chromium's PDF viewer is not reliable here.
+Confirmed image load or decode failures count as settled images and retain the
+browser's broken-image appearance in the full-page comparison. Other images
+must still finish loading and decoding, and layout must stabilize. Broken
+images alone do not fail a comparison, including when both environments have
+the same broken image; only their visual differences affect the comparison.
 
 Responsive images load and settle using their original markup at each test
 viewport. For the full-page screenshot only, the capture hook holds `picture`
@@ -218,8 +224,11 @@ ddev exec node backstop/scripts/preflight.js --target=local
 
 Each capture writes a JSON file under `backstop/diagnostics/` with document
 status, failed requests, image URLs and dimensions, background crop styles,
-and Tableau states. Readiness failures also save a diagnostic screenshot and
-appear as engine errors in Backstop rather than ordinary visual differences.
+and Tableau states. The `imageErrors` list records confirmed image failures,
+including the affected element, URL, and HTTP status when available; these are
+informational and do not cause engine errors. Readiness failures also save a
+diagnostic screenshot and appear as engine errors in Backstop rather than
+ordinary visual differences.
 Intentionally blocked third-party requests are excluded from failed-request
 logs. Credentials and sensitive URL query parameters are redacted. CircleCI
 stores diagnostics as artifacts, including when readiness fails.

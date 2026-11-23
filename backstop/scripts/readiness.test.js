@@ -136,7 +136,7 @@ test('homepage selects the first image path across reordered environments, retai
   }
 });
 
-test('homepage reports empty image lists and a selected broken background rather than capturing a mask or another image', async () => {
+test('homepage rejects empty image lists and captures a selected broken background without substituting another image', async () => {
   let images = [];
   handle = (request, response) => {
     if (serveHomepageScripts(request, response)) return true;
@@ -148,7 +148,12 @@ test('homepage reports empty image lists and a selected broken background rather
   await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Readiness: homepage banner.*No homepage banner images/));
   assert.equal(report('Homepage').state.homepageBanner.state, 'error');
   images = [{ image_url: `${origin}/broken.svg`, image_url_mobile: `${origin}/broken.svg`, image_location: 'Actual location', image_credit: 'Actual credit' }];
-  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Image failed to load or decode: .*HTTP 404/));
+  await capture(scenario, async page => {
+    await ready(page, scenario, viewport);
+    assert.ok((await page.screenshot({ fullPage: true })).length);
+  });
+  assert.equal(report('Homepage').outcome, 'ready');
+  assert.ok(report('Homepage').imageErrors.some(image => image.source === `${origin}/broken.svg` && image.status === 404));
 });
 
 test('deterministic homepage selection does not change other scenarios or unrelated settings', async () => {
@@ -420,15 +425,70 @@ test('CI preflight requires consecutive successful stylesheet checks after a fai
   assert.match(stdout, /two consecutive document and stylesheet checks/);
 });
 
-test('a broken banner image fails decoding instead of becoming a visual mismatch', async () => {
+test('confirmed broken images remain in full-page captures while other images and layout finish settling', async () => {
+  let delayedResponse;
   handle = (request, response) => {
-    if (request.url === '/page') { response.writeHead(200, { 'content-type': 'text/html' }); response.end(html('<img width="100" height="40" src="/broken.svg">')); return true; }
+    if (request.url === '/page') {
+      response.writeHead(200, { 'content-type': 'text/html' });
+      response.end(html('<img id="delayed" width="160" height="40" src="/delayed.svg"><div id="spacer" style="height:1200px"></div><img id="broken" width="100" height="40" src="/broken.svg" alt="Missing image"><img id="invalid" width="100" height="40" src="/invalid.svg"><div id="background" style="height:40px;background-image:url(/broken.svg)"></div>',
+        'document.querySelector("#delayed").onload = () => setTimeout(() => document.querySelector("#spacer").style.height = "1400px", 250)'));
+      return true;
+    }
     if (request.url === '/broken.svg') { response.writeHead(404); response.end(); return true; }
+    if (request.url === '/invalid.svg') { response.writeHead(200, { 'content-type': 'image/svg+xml' }); response.end('Not a valid image'); return true; }
+    if (request.url === '/delayed.svg') { delayedResponse = response; return true; }
     return false;
   };
-  const scenario = { label: 'broken-image', url: `${origin}/page`, captureTimeout: 3000 };
-  await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Image failed to load or decode: .*HTTP 404/));
-  assert.equal(report(scenario.label).outcome, 'readiness-failure');
+  const scenario = { label: 'broken-image', url: `${origin}/page`, captureTimeout: 10000 };
+  let previous;
+  for (const isReference of [true, false]) {
+    const screenshot = await capture(scenario, async page => {
+      let settled = false;
+      const pending = ready(page, scenario, viewport).then(() => { settled = true; });
+      try {
+        await page.waitForFunction(() => document.querySelector('#broken').complete && !document.querySelector('#broken').naturalWidth);
+        await page.waitForTimeout(1300);
+        assert.equal(settled, false, 'A broken image must not bypass an image still loading');
+      } finally {
+        delayedResponse.writeHead(200, { 'content-type': 'image/svg+xml' });
+        delayedResponse.end(svg);
+        await pending;
+      }
+      assert.equal(await page.locator('#spacer').evaluate(element => element.offsetHeight), 1400);
+      assert.deepEqual(await page.locator('#broken').evaluate(image => ({ source: image.getAttribute('src'), alt: image.alt, complete: image.complete, natural: image.naturalWidth })),
+        { source: '/broken.svg', alt: 'Missing image', complete: true, natural: 0 });
+      assert.equal(await page.locator('#delayed').evaluate(image => image.complete && image.naturalWidth > 0), true);
+      const screenshot = await page.screenshot({ fullPage: true });
+      const broken = await page.locator('#broken').boundingBox();
+      assert.ok(broken.y > viewport.height);
+      assert.ok(PNG.sync.read(screenshot).height >= broken.y + broken.height);
+      return screenshot;
+    }, viewport, async () => {}, isReference);
+    const result = report(scenario.label, viewport, isReference);
+    assert.equal(result.outcome, 'ready');
+    assert.deepEqual(result.imageErrors.map(image => [image.element, image.status]), [['broken', 404], ['invalid', undefined], ['background', 404]]);
+    assert.ok(result.imageErrors.every(image => image.error === 'Image failed to load or decode'));
+    if (previous) assert.deepEqual(screenshot, previous, 'Identical broken images in both environments should produce identical screenshots');
+    previous = screenshot;
+  }
+});
+
+test('a confirmed broken image does not allow a pending image to bypass the readiness deadline', async () => {
+  let pendingResponse;
+  handle = (request, response) => {
+    if (request.url === '/page') { response.writeHead(200, { 'content-type': 'text/html' }); response.end(html('<img width="100" height="40" src="/broken.svg"><img width="100" height="40" src="/pending.svg">')); return true; }
+    if (request.url === '/broken.svg') { response.writeHead(404); response.end(); return true; }
+    if (request.url === '/pending.svg') { pendingResponse = response; return true; }
+    return false;
+  };
+  const scenario = { label: 'pending-with-broken-image', url: `${origin}/page`, captureTimeout: 1500 };
+  try {
+    await capture(scenario, page => assert.rejects(ready(page, scenario, viewport), /Capture readiness exceeded 1500ms/));
+  } finally { pendingResponse?.end(); }
+  const result = report(scenario.label);
+  assert.equal(result.outcome, 'readiness-failure');
+  assert.ok(result.state.images.some(image => image.source.endsWith('/pending.svg') && image.state === 'loading'));
+  assert.equal(result.imageErrors[0].status, 404);
 });
 
 test('an expected 404 succeeds, but an actual 500 cannot be captured as the 404 page', async () => {
