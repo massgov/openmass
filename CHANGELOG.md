@@ -1,5 +1,12 @@
 
 
+## [0.499.1] - November 20, 2026
+
+### Security
+  - DP-49620: Updated Drupal core to 11.3.22.
+
+
+
 ## [0.499.0] - November 17, 2026
 
 ### Fixed
