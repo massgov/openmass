@@ -30,6 +30,13 @@ references:
       key: site-composer-v20-{{ checksum "composer.lock" }}
       paths: [ vendor, docroot/core, docroot/modules/contrib, docroot/themes/contrib ]
 
+  # Pin Node for PHP jobs that run JavaScript tools.
+  install_node: &install_node
+    node/install:
+      node-version: "24.22.1"
+      # Use bundled npm instead of upgrading it to the latest release.
+      install-npm: false
+
   # Runs yarn install with caching https://circleci.com/developer/orbs/orb/circleci/node#commands-install-packages.
   yarn_install: &yarn_install
     node/install-packages:
@@ -151,6 +158,7 @@ jobs:
     docker:
       - image: cimg/php:8.4-node
     steps:
+      - *install_node
       - checkout
       - *restore_composer_cache
       - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
@@ -166,6 +174,7 @@ jobs:
 #    docker:
 #      - image: cimg/php:8.4-node
 #    steps:
+#      - *install_node
 #      - checkout
 #      - *restore_composer_cache
 #      - run: {name: 'Composer install', command: 'composer install --no-interaction --optimize-autoloader'}
@@ -206,6 +215,7 @@ jobs:
     docker:
       - image: cimg/php:8.4-node
     steps:
+      - *install_node
       - attach_workspace: {at: /tmp}
       - run:
           #Fail when there is no PR. This helps avoid false positives given by Danger when no PR exists.
@@ -252,6 +262,7 @@ jobs:
     docker:
       - image: cimg/php:8.4-node
     steps:
+      - *install_node
       - attach_workspace: {at: /tmp }
       - *vendor_bin_add_path
       # Validate .json and check if it is in sync with the .lock file
@@ -438,6 +449,7 @@ jobs:
     docker:
       - image: cimg/php:8.4-node
     steps:
+      - *install_node
       - attach_workspace: {at: /tmp}
       - *vendor_bin_add_path
       - *no_host_check
