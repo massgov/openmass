@@ -19,6 +19,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\mass_org_access\OrgAccessChecker;
 use Drupal\mass_org_access\OrgAccessSettings;
 use Drupal\node\NodeInterface;
+use Drupal\taxonomy\TermInterface;
 use Drupal\user\UserInterface;
 
 /**
@@ -54,6 +55,54 @@ class MassOrgAccessHooks {
   }
 
   /**
+   * Grants and restricts updates to collection terms.
+   *
+   * Vocabulary-level editors (`administer taxonomy` or the core
+   * `edit terms in collections`) manage every top-level collection, as before
+   * organization access existed. Everyone else edits top-level collections
+   * with `edit top-level collection terms`, limited to their Permission
+   * Groups when enforcement is on and they cannot bypass it. That permission
+   * is term-level only: unlike `edit terms in collections` it does not open
+   * the vocabulary overview's Save button (it stores vocabulary settings such
+   * as Taxonomy unique) or the reset-weights form.
+   *
+   * Child collection terms are topics used within collections. Users without
+   * `bypass org access` or `administer taxonomy` need
+   * `edit child collection terms` on top of the core permission to edit them.
+   */
+  #[Hook('taxonomy_term_access')]
+  public function taxonomyTermAccess(TermInterface $term, string $operation, AccountInterface $account): AccessResultInterface {
+    if ($operation !== 'update' || $term->bundle() !== 'collections') {
+      return AccessResult::neutral();
+    }
+    if (!$this->isTopLevelTerm($term)) {
+      if ($account->hasPermission('bypass org access') || $account->hasPermission('administer taxonomy')) {
+        return AccessResult::neutral()
+          ->addCacheableDependency($term)
+          ->cachePerPermissions();
+      }
+      return ($account->hasPermission('edit child collection terms')
+        ? AccessResult::neutral()
+        : AccessResult::forbidden())
+        ->addCacheableDependency($term)
+        ->cachePerPermissions();
+    }
+    if ($account->hasPermission('administer taxonomy') || $account->hasPermission('edit terms in collections')) {
+      // Core grants these users access.
+      return AccessResult::neutral()
+        ->addCacheableDependency($term)
+        ->cachePerPermissions();
+    }
+    $granted = AccessResult::allowedIfHasPermission($account, 'edit top-level collection terms')
+      ->addCacheableDependency($term);
+    // checkAccess() is neutral when enforcement is off or the user may
+    // bypass it. Otherwise it is forbidden when the user has no organization,
+    // the Collection has no Permission Groups, or they do not overlap. orIf()
+    // keeps a forbidden result, so the grant never overrides the gate.
+    return $this->checkAccess($term, $operation, $account)->orIf($granted);
+  }
+
+  /**
    * Locks field_user_org to users with `administer users`.
    *
    * Prevents an editor from self-assigning organizations on
@@ -75,7 +124,7 @@ class MassOrgAccessHooks {
   }
 
   /**
-   * Shared org-based access logic for nodes and media.
+   * Shared org-based access logic for nodes, media and collection terms.
    *
    * Decisions depend on the user's field_user_org, so the result must
    * invalidate when that user is updated — the user:UID cache tag handles it.
@@ -116,7 +165,15 @@ class MassOrgAccessHooks {
       return $forbidden;
     }
     if ($this->orgAccessChecker->userHasOrgAccess($account, $entity)) {
-      return AccessResult::neutral();
+      // The grant this result is combined with (core node and media
+      // permissions, `edit top-level collection terms`) varies only by
+      // permissions, but this organization match is user-specific. Without
+      // this context an allowed result for one user could be reused for
+      // another user with the same roles.
+      return AccessResult::neutral()
+        ->cachePerUser()
+        ->addCacheableDependency($entity)
+        ->addCacheTags(['user:' . $account->id()]);
     }
     return $forbidden;
   }
@@ -241,6 +298,45 @@ class MassOrgAccessHooks {
   }
 
   /**
+   * Removes administrator-only identifiers from collection term edit forms.
+   *
+   * Only vocabulary-level editors (`administer taxonomy` or the core
+   * `edit terms in collections`) get the full form. Everyone editing through
+   * `edit top-level collection terms` gets the reduced one, including users
+   * who may bypass organization access.
+   */
+  #[Hook('form_taxonomy_term_collections_form_alter')]
+  public function formCollectionTermAlter(array &$form, FormStateInterface $form_state, string $form_id): void {
+    $term = $form_state->getFormObject()->getEntity();
+    if (!$term instanceof TermInterface || $term->isNew()
+      || !$this->isTopLevelTerm($term)
+      || $this->currentUser->hasPermission('administer taxonomy')
+      || $this->currentUser->hasPermission('edit terms in collections')) {
+      return;
+    }
+
+    // Term title and URL name are stable identifiers. Permission Groups are
+    // derived on presave from Organization(s), so they are never editor
+    // editable. Other collection fields stay editable unless
+    // mass_content_form_taxonomy_term_collections_form_alter() hides them.
+    foreach (['name', 'field_url_name', 'field_content_organization'] as $element) {
+      if (isset($form[$element])) {
+        $form[$element]['#access'] = FALSE;
+      }
+    }
+
+    // These are core taxonomy form sections, not collection metadata.
+    // Editors must not change hierarchy, publication state, or revision
+    // behavior through this narrowly scoped collection editing workflow.
+    foreach (['relations', 'revision_information', 'status'] as $element) {
+      if (isset($form[$element])) {
+        $form[$element]['#access'] = FALSE;
+      }
+    }
+    $form['#validate'][] = [self::class, 'validateOrgAccess'];
+  }
+
+  /**
    * Form #validate callback enforcing cross-org save protection.
    *
    * Used as [self::class, 'validateOrgAccess'] (serializable) so paragraph
@@ -296,6 +392,18 @@ class MassOrgAccessHooks {
       'You do not have permission to save this content. It belongs to @org. Contact your administrator if you need access.',
       ['@org' => $org_list]
     ));
+  }
+
+  /**
+   * Determines whether a taxonomy term has no taxonomy parent.
+   */
+  private function isTopLevelTerm(TermInterface $term): bool {
+    foreach ($term->get('parent') as $parent) {
+      if ((int) $parent->target_id > 0) {
+        return FALSE;
+      }
+    }
+    return TRUE;
   }
 
   /**
