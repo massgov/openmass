@@ -1,5 +1,12 @@
 
 
+## [0.500.0] - November 24, 2026
+
+### Fixed
+  - DP-49629: Pinned Node 24 in CircleCI to fix build job failures.
+  
+
+
 ## [0.499.1] - November 20, 2026
 
 ### Security
