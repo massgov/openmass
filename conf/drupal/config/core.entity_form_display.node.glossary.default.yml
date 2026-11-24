@@ -5,6 +5,7 @@ dependencies:
   config:
     - field.field.node.glossary.field_content_organization
     - field.field.node.glossary.field_organizations
+    - field.field.node.glossary.field_sme_content_owner
     - field.field.node.glossary.field_terms
     - node.type.glossary
     - workflows.workflow.editorial
@@ -60,6 +61,7 @@ third_party_settings:
         - search
         - search_nosnippet
         - status
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_glossary_edit_form
@@ -116,6 +118,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 3
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_terms:
     type: mass_glossary_key_value_textarea
     weight: 3
@@ -147,32 +159,32 @@ content:
     third_party_settings: {  }
   path:
     type: path
-    weight: 5
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }
   search:
-    type: boolean_checkbox
-    weight: 6
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
-  search_nosnippet:
     type: boolean_checkbox
     weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
+  search_nosnippet:
+    type: boolean_checkbox
+    weight: 8
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   simple_sitemap:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    weight: 8
+    weight: 9
     region: content
     settings:
       display_label: true
@@ -196,7 +208,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   url_redirects:
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }

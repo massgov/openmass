@@ -6,12 +6,12 @@ namespace Drupal\Tests\mass_views\ExistingSiteJavascript;
 
 use Drupal\file\Entity\File;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Verifies editors can set blocked/active users in media Authored by field.
  */
-class BlockedAuthorsMediaEditTest extends ExistingSiteSelenium2DriverTestBase {
+class BlockedAuthorsMediaEditTest extends MassExistingSiteSelenium2DriverTestBase {
 
   use MediaCreationTrait;
 

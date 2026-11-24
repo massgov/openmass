@@ -338,7 +338,7 @@ function mass_flagging_mail_alter(&$message) {
 function mass_flagging_get_unwatch_flag_link(Flag $watch_flag, Node $node, array $options = []) {
   // Gets flag link for unwatching content.
   $flag_link_type_plugin = $watch_flag->getLinkTypePlugin();
-  $flag_url = $flag_link_type_plugin->getAsLink($watch_flag, $node)->getUrl();
+  $flag_url = $flag_link_type_plugin->getAsLink($watch_flag, $node, 'default')->getUrl();
   $flag_url->setOption('query', ['destination' => $node->toUrl()->toString()]);
   $flag_url = array_key_exists('set_absolute', $options) ? $flag_url->setAbsolute()->toString() : $flag_url->toString();
   $flag_title = $watch_flag->getShortText('unflag');

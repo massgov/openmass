@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.external_data_resource.field_externaldata_url
     - field.field.node.external_data_resource.field_hide_org_in_collection
     - field.field.node.external_data_resource.field_organizations
+    - field.field.node.external_data_resource.field_sme_content_owner
     - node.type.external_data_resource
     - workflows.workflow.editorial
   module:
@@ -75,6 +76,7 @@ third_party_settings:
         - search
         - search_nosnippet
         - simple_sitemap
+        - field_sme_content_owner
       label: 'Page Info'
       region: content
       parent_name: group_externaldata_edit_form
@@ -312,6 +314,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 5
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 1
@@ -344,20 +356,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 6
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 7
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }

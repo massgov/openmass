@@ -3,6 +3,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.api_service_card_journey.field_api_service_card_idv_level
     - field.field.paragraph.api_service_card_journey.field_api_service_card_j_feature
     - field.field.paragraph.api_service_card_journey.field_api_service_card_j_mc_name
     - field.field.paragraph.api_service_card_journey.field_api_service_card_j_steps
@@ -15,6 +16,13 @@ targetEntityType: paragraph
 bundle: api_service_card_journey
 mode: default
 content:
+  field_api_service_card_idv_level:
+    type: list_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 9
+    region: content
   field_api_service_card_j_feature:
     type: list_default
     label: above

@@ -24,8 +24,8 @@ class FormEmbedWidget extends WidgetBase {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-    $value = isset($items[$delta]->value) ? $items[$delta]->value : '';
-    $type = isset($items[$delta]->type) ? $items[$delta]->type : '';
+    $value = $items[$delta]->value ?? '';
+    $type = $items[$delta]->type ?? '';
     $element['value'] = [
       '#title' => 'Embedded form',
       '#type' => 'textarea',
@@ -81,7 +81,19 @@ class FormEmbedWidget extends WidgetBase {
       case 'formstack':
       case 'formstack_reload':
         try {
-          $doc = new Crawler($value);
+          // DomCrawler's HTML5 parser treats <noscript> as if scripting is
+          // enabled and moves its fallback link outside the element. Parse the
+          // fragment with DOMDocument so the required relationship is kept.
+          $document = new \DOMDocument();
+          $use_internal_errors = libxml_use_internal_errors(TRUE);
+          try {
+            $document->loadHTML($value);
+          }
+          finally {
+            libxml_clear_errors();
+            libxml_use_internal_errors($use_internal_errors);
+          }
+          $doc = new Crawler($document);
           $script_url = $doc->filterXPath('//script[@src]')->attr('src');
           $noscript_url = $doc->filterXPath('//noscript/a[@href]')->attr('href');
 
@@ -91,7 +103,7 @@ class FormEmbedWidget extends WidgetBase {
           else {
             $validate_noscript_url = parse_url($noscript_url, PHP_URL_HOST);
             $validate_script_url = parse_url($script_url, PHP_URL_HOST);
-            if (!str_ends_with($validate_noscript_url, "formstack.com") || !str_ends_with($validate_script_url, "formstack.com")) {
+            if (!self::isFormstackHost($validate_noscript_url) || !self::isFormstackHost($validate_script_url)) {
               $form_state->setError($element['value'], t("Malformed embed code. FormStack embed must contain a formstack URL."));
             }
           }
@@ -102,6 +114,14 @@ class FormEmbedWidget extends WidgetBase {
         }
         break;
     }
+  }
+
+  /**
+   * Determines whether a parsed URL host belongs to Formstack.
+   */
+  private static function isFormstackHost(mixed $host): bool {
+    return is_string($host) &&
+      ($host === 'formstack.com' || str_ends_with($host, '.formstack.com'));
   }
 
 }

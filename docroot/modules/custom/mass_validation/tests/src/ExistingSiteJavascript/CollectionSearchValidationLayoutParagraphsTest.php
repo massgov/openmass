@@ -3,7 +3,7 @@
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
 use Drupal\mass_content_moderation\MassModeration;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * End‑to‑end UI test for the Layout Paragraphs workflow on service pages.
@@ -23,7 +23,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  *  - Scopes all assertions to the active jQuery UI dialog (.ui-dialog...)
  *    to avoid matching messages elsewhere on the page.
  */
-class CollectionSearchValidationLayoutParagraphsTest extends ExistingSiteSelenium2DriverTestBase {
+class CollectionSearchValidationLayoutParagraphsTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * The user to log in and test the functionality.

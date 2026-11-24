@@ -2,12 +2,12 @@
 
 namespace Drupal\Tests\mass_content\ExistingSiteJavascript;
 
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Topic Page Description visibility tests.
  */
-class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
+class GlossaryPopoverTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Test paths for content types that support glossaries.
@@ -83,6 +83,8 @@ class GlossaryPopoverTest extends ExistingSiteSelenium2DriverTestBase {
   private function createEditor() {
     $editor = $this->createUser(['bypass org access']);
     $editor->addRole('editor');
+    // Only the Executive Orders role can edit the executive order QAG page.
+    $editor->addRole('executive_orders');
     $editor->activate();
     $editor->save();
     return $editor;

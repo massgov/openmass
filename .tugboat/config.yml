@@ -3,7 +3,12 @@ services:
   # What to call the service hosting the site.
   php:
     # Use PHP 8.x with Apache;
-    image: tugboatqa/php:8.3-apache
+    image: tugboatqa/php:8.4-apache
+
+    # Enforce organization-based editing permissions, the same way prod,
+    # test and dev do (env var takes precedence over the State key).
+    environment:
+      MASS_ORG_ACCESS_ENFORCE: "true"
 
     # Set this as the default service. This does a few things
     #   1. Clones the git repository into the service container
@@ -51,13 +56,16 @@ services:
         - apt-get update
         - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
         - sudo apt update
-        # Install Node.js 22.x
-        - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+        # Install Node.js 24.x to match package.json's engine requirement.
+        - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
         - apt-get install -y nodejs
+        - node --version
         # Install opcache
         - docker-php-ext-install opcache
         # Needed for image styles.
         - a2enmod headers rewrite
+        # CVE-2026-115560: apply at PHP startup before Apache reloads.
+        - echo "session.upload_progress.enabled=0" > /usr/local/etc/php/conf.d/99-session-upload-progress.ini
         - apache2ctl graceful
 
         - curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg

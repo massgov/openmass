@@ -312,6 +312,7 @@ function mayflower_preprocess_block(array &$variables) {
   if (!empty($variables['elements']['#id'])) {
     $variables['content']['#attributes']['data-block-id'] = $variables['elements']['#id'];
     $variables['sealImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal.png');
+    $variables['sealWhiteImage'] = \Drupal::service('file_url_generator')->generateAbsoluteString(mayflower_get_path() . '/assets/images/logo/stateseal-white.png');
   }
 }
 

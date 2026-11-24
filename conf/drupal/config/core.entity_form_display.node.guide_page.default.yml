@@ -22,6 +22,7 @@ dependencies:
     - field.field.node.guide_page.field_primary_parent
     - field.field.node.guide_page.field_reusable_label
     - field.field.node.guide_page.field_short_title
+    - field.field.node.guide_page.field_sme_content_owner
     - image.style.large
     - node.type.guide_page
     - workflows.workflow.editorial
@@ -125,8 +126,9 @@ third_party_settings:
         - url_redirects
         - search
         - search_nosnippet
+        - field_sme_content_owner
       label: 'Page Info'
-      region: hidden
+      region: content
       parent_name: group_node_edit_form
       weight: 23
       format_type: tab
@@ -336,7 +338,7 @@ content:
     third_party_settings: {  }
   field_guide_page_metatags:
     type: metatag_firehose
-    weight: 2
+    weight: 3
     region: content
     settings:
       sidebar: false
@@ -417,6 +419,16 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
+  field_sme_content_owner:
+    type: entity_reference_autocomplete
+    weight: 2
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 4
@@ -442,20 +454,20 @@ content:
     third_party_settings: {  }
   search:
     type: boolean_checkbox
-    weight: 5
+    weight: 6
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   search_nosnippet:
     type: boolean_checkbox
-    weight: 6
+    weight: 7
     region: content
     settings:
       display_label: true
     third_party_settings: {  }
   simple_sitemap:
-    weight: 3
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -494,7 +506,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 4
+    weight: 5
     region: content
     settings: {  }
     third_party_settings: {  }

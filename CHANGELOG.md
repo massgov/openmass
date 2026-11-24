@@ -1,15 +1,135 @@
 
 
+## [0.499.1] - November 20, 2026
+
+### Security
+  - DP-49620: Updated Drupal core to 11.3.22.
+
+
+
+## [0.499.0] - November 17, 2026
+
+### Fixed
+  - DP-45281: A single rich-text callout link uses the 5-column action-finder measure from 911px, with a 20rem floor, instead of the 4-column grid.
+  
+### Added
+  - DP-49277: Add Bengali language to Drupal site.
+  - DP-49277: Add Bengali to the Google Translate language menu.
+  
+### Security
+  - DP-49404: Updated Node.js to v24.22.1.
+  
+
+
+## [0.498.0] - November 3, 2026
+
+### Changed
+  - DP-48193: Stop running the PHPUnit job in build_github_tag, to save CircleCI credits.
+  - DP-49058: Run the PHPUnit suite in DDEV on CircleCI with PHP 8.4, against a new nightly mysql-sanitized:trimmed image without old revisions, and build the database images faster and smaller (no MySQL binary logs, zstd layers, so pulling them needs Docker 23 or newer).
+  - DP-49058: Run the PHPUnit jobs on CircleCI ARM machines and build only ARM database images (latest.arm, super.arm, trimmed.arm). The local default database image becomes super.arm.
+  
+### Fixed
+  - DP-49238: Use h4 for Phone and Online on Person contact summaries so those headings sit under the person's h3 name.
+  - DP-49306: Message box titles show special characters such as "&" correctly instead of HTML codes like "&amp;".
+  - DP-49314: Only users with the Executive Orders role can edit executive orders and schedule their transitions; the editor role no longer grants it.
+  
+### Added
+  - DP-49307: Added Help Text to Hours Field on Contact Content Type
+  
+### Security
+  - DP-49324: Require patched PHP versions and upgrade DDEV PHP packages for CVE-2026-109618 and CVE-2026-109619.
+  - DP-49324: Disable PHP session upload-progress tracking in DDEV and Tugboat to mitigate CVE-2026-115560.
+  - DP-49405: Updated the AI and Stage File Proxy modules plus dependencies.
+  
+
+
+## [0.497.0] - October 27, 2026
+
+### Security
+  - DP-48793: Update the CSV Field module to 3.0.7 (SA-CONTRIB-2026-226, cross site scripting in the CSV table formatter).
+  - DP-49333: Update Rabbit Hole to 1.3.0 (SA-CONTRIB-2026-252, access bypass) and Diff to 2.1.1 (SA-CONTRIB-2026-096, access bypass).
+  
+### Added
+  - DP-48795: Internal SME / content owner field for pages and documents, with report filters and an owner directory.
+  
+### Fixed
+  - DP-49018: Use H2 for event titles on past and upcoming event listing pages so the heading order no longer skips from H1 to H3.
+  - DP-49043: Prevented repeated Akamai API failures from blocking newer cache invalidations indefinitely.
+  
+### Changed
+  - DP-49043: Enabled the Akamai cache tag purger (akamai_tag) on test and prod so cache tag invalidations are sent to Akamai.
+  
+
+
+## [0.496.1] - October 15, 2026
+
+### Security
+  - DP-49234: Update Drupal core to 11.3.19
+
+
+
+## [0.496.0] - October 6, 2026
+
+### Changed
+  - DP-48821: Changed local and CI Backstop runs to run directly on DDEV and CircleCI images rather than use BackstopJS docker image due to image staleness that was causing failures.
+  - DP-49005: Enforce organization-based editing permissions in local DDEV and in CircleCI tests through MASS_ORG_ACCESS_ENFORCE, matching Acquia and Tugboat; mass_org_access tests no longer depend on the environment variable.
+  - DP-49017: Updated Admin Audit Trail and enabled new CLI option.
+
+### Security
+  - DP-48959: Updates Editoria11y from 3.0.5 to 3.0.9, a security release. The update adds a unique key to the accessibility page table and drops the duplicate rows it finds, and rewrites the alert listing filter and the CSV export links in the exported views.
+
+### Fixed
+  - DP-49042: Fixed mysql_rebuild external database commands.
+  - DP-49113: Addressed cron issue that reapplied limits on Admin Audit Trail retention.
+
+
+
+## [0.495.0] - September 29, 2026
+
+### Changed
+  - DP-41516: Accessibility fixes related to high contrast modes.
+  - DP-48741: Announce the document title before file type and size so screen readers hear the link name first.
+
+### Fixed
+  - DP-48604: Paginate organization event listing pages so large archives no longer 500.
+  - DP-49003: Choosing an organization as the Issuer on executive orders and advisories no longer fails with an AJAX error, which had blocked saving those pages.
+  - DP-48999: Organization-based access no longer blocks editing of content types that have no Permission Groups field (API service cards, basic pages, sitewide alerts, videos and others), which had become admin-only once enforcement was turned on.
+
+### Removed
+  - DP-48966: Remove IAL1 form the Service card idv level options.
+
+
+
+## [0.494.0] - September 22, 2026
+
+### Changed
+  - DP-48482: Updated PHP version to 8.4, along with updates and patches to modules for compatibility.
+  - DP-48482: Upgraded Flag, Referenced Blocked Users, and OpenID Connect major versions
+  - DP-48482: OpenID Connect now handles /user/logout for SSO logout
+  - DP-48482: Changed Flag unwatch email URLs for Flag 5 compatibility. Unwatch links in emails sent before this release will return 404
+  - DP-48546: Override the audit trail row limit with time-based retention rules displayed on the report.
+  - DP-48764: Update the AI module to 1.4.9.
+
+### Added
+  - DP-48520: Add IDV level to API service cards.
+
+### Security
+  - DP-48764: Update Entity Browser to 2.16.0 and Key Auth to 2.2.4 to address Drupal security advisories.
+  - DP-48764: Update highlight.js Input Filter to 1.2.0 and Video Embed Field to 3.1.0.
+  - DP-48764: Update Drupal core to 11.3.17
+
+
+
 ## [0.493.0] - September 15, 2026
 
 ### Changed
   - DP-48467: Replace the old Mayflower Brand Banner with the new MDS State Banner component.
-  
+
 ### Added
   - DP-48740: Add Portuguese language to Drupal site.
   - DP-48740: Add Portuguese to content and document view language filters.
   - DP-48740: Show Portuguese instead of Portuguese, International on public translation links.
-  
+
 
 
 ## [0.492.0] - September 8, 2026

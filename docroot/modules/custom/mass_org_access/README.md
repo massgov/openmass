@@ -41,12 +41,46 @@ Content node / media.document
 ## Feature switch
 
 `OrgAccessSettings::isEnforcementEnabled()` gates the access decision,
-form validator, and login warning. **Off by default.**
+form validator, and login warning. **On everywhere**: Acquia (prod, test,
+dev), Tugboat previews, local DDEV and the CircleCI `test` job all set
+`MASS_ORG_ACCESS_ENFORCE=true`.
 
-- Env `MASS_ORG_ACCESS_ENFORCE` (`1`/`true`/`yes`/`on` case-insensitive)
-  wins when set. Use this on Acquia.
-- State key `mass_org_access.enforce` is the fallback — DB-backed, so it
-  propagates between PHPUnit and webserver processes during DTT tests.
+Where it is set:
+
+- Acquia: environment variable on each environment.
+- Tugboat: `environment` of the `php` service in `.tugboat/config.yml`.
+- Local DDEV: `web_environment` in `.ddev/config.yaml` and
+  `.ddev/docker-compose.org-access.yaml`. The compose file keeps it set
+  when a personal `.ddev/config.*.yaml` uses `override_config: true`.
+- CircleCI: `environment` of the `test` job in `.circleci/config.yml`.
+  The job's "Show org access enforcement (CLI and web)" step prints what
+  the shell, drush and a web request see.
+
+How the value is read:
+
+- Env `MASS_ORG_ACCESS_ENFORCE` wins when it is set to a non-empty
+  value. `1`/`true`/`yes`/`on` (case-insensitive) turn the gate on; any
+  other value, including `false`, forces it off and does **not** fall
+  through to State.
+- An empty or unset env var falls back to the State key
+  `mass_org_access.enforce` (DB-backed, so it is shared between the
+  PHPUnit and webserver processes during DTT tests). Off when both are
+  unset.
+
+Turning it off locally: `web_environment` in a personal
+`.ddev/config.*.yaml` is not enough, because
+`docker-compose.org-access.yaml` still sets the variable. Add a compose
+file that sorts after it, for example `.ddev/docker-compose.zz-local.yaml`
+(keep it out of git), then `ddev restart`:
+
+```yaml
+services:
+  web:
+    environment:
+      - MASS_ORG_ACCESS_ENFORCE=false
+```
+
+Check with `ddev exec printenv MASS_ORG_ACCESS_ENFORCE`.
 
 The Permission Groups widget itself is **not gated by the switch** — its
 Release 1 visibility rules (hidden from everyone except administrators and
@@ -376,7 +410,7 @@ JS tests require the `selenium-chrome` DDEV add-on and a correct
 
 ## Rollout sequence
 
-1. Deploy with switch **off** (current default).
+1. Deploy with switch **off**.
 2. Content team curates `field_content_organization` on the ~1000
    `org_page` nodes — via the **Edit mappings** matrix / **Import
    mappings** CSV admin tabs, or by hand. Org pages go first because

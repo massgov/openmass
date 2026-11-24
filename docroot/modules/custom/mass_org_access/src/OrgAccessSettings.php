@@ -21,7 +21,7 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class OrgAccessSettings {
 
-  private const ENV_VAR = 'MASS_ORG_ACCESS_ENFORCE';
+  public const ENFORCE_ENV = 'MASS_ORG_ACCESS_ENFORCE';
   public const STATE_KEY = 'mass_org_access.enforce';
 
   /**
@@ -46,7 +46,7 @@ class OrgAccessSettings {
    * Returns TRUE when the org-based write gate should run.
    */
   public function isEnforcementEnabled(): bool {
-    $env = getenv(self::ENV_VAR);
+    $env = getenv(self::ENFORCE_ENV);
     if ($env !== FALSE && $env !== '') {
       return in_array(strtolower($env), ['1', 'true', 'yes', 'on'], TRUE);
     }

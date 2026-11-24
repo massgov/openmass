@@ -8,12 +8,12 @@ use Drupal\user\Entity\Role;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\user\UserInterface;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Real user interaction tests for friendly redirects.
  */
-class FriendlyRedirectsUiTest extends ExistingSiteSelenium2DriverTestBase {
+class FriendlyRedirectsUiTest extends MassExistingSiteSelenium2DriverTestBase {
 
   /**
    * Creates and returns a user with editor permissions.

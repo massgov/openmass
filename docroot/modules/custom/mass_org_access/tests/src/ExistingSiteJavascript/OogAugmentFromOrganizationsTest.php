@@ -9,7 +9,7 @@ use Drupal\media\Entity\Media;
 use Drupal\taxonomy\Entity\Vocabulary;
 use weitzman\DrupalTestTraits\Entity\MediaCreationTrait;
 use weitzman\DrupalTestTraits\Entity\TaxonomyCreationTrait;
-use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
+use MassGov\Dtt\MassExistingSiteSelenium2DriverTestBase;
 
 /**
  * Verifies the JS that augments Owner Groups from Organizations.
@@ -23,7 +23,7 @@ use weitzman\DrupalTestTraits\ExistingSiteSelenium2DriverTestBase;
  * exercises real autocomplete typing with a dropdown click on
  * info_details so we know the end-to-end UI flow stays wired up.
  */
-class OogAugmentFromOrganizationsTest extends ExistingSiteSelenium2DriverTestBase {
+class OogAugmentFromOrganizationsTest extends MassExistingSiteSelenium2DriverTestBase {
 
   use TaxonomyCreationTrait;
   use MediaCreationTrait;
