@@ -116,7 +116,8 @@ if(isset($_ENV['AH_SITE_ENVIRONMENT'])) {
 }
 
 // Now that secrets file was included, perform config overrides.
-$config['akamai.settings']['rest_api_url'] = getenv('AKAMAI_REST_API_URL') ?: '';
+// Use Akamai's default placeholder so its diagnostics detect missing credentials.
+$config['akamai.settings']['rest_api_url'] = getenv('AKAMAI_REST_API_URL') ?: 'https://xxxx-xxxxxxxxxxxxxxxx-xxxxxxxxxxxxxxxx.luna.akamaiapis.net/';
 $config['mass_analytics.settings']['looker_studio_url'] = getenv('LOOKER_STUDIO_URL');
 $config['mailchimp_transactional.settings']['mailchimp_transactional_api_key'] = getenv('MANDRILL_API_KEY');
 $config['key.key.real_aes']['key_provider_settings']['key_value'] = getenv('REAL_AES_KEY_VALUE');
