@@ -56,13 +56,16 @@ services:
         - apt-get update
         - apt-get install -y imagemagick pngcrush libjpeg-turbo-progs
         - sudo apt update
-        # Install Node.js 22.x
-        - curl -fsSL https://deb.nodesource.com/setup_22.x | bash -
+        # Install Node.js 24.x to match package.json's engine requirement.
+        - curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
         - apt-get install -y nodejs
+        - node --version
         # Install opcache
         - docker-php-ext-install opcache
         # Needed for image styles.
         - a2enmod headers rewrite
+        # CVE-2026-115560: apply at PHP startup before Apache reloads.
+        - echo "session.upload_progress.enabled=0" > /usr/local/etc/php/conf.d/99-session-upload-progress.ini
         - apache2ctl graceful
 
         - curl -fsSL https://dl.yarnpkg.com/debian/pubkey.gpg | gpg --dearmor -o /usr/share/keyrings/yarn-archive-keyring.gpg

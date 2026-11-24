@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_inline_message\Plugin\Filter;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
@@ -81,13 +82,15 @@ class FilterMassInlineMessage extends FilterBase implements ContainerFactoryPlug
    *   Raw attributes, e.g. 'data-title="Foo" data-type="warning"'.
    *
    * @return array
-   *   Associative array of attribute name => value.
+   *   Associative array of attribute name => decoded value. Values are decoded
+   *   because the template escapes them again on output.
    */
   protected function parseAttributes(string $attribute_string): array {
     $attributes = [];
     if (preg_match_all('/([\w-]+)\s*=\s*(?:"([^"]*)"|\'([^\']*)\'|(\S+))/', $attribute_string, $matches, PREG_SET_ORDER)) {
       foreach ($matches as $match) {
-        $attributes[$match[1]] = $match[2] !== '' ? $match[2] : ($match[3] !== '' ? $match[3] : ($match[4] ?? ''));
+        $value = $match[2] !== '' ? $match[2] : ($match[3] !== '' ? $match[3] : ($match[4] ?? ''));
+        $attributes[$match[1]] = Html::decodeEntities($value);
       }
     }
     return $attributes;

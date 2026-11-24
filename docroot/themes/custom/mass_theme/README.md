@@ -2,18 +2,8 @@
 
 `mass_theme` is a custom theme that [integrates with our pattern library, Mayflower](../../../../docs/Mayflower.md), through the use of a [custom module called mayflower](../../../modules/custom/mayflower).
 
-## How this theme works
+## How this theme uses Mayflower
 
-## Non-Mayflower Workflow
-If not using Mayflower during the theming process, this theme is configured to use Gulp,Node, NPM and NVM.  Follow these steps to work with the theme:
- * Navigate to `mass_theme` to execute all the code compiling commands
- * Run `npm install` to ensure all theme dependencies are installed.  If you run into install issues, you may want to remove `/node_modules` directory first and then execute `npm install`.
- * Run `nvm install` to install the version of node specified in `.nvmrc`.  This ensures all developers use the same version of node to avoid conflicts.
- * To compile the theme run `npm run build`.  This command will run all gulp tasks (i.e. compile, compress, move, clean, lint, etc.).  If you only want to compile Sass, you can run `npm run compile`.  For compressing assets run `npm run compress`, etc.
-
-Note:  The first 3 commands above don't need to be ran every time, only when you first start up the project or if you update your tools/dependencies.
-
-## Mayflower Workflow
 In general, `mass_theme` handles the templating for global elements (i.e. header, footer, menu) and for node layout.  For most content types, there is a node template which closely follows the format of either the corresponding Mayflower `@templates` or `@pages` pattern for a given page type.
 
 These node templates often break the node-level data structure (i.e. `$variables[]`) into smaller data structures, which are then sent to the node's included  `@organisms` and `@molecules` templates.

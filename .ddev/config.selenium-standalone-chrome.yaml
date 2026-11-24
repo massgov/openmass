@@ -1,11 +1,13 @@
 # This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
 #
-# Edited locally, so the add-on must not overwrite it: "w3c":true, because
-# current selenium/standalone-chromium images reject "w3c":false with "session
-# not created". No --headless: headless Chrome opens an 800x600 window, the
-# pages switch to the mobile layout and tests that click desktop-only elements
-# fail. Without it Chrome uses the Selenium container's virtual display, sized
-# in docker-compose.selenium-chrome.yaml. --window-size, because current Chrome
+# Edited locally, so the add-on must not overwrite it.
+# "w3c":true: chromedriver has defaulted to W3C since version 75, and current
+# selenium/standalone-chromium images reject "w3c":false with "session not
+# created".
+# No --headless: headless Chrome opens an 800x600 window, the pages switch to
+# the mobile layout and tests that click desktop-only elements fail. Without it
+# Chrome uses the Selenium container's virtual display, sized in
+# docker-compose.selenium-chrome.yaml. --window-size, because current Chrome
 # opens a 945px wide window on that display. 1050x980 is the window Chrome 101
 # in the old seleniarm image opened, and the tests are written for that layout
 # (e.g. the header search in the hamburger menu). CircleCI uses these values.
