@@ -2,6 +2,7 @@
 
 namespace Drupal\mass_views\Plugin\views\filter;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\views\Plugin\views\filter\FilterPluginBase;
@@ -27,11 +28,19 @@ class OrgFilterMedia extends FilterPluginBase implements ContainerFactoryPluginI
   protected $joinManager;
 
   /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $database;
+
+  /**
    * Constructs a new OrgFilterMedia object.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, ViewsHandlerManager $join_manager, Connection $database) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->joinManager = $join_manager;
+    $this->database = $database;
   }
 
   /**
@@ -42,7 +51,8 @@ class OrgFilterMedia extends FilterPluginBase implements ContainerFactoryPluginI
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('plugin.manager.views.join')
+      $container->get('plugin.manager.views.join'),
+      $container->get('database')
     );
   }
 
@@ -65,35 +75,33 @@ class OrgFilterMedia extends FilterPluginBase implements ContainerFactoryPluginI
    * {@inheritdoc}
    */
   public function query() {
-    // ONLY add the relationships if we have a value to filter on.
+    // ONLY add the join if we have a value to filter on.
     if ($value = $this->getValue()) {
-      // Build the join to media__field_organizations.
-      // Use getJoinData if the table is already joined, otherwise create
-      // a new join definition manually.
-      $relationship = $this->relationship ? $this->relationship : $this->view->storage->get('base_table');
-      $join = $this->query->getJoinData('media__field_organizations', $relationship);
-      if (!$join) {
-        $join = $this->joinManager->createInstance('standard', [
-          'table' => 'media__field_organizations',
-          'field' => 'entity_id',
-          'left_table' => $relationship,
-          'left_field' => 'mid',
-          'extra' => [
-            [
-              'field' => 'deleted',
-              'value' => '0',
-            ],
-          ],
-        ]);
-      }
-      $join->type = 'INNER';
+      // Join a de-duplicated set of media ids instead of the raw field table.
+      // The autocomplete accepts several organizations, and a document tagged
+      // with more than one of them has one media__field_organizations row per
+      // match, so joining the field table directly would list it once per
+      // matching organization. SELECT DISTINCT removes that fan-out.
+      $subquery = $this->database->select('media__field_organizations', 'mfo');
+      $subquery->addField('mfo', 'entity_id');
+      $subquery->condition('mfo.deleted', 0);
+      $subquery->condition('mfo.field_organizations_target_id', $value, 'IN');
+      $subquery->distinct();
 
-      // Ensure we have the tables we need.
-      $org_table_alias = $this->query->ensureTable('media__field_organizations', $this->relationship, $join);
-
-      $p1 = $this->placeholder() . '[]';
-      $snippet = "$org_table_alias.field_organizations_target_id = $p1";
-      $this->query->addWhereExpression($this->options['group'], $snippet, [$p1 => $value]);
+      // INNER JOIN is always AND'd onto the query and does not honor
+      // $this->options['group']. No media Organization filter is currently in
+      // an OR group.
+      $join = $this->joinManager->createInstance('standard', [
+        'table' => 'media__field_organizations',
+        'table formula' => $subquery,
+        'field' => 'entity_id',
+        'left_table' => $this->relationship ?: $this->view->storage->get('base_table'),
+        'left_field' => 'mid',
+        'type' => 'INNER',
+      ]);
+      // Handler IDs are unique per display. A hard-coded alias would let
+      // Sql::queueTable() silently discard a second instance's subquery.
+      $this->query->addTable('media__field_organizations', $this->relationship, $join, 'media_org_set_' . $this->options['id']);
     }
   }
 
