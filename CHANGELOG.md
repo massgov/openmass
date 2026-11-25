@@ -1,5 +1,12 @@
 
 
+## [0.499.2] - November 25, 2026
+
+### Security
+  - DP-49680: Updated Drupal core to 11.3.23. Removed install and update scripts.
+
+
+
 ## [0.499.1] - November 20, 2026
 
 ### Security
