@@ -1,0 +1,77 @@
+<?php
+
+namespace Drupal\mass_sendgrid\EventSubscriber;
+
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\sendgrid\Event\SendgridSendEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+/**
+ * Applies the Mass.gov dynamic template to SendGrid messages.
+ */
+class SendgridTemplateSubscriber implements EventSubscriberInterface {
+
+  /**
+   * Constructs a SendgridTemplateSubscriber object.
+   */
+  public function __construct(protected ConfigFactoryInterface $configFactory) {
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function getSubscribedEvents(): array {
+    // Use the event name directly so container compilation can complete during
+    // the deployment where SendGrid has not yet been enabled in active config.
+    return ['sendgrid.send' => 'applyTemplate'];
+  }
+
+  /**
+   * Applies the configured template and template data to an email.
+   */
+  public function applyTemplate(SendgridSendEvent $event): void {
+    $config = $this->configFactory->get('mass_sendgrid.settings');
+    $template_id = $config->get('template_id');
+
+    if (!is_string($template_id) || !str_starts_with($template_id, 'd-')) {
+      throw new \LogicException('The MASS_SENDGRID_TEMPLATE_ID environment variable must contain a SendGrid dynamic template ID.');
+    }
+
+    $email = $event->getEmail();
+    $from_email = $config->get('from_email');
+    if (!is_string($from_email) || $from_email === '') {
+      throw new \LogicException('The mass_sendgrid.settings from_email configuration value is required.');
+    }
+
+    $site_config = $this->configFactory->get('system.site');
+    $email->setFrom($from_email, $site_config->get('name'));
+    if (!$email->getReplyTo()) {
+      $reply_to = $site_config->get('mail');
+      if (!is_string($reply_to) || $reply_to === '') {
+        throw new \LogicException('The system.site mail configuration value is required.');
+      }
+      $email->setReplyTo($reply_to);
+    }
+
+    // The HTML has already passed through the configured Drupal text format
+    // and must not be escaped before template expansion.
+    $template_data = [
+      'subject' => $email->getGlobalSubject()?->getSubject() ?? '',
+      'content' => '',
+    ];
+
+    foreach ($email->getContents() as $content) {
+      if ($content->getType() === 'text/html') {
+        $template_data['content'] = $content->getValue();
+        break;
+      }
+    }
+
+    $email->setTemplateId($template_id);
+    $email->addDynamicTemplateDatas($template_data);
+
+    $email->setClickTracking(FALSE, FALSE);
+    $email->setOpenTracking(FALSE);
+  }
+
+}
