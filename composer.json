@@ -332,11 +332,13 @@
             "bash scripts/remove_vendor_git_folders.sh || :"
         ],
         "post-install-cmd": [
-            "@remove-git"
+            "@remove-git",
+            "rm -f docroot/core/install.php docroot/core/update.php"
         ],
         "post-update-cmd": [
             "@check-php-platform",
-            "@remove-git"
+            "@remove-git",
+            "rm -f docroot/core/install.php docroot/core/update.php"
         ]
     },
     "conflict": {
