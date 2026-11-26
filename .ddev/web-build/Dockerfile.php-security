@@ -1,7 +1,7 @@
 # PHP security update (CVE-2026-109618, CVE-2026-109619) without waiting for a DDEV release.
 # Bump PHP_MIN_VERSION on the next PHP security release to rebuild this layer.
 ARG DDEV_PHP_VERSION
-ARG PHP_MIN_VERSION=8.4.27
+ARG PHP_MIN_VERSION=8.4.28
 RUN curl -fsSL https://packages.sury.org/php/apt.gpg -o /usr/share/keyrings/deb.sury.org-php.gpg \
     && apt-get update \
     && DEBIAN_FRONTEND=noninteractive apt-get install -y --only-upgrade --no-install-recommends --no-remove \
