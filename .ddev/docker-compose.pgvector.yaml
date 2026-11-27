@@ -1,0 +1,24 @@
+services:
+  pgvector:
+    container_name: "ddev-${DDEV_SITENAME}-pgvector"
+    image: pgvector/pgvector:0.8.5-pg16
+    restart: "no"
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: ai_editorial
+      POSTGRES_USER: ai_editorial
+      POSTGRES_PASSWORD: ai_editorial
+    volumes:
+      - pgvector-data:/var/lib/postgresql/data
+      - "./pgvector/init:/docker-entrypoint-initdb.d:ro"
+    x-ddev:
+      describe-info: |
+        DB: ai_editorial
+        User: ai_editorial
+        Pass: ai_editorial
+        Host from web: pgvector
+        Host from Mac: 127.0.0.1:5433
+
+volumes:
+  pgvector-data:
