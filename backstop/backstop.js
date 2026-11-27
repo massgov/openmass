@@ -34,7 +34,7 @@ const scenarios = pages.map(function(page) {
       break;
     case 'test':
       auth = getAuth();
-      base = `https://${auth.username}:${auth.password}@stage.mass.gov`;
+      base = 'https://stage.mass.gov';
       break;
     case 'tugboat':
       const opts = process.argv.filter(arg => arg.match(/^--tugboat=/))
@@ -45,13 +45,14 @@ const scenarios = pages.map(function(page) {
       break;
     default:
       auth = getAuth();
-      base = `https://${auth.username}:${auth.password}@${target}.edit.mass.gov`;
+      base = `https://${target}.edit.mass.gov`;
   }
   const url = new URL(`${base}${page.url}`);
-  let separator = "?";
-  if (url.search !== "") {
-    separator = "&";
+  if (auth) {
+    url.username = encodeURIComponent(auth.username);
+    url.password = encodeURIComponent(auth.password);
   }
+  if (withCache) url.searchParams.set('cachebuster', Math.random().toString(36).substring(7));
   if (page.screens !== undefined) {
     if (page.screens.length > 0 && page.viewports === undefined) {
       page.viewports = page.screens.map(function (screen) {
@@ -91,7 +92,10 @@ const scenarios = pages.map(function(page) {
   }
   return {
     ...page,
-    url: withCache ? `${base}${page.url}${separator}cachebuster=${Math.random().toString(36).substring(7)}` : `${base}${page.url}`,
+    // Backstop applies its default after onReadyScript. Set it now so engine
+    // failures use the same reference filename as successful document captures.
+    selectors: page.selectors?.length ? page.selectors : ['document'],
+    url: url.href,
     misMatchThreshold: 0.1,
     removeSelectors,
   }
@@ -101,9 +105,15 @@ function getAuth() {
   // Trim leading and trailing quotes off of the auth variables.
   // This works around docker-compose's handling of environment
   // variables with quotes.
+  const variables = ['LOWER_ENVIR_AUTH_USER', 'LOWER_ENVIR_AUTH_PASS'];
+  const values = variables.map(name => (process.env[name] ?? '').replace(/(^["']|["']$)/g, ''));
+  const missing = variables.filter((name, index) => !values[index]);
+  if (missing.length) {
+    throw new Error(`Missing Backstop HTTP authentication for target "${target}": ${missing.join(', ')}. For ddev backstop, add these variables to .ddev/.env. See backstop/README.md.`);
+  }
   return {
-    username: process.env.LOWER_ENVIR_AUTH_USER.replace(/(^["']|["']$)/g, ''),
-    password: process.env.LOWER_ENVIR_AUTH_PASS.replace(/(^["']|["']$)/g, '')
+    username: values[0],
+    password: values[1]
   }
 }
 
@@ -143,7 +153,7 @@ module.exports = {
     },
     "onBeforeScript": "before.js",
     "onReadyScript": "ready.js",
-    "readyTimeout": "90000",
+    "readyTimeout": 90000,
     "asyncCaptureLimit": 1,
     "report": ["browser", "CI"],
     "engine": "playwright",

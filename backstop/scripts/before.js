@@ -1,4 +1,10 @@
-module.exports = async (page, scenario, viewport, isReference, browserContext) => {
+const readiness = require('./readiness');
+
+module.exports = async (page, scenario, viewport, isReference, browserContext, config = {}) => {
+  const capture = readiness.monitor(page, scenario, viewport, isReference, config);
+  require('./responsive-image-capture')(page);
+  await page.addInitScript(require('./tableau-readiness'));
+  if (scenario.label === 'Homepage') await page.addInitScript(require('./homepage-banner'));
   const banned = [
     'www.googletagmanager.com',
     'script.crazyegg.com',
@@ -6,24 +12,38 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
     'js-agent.newrelic.com',
     'translate.google.com',
     'foresee.com',
-    'www.youtube.com',
     'bam.nr-data.net',
     'maps.googleapis.com',
     '9p83os0fkf.execute-api.us-east-1.amazonaws.com/v1/waittime',
-    'player.vimeo.com',
     'https://massgov.github.io/FWE/PondMaps/dfw-pond-maps-table.html',
   ];
   await page.route('**/*', (route) => {
     const url = route.request().url();
     const matches = banned.filter(ban => url.includes(ban));
-    return matches.length ? route.abort() : route.continue();
+    // Load the player UI for its diagnostic check, but don't stream video.
+    const videoMedia = route.request().resourceType() === 'media' &&
+      /(^|\.)(vimeo\.com|vimeocdn\.com|youtube\.com|youtube-nocookie\.com|googlevideo\.com)$/.test(new URL(url).hostname);
+    if (matches.length || videoMedia) {
+      capture.blocked.add(url);
+      return route.abort();
+    }
+    return route.fallback();
   });
 
-  await browserContext.setExtraHTTPHeaders(
-    {'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT}
-  );
+  if (process.env.MASS_BYPASS_RATE_LIMIT) {
+    await browserContext.setExtraHTTPHeaders({ 'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT });
+  }
 
-  const url = new URL(scenario.url);
+  const url = new URL(isReference && scenario.referenceUrl || scenario.url);
+  if (url.username || url.password) {
+    // URL credentials can be dropped by an absolute redirect. Configure both
+    // browser navigation and its request client, scoped to this origin only.
+    await browserContext.setHTTPCredentials({
+      username: decodeURIComponent(url.username),
+      password: decodeURIComponent(url.password),
+      origin: url.origin
+    });
+  }
   await browserContext.addCookies([
     {
       name: 'im-bypass',
@@ -32,63 +52,10 @@ module.exports = async (page, scenario, viewport, isReference, browserContext) =
     },
   ]);
 
-  async function warmupWithRetries(context, url, maxAttempts = 3, baseDelay = 1000) {
-    const headers = {
-      'mass-bypass-rate-limit': process.env.MASS_BYPASS_RATE_LIMIT,
-    };
-
-    // Extract cookies from browser context
-    const allCookies = await context.cookies();
-    const cookieHeader = allCookies
-      .map(cookie => `${cookie.name}=${cookie.value}`)
-      .join('; ');
-
-    if (cookieHeader) {
-      headers['cookie'] = cookieHeader;
-    }
-
-    for (let attempt = 1; attempt <= maxAttempts; attempt++) {
-      try {
-        const response = await context.request.get(url, { headers });
-        const status = response.status();
-
-        if (status === 200) {
-          console.log(`[Cache Warmup] ✅ Success on attempt ${attempt}: ${url}`);
-          return;
-        }
-
-        if (status === 404) {
-          console.log(`[Cache Warmup] 🚫 Skipping warmup retries for 404: ${url}`);
-          return;
-        }
-
-        console.warn(`[Cache Warmup] ⚠️ Attempt ${attempt} failed with status ${status} for: ${url}`);
-      } catch (err) {
-        console.warn(`[Cache Warmup] ❌ Attempt ${attempt} failed.`);
-      }
-
-      const delay = baseDelay * Math.pow(2, attempt - 1);
-      console.log(`[Cache Warmup] ⏳ Retrying in ${delay}ms...`);
-      await new Promise(res => setTimeout(res, delay));
-    }
-
-    console.error(`[Cache Warmup] 🚫 Failed after ${maxAttempts} attempts: ${url}`);
+  try {
+    await readiness.warmup(browserContext, url.href, scenario.expectedStatus ?? 200);
+  } catch (error) {
+    readiness.save(page, { outcome: 'readiness-failure', stage: 'warmup', error: error.message });
+    throw error;
   }
-
-  await warmupWithRetries(browserContext, url.href);
-
-  const ignoredMessages = [
-    'New Relic',
-    'Loading chunk',
-    'JQMIGRATE',
-    'BackstopTools have been installed'
-  ];
-  console.log = (message) => {
-    if (typeof message === 'string' || message instanceof String) {
-      ignoredMessages.some(ignore => message.includes(ignore)) ? undefined : process.stdout.write(`${message}\n`);
-    }
-    else {
-      process.stdout.write(`${message}\n`);
-    }
-  };
-}
+};
