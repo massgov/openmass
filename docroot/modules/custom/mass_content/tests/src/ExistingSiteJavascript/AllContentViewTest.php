@@ -37,7 +37,11 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       return;
     }
     $randomRow = $rows[\random_int(0, count($rows) - 1)];
-    $text = $randomRow->getText();
+    // Chrome's rendered text drops leading and repeated spaces. Node labels
+    // in the sanitized database can still carry them, so compare both sides
+    // with the same whitespace.
+    $text = preg_replace('/\s+/u', ' ', $randomRow->getText()) ?? '';
+    $value = preg_replace('/\s+/u', ' ', trim((string) $value)) ?? '';
     $this->assertStringContainsString($value, $text);
   }
 
@@ -49,6 +53,19 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       10000,
       "document.querySelector('.view.view-content .views-view-table tbody tr') !== null || document.querySelector('.view.view-content .view-empty') !== null"
     );
+    // Views AJAX replaces the form. A node found before that request is stale
+    // in current Chrome.
+    $this->refreshView();
+  }
+
+  /**
+   * Points at the All Content view after the latest AJAX replacement.
+   */
+  private function refreshView(): void {
+    $view = $this->getCurrentPage()->find('css', '.view.view-content');
+    if ($view) {
+      $this->view = $view;
+    }
   }
 
   /**
@@ -248,7 +265,12 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
    * Resets a view exposed form.
    */
   private function reset() {
-    $this->view->hasButton('Reset') ? $this->view->pressButton('Reset') : NULL;
+    $this->refreshView();
+    if ($this->view->hasButton('Reset')) {
+      $this->view->pressButton('Reset');
+      $this->waitForViewResults();
+    }
+    $this->refreshView();
     $this->view->pressButton('Apply');
     $this->waitForViewResults();
   }
@@ -337,8 +359,39 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       ),
       'The batch should finish and return to All Content.'
     );
-    $this->assertSession()->pageTextNotContains('An error has occurred');
-    $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
+    // window.location is already All Content while Mink still holds the batch
+    // document, so reload() would reload the batch URL. Visit the browser's
+    // URL, then retry the read: Chrome 152 reports the old document as stale
+    // until that navigation finishes.
+    $href = $this->getSession()->evaluateScript('return window.location.href;');
+    $this->assertIsString($href);
+    $this->getSession()->visit($href);
+    $this->assertNotNull($this->assertSession()->waitForElement('css', '.view.view-content'));
+    $this->assertDocumentTextDoesNotContain(
+      'An error has occurred',
+      'The website encountered an unexpected error',
+    );
+  }
+
+  /**
+   * Reads the current page once Chrome has finished replacing the document.
+   */
+  private function readablePageText(): string {
+    $text = $this->getSession()->getPage()->waitFor(15, function ($page) {
+      return $page->getText();
+    });
+    $this->assertIsString($text, 'The page should be readable after navigation.');
+    return $text;
+  }
+
+  /**
+   * Asserts the settled page does not contain any of the given snippets.
+   */
+  private function assertDocumentTextDoesNotContain(string ...$snippets): void {
+    $text = $this->readablePageText();
+    foreach ($snippets as $snippet) {
+      $this->assertStringNotContainsString($snippet, $text);
+    }
   }
 
   /**
@@ -375,10 +428,11 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       'Applying the action should lead to the action configuration form.'
     );
     $this->assertSession()->addressMatches('/views-bulk-operations\/configure\/content\//');
-    $this->assertSession()->pageTextNotContains('The website encountered an unexpected error');
-    $this->assertSession()->elementExists('css', 'form#views-bulk-operations-configure-action');
+    $this->assertNotNull($this->assertSession()->waitForElement('css', 'form#views-bulk-operations-configure-action'));
+    $text = $this->readablePageText();
+    $this->assertStringNotContainsString('The website encountered an unexpected error', $text);
     foreach ($nodes as $node) {
-      $this->assertSession()->pageTextContains($node->getTitle());
+      $this->assertStringContainsString($node->getTitle(), $text);
     }
   }
 
@@ -424,6 +478,7 @@ class AllContentViewTest extends MassExistingSiteSelenium2DriverTestBase {
       'Applying the action should lead to the action configuration form.'
     );
 
+    $this->assertNotNull($this->assertSession()->waitForField('node[page][_field_selector][field_reusable_label]'));
     $configure = $this->getCurrentPage();
     $configure->checkField('node[page][_field_selector][field_reusable_label]');
     $configure->fillField('node[page][field_reusable_label][0][target_id]', $label);

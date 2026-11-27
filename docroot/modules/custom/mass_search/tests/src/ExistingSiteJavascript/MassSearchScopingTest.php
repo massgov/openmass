@@ -27,8 +27,9 @@ class MassSearchScopingTest extends MassExistingSiteSelenium2DriverTestBase {
     while ($form && $form->getTagName() !== 'form') {
       $form = $form->getParent();
     }
+    $start_url = $this->getUrl();
     $form->submit();
-    $this->assertSession();
+    $this->waitForNavigationAwayFrom($start_url);
 
     // Assert search results are scoped to microsite.
     $search_url = parse_url($this->getUrl());
@@ -37,18 +38,15 @@ class MassSearchScopingTest extends MassExistingSiteSelenium2DriverTestBase {
 
     // Check each suggestion.
     for ($i = 0; $i < $suggestions_length; $i++) {
-      if ($i === 0) {
-        $this->drupalGet($massgov_page);
-        $this->assertSession();
-      }
+      // Load the page fresh. back() restores Chrome's back/forward cache,
+      // including the previous search query (microsite= stays in the URL).
+      $this->drupalGet($massgov_page);
       $suggestions = $this->getSearchSuggestions($query);
       if (!isset($suggestions[$i])) {
         continue;
       }
       $suggestion = $suggestions[$i];
       $this->testSearchSuggestion($suggestion, $query);
-      $this->getSession()->executeScript("window.history.back();");
-      $this->assertSession();
     }
   }
 
@@ -74,7 +72,9 @@ class MassSearchScopingTest extends MassExistingSiteSelenium2DriverTestBase {
     while ($form && $form->getTagName() !== 'form') {
       $form = $form->getParent();
     }
+    $start_url = $this->getUrl();
     $form->submit();
+    $this->waitForNavigationAwayFrom($start_url);
 
     // Assert search results are scoped to microsite.
     $search_url = parse_url($this->getUrl());
@@ -83,20 +83,20 @@ class MassSearchScopingTest extends MassExistingSiteSelenium2DriverTestBase {
 
     // Check each suggestion.
     for ($i = 0; $i < $suggestions_length; $i++) {
-      if ($i === 0) {
-        $this->drupalGet($massgov_page);
-        $this->assertSession();
+      // Load the page fresh. back() restores Chrome's back/forward cache,
+      // including the previous search query (microsite= stays in the URL).
+      $this->drupalGet($massgov_page);
+      $suggestions = $this->getSearchSuggestions($query);
+      if (!isset($suggestions[$i])) {
+        continue;
       }
-      $suggestion = $this->getSearchSuggestions($query)[$i];
+      $suggestion = $suggestions[$i];
       $type = $suggestion->getAttribute('data-type');
       $this->testSearchSuggestion($suggestion, $query);
 
       if ($type !== 'microsite') {
         $this->assertStringNotContainsString("microsite=", parse_url($this->getUrl())['query']);
       }
-
-      $this->getSession()->executeScript("window.history.back();");
-      $this->assertSession();
     }
   }
 
@@ -153,8 +153,9 @@ class MassSearchScopingTest extends MassExistingSiteSelenium2DriverTestBase {
     $value = $suggestion->getAttribute('data-value');
     $input = $this->setSearchInput($query);
     $input->focus();
+    $start_url = $this->getUrl();
     $suggestion->click();
-    $this->assertSession();
+    $this->waitForNavigationAwayFrom($start_url);
     $search_url = parse_url($this->getUrl());
     $this->assertIsString('search.mass.gov', $search_url['host']);
     if ($type && $value) {
@@ -162,6 +163,23 @@ class MassSearchScopingTest extends MassExistingSiteSelenium2DriverTestBase {
     }
     $queryCount = count(explode("&", $search_url['query']));
     $this->assertLessThan(3, $queryCount);
+  }
+
+  /**
+   * Waits until the browser has left the given URL.
+   *
+   * The search form is submitted from JavaScript, and chromedriver returns
+   * from the click or submit before the browser starts loading the results.
+   *
+   * @param string $url
+   *   The URL of the page the search started from.
+   */
+  private function waitForNavigationAwayFrom(string $url): void {
+    $deadline = microtime(TRUE) + 10;
+    while ($this->getUrl() === $url && microtime(TRUE) < $deadline) {
+      usleep(100000);
+    }
+    $this->assertNotEquals($url, $this->getUrl(), 'The search did not leave the page.');
   }
 
 }

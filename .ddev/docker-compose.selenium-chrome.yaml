@@ -1,0 +1,39 @@
+# This file comes from https://github.com/ddev/ddev-selenium-standalone-chrome
+#
+# Edited locally, so the add-on must not overwrite it. The image is pinned to
+# an exact Chromium and Grid build (chromedriver ships inside it, matched to the
+# browser), and is multi-arch, so Apple Silicon and CircleCI run the same
+# browser. Bump the tag on purpose; never use "latest".
+#
+services:
+  selenium-chrome:
+    image: selenium/standalone-chromium:152.0.7977.82-chromedriver-152.0.7977.82-grid-4.49.0-20260909
+    container_name: ddev-${DDEV_SITENAME}-selenium-chrome
+    expose:
+      #      The internal noVNC port, which operates over HTTP so it can be exposed
+      #      through the router.
+      - 7900
+    environment:
+      - VIRTUAL_HOST=$DDEV_HOSTNAME
+      - HTTPS_EXPOSE=7900:7900
+      - HTTP_EXPOSE=7910:7900
+      - VNC_NO_PASSWORD=1
+      # Chrome runs on the container's virtual display, not headless. Keep the
+      # size fixed so a new image default cannot change the page layout.
+      - SE_SCREEN_WIDTH=1920
+      - SE_SCREEN_HEIGHT=1080
+    external_links:
+      - ddev-router:${DDEV_SITENAME}.${DDEV_TLD}
+    # To enable VNC access for traditional VNC clients like macOS "Screen Sharing",
+    # uncomment the following two lines.
+    #ports:
+    #  - "5900:5900"
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: $DDEV_APPROOT
+    volumes:
+      - ".:/mnt/ddev_config"
+
+  web:
+    links:
+      - selenium-chrome

@@ -74,8 +74,9 @@ class BackToContentEditingTest extends MassExistingSiteSelenium2DriverTestBase {
 
     // Edit the node.
     $this->drupalGet('node/' . $node->id() . '/edit');
-    // Visit the preview.
+    // Visit the preview. The button returns before the preview document loads.
     $this->getCurrentPage()->pressButton('Preview');
+    $this->assertSession()->waitForLink('Back to content editing');
     // Back to editing.
     $this->clickLink('Back to content editing');
     $title = $this->getSession()->getPage()->find('css', 'h1')->getText();
