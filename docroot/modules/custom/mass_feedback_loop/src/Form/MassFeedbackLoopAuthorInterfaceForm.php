@@ -181,6 +181,23 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       '#default_value' => isset($feedback_api_params['label_id']) ? $feedback_api_params['label_id'] : NULL,
     ];
 
+    $owners = $this->entityTypeManager->getStorage('taxonomy_term')->loadByProperties(['vid' => 'sme_owner']);
+    $owner_options = [];
+    foreach ($owners as $owner) {
+      $owner_options[$owner->id()] = $owner->label();
+    }
+    asort($owner_options);
+    $form['filter_by_sme_owner'] = [
+      '#type' => 'select2',
+      '#multiple' => TRUE,
+      '#title' => $this->t('Content Owner / SME'),
+      '#options' => $owner_options,
+      '#default_value' => $feedback_api_params['sme_owner_id'] ?? [],
+      '#attributes' => [
+        'placeholder' => $this->t('Start typing Content Owners / SMEs to filter by ...'),
+      ],
+    ];
+
     $searchHelpText = $this->t(
       'Enter a comma-separated list of words or phrases.'
     );
@@ -330,6 +347,11 @@ class MassFeedbackLoopAuthorInterfaceForm extends FormBase {
       $filter_by_author_param = $form_state->getValue('filter_by_author');
       if (!empty($filter_by_author_param)) {
         $feedback_api_params['author_id'] = [implode(",", array_keys($filter_by_author_param))];
+      }
+
+      $filter_by_sme_owner = $form_state->getValue('filter_by_sme_owner');
+      if (!empty($filter_by_sme_owner)) {
+        $feedback_api_params['sme_owner_id'] = array_values($filter_by_sme_owner);
       }
 
       $filter_by_start_date_param = $form_state->getValue('filter_by_start_date');
