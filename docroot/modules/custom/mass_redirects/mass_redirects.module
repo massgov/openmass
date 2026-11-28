@@ -1,9 +1,45 @@
 <?php
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\TrustedRedirectResponse;
+use Drupal\mass_content\Entity\Bundle\node\NodeBundle;
 use Drupal\mass_content_moderation\MassModeration;
 use Drupal\mass_redirects\Form\MoveRedirectsForm;
+use Drupal\redirect\Entity\Redirect;
+
+/**
+ * Implements hook_redirect_response_alter().
+ */
+function mass_redirects_redirect_response_alter(TrustedRedirectResponse $response, Redirect $redirect): void {
+  $url = $redirect->getRedirectUrl();
+  if (!$url->isRouted() || $url->getRouteName() !== 'entity.node.canonical') {
+    return;
+  }
+  $node = \Drupal::entityTypeManager()->getStorage('node')->load($url->getRouteParameters()['node']);
+  if (!$node instanceof NodeBundle || $node->isPublished()) {
+    return;
+  }
+
+  // Incoming redirects resolve to the unpublished alias. Follow the public
+  // alias's replacement without changing the incoming redirect itself.
+  $response->addCacheableDependency($node);
+  $replacement = \Drupal::service('redirect.repository')->findMatchingRedirect(MoveRedirectsForm::shortenUrl($node), [], $node->language()->getId());
+  if (!$replacement) {
+    $response->getCacheableMetadata()->addCacheTags(['redirect_list']);
+    return;
+  }
+  $response->addCacheableDependency($replacement);
+  if (!in_array($replacement->getRedirect()['uri'], ['internal:/node/' . $node->id(), 'entity:node/' . $node->id()], TRUE)) {
+    $url = $replacement->getRedirectUrl();
+    $query = UrlHelper::parse($response->getTargetUrl())['query'];
+    $url->setOption('query', ($url->getOption('query') ?? []) + $query);
+    $generated_url = $url->setAbsolute()->toString(TRUE);
+    $response->setTrustedTargetUrl($generated_url->getGeneratedUrl());
+    $response->addCacheableDependency($generated_url);
+  }
+}
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -18,7 +54,7 @@ function mass_redirects_form_node_form_alter(&$form, FormStateInterface $form_st
 }
 
 /**
- * Upon saving a trashed node, give link to Move Redirects form.
+ * Upon saving a trashed or unpublished node, offer the redirects form.
  *
  * We can't easily use hook_node_update since the node URL changes to ---unpublished in pathauto_alias_alter hook.
  * We don't use hook_entity_update since that was spamming during bulk update. See https://massgov.atlassian.net/browse/DP-26408
@@ -31,10 +67,11 @@ function mass_redirects_node_form_submit($form, FormStateInterface $form_state) 
 
   /** @var \Drupal\mass_content\Entity\Bundle\node\NodeBundle $entity */
   $entity = $form_state->getFormObject()->getEntity();
-  if (PHP_SAPI !== 'cli' && $entity->getModerationState()->getString() == MassModeration::TRASH) {
-    $id = $entity->id();
-    $message = 'You may be able to <a href="@redirect-page">Redirect this trashed page</a> so that visitors will not get a <em>Page not Found</em> error.';
-    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $entity->toUrl('redirects')->toString()]));
+  $state = $entity->getModerationState()->getString();
+  if (in_array($state, [MassModeration::TRASH, MassModeration::UNPUBLISHED], TRUE)) {
+    $state_label = $state === MassModeration::TRASH ? 'trashed' : 'unpublished';
+    $message = 'You may be able to <a href="@redirect-page">Redirect this @state page</a> so that visitors will not get a <em>Page not Found</em> error.';
+    Drupal::messenger()->addWarning(t($message, ['@redirect-page' => $entity->toUrl('redirects', ['path_processing' => FALSE])->toString(), '@state' => $state_label]));
   }
 }
 
@@ -43,7 +80,7 @@ function mass_redirects_node_form_submit($form, FormStateInterface $form_state) 
  */
 function mass_redirects_entity_operation(EntityInterface $entity): array {
   if ($entity->getEntityTypeId() == 'node') {
-    $url = $entity->toUrl('redirects');
+    $url = $entity->toUrl('redirects', ['path_processing' => FALSE]);
     if ($url->access()) {
       $operations['redirects'] = [
         'title' => \t('Redirects'),
